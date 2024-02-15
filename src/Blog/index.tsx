@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatDateStr } from "./utils.tsx";
 import frontMatter from "front-matter";
+import { compareDesc, parseISO } from "date-fns";
 
 export interface BlogPostMetadata {
   title: string;
@@ -48,6 +49,13 @@ const Blog = () => {
       );
 
       const loadedPosts: BlogPost[] = await Promise.all(markdownPromises);
+      loadedPosts.sort((a, b) => {
+        return compareDesc(
+          parseISO(a.metadata.date),
+          parseISO(b.metadata.date),
+        );
+      });
+
       setPosts(loadedPosts);
     };
 
