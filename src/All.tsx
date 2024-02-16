@@ -1,6 +1,7 @@
-import StandardMetronome from "./Standard.tsx";
-import CircleOfFifthsMetronome from "./CircleOfFifths.tsx";
-import Blog from "../Blog";
+import StandardMetronome from "./Metronomes/Standard.tsx";
+import CircleOfFifthsMetronome from "./Metronomes/CircleOfFifths.tsx";
+import Blog from "./Blog";
+import RandomPromptGenerator from "./RandomPromptGenerator/index.tsx";
 
 const All = [
   {
@@ -12,6 +13,11 @@ const All = [
     path: "/circle-of-fifths-metronome",
     component: CircleOfFifthsMetronome,
     name: "circle of fifths metronome",
+  },
+  {
+    path: "/prompts-for-guitar",
+    component: RandomPromptGenerator,
+    name: "prompts for guitarists",
   },
   {
     path: "/articles",

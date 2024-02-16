@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import All from "./Metronomes/All";
+import All from "./All.tsx";
 
 const Navigation: React.FC = () => {
   const location = useLocation();
