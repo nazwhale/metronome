@@ -1,18 +1,20 @@
 import { useMetronome } from "../hooks/useMetronome.tsx";
 import React from "react";
-import BPMSlider from "./BPMSlider.tsx";
-import PlayButton from "./PlayButton.tsx";
+import Layout from "./Layout.tsx";
 
 const Standard: React.FC = () => {
   const { isPlaying, bpm, currentBeat, currentBar, toggleMetronome, setBpm } =
     useMetronome(120);
 
   return (
-    <div className="space-y-8">
-      <BPMSlider bpm={bpm} setBpm={setBpm} />
+    <Layout
+      isPlaying={isPlaying}
+      bpm={bpm}
+      toggleMetronome={toggleMetronome}
+      setBpm={setBpm}
+    >
       <StandardStatsDisplay currentBeat={currentBeat} currentBar={currentBar} />
-      <PlayButton isPlaying={isPlaying} onToggle={toggleMetronome} />
-    </div>
+    </Layout>
   );
 };
 
