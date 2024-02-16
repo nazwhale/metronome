@@ -6,22 +6,24 @@ import routes from "./routes.tsx";
 function App() {
   return (
     <Router>
-      <div>
-        <div className="mb-8">
-          <h1 className="mb-4 text-4xl font-semibold text-primary-content">
-            tempotick <span className="text-primary-content/60">metronome</span>
+      <div className="navbar bg-neutral text-neutral-content rounded-box mb-8">
+        <div className="flex-1 px-2 lg:flex-none">
+          <h1 className="text-lg font-semibold">
+            tempotick <span className="text-neutral-content/60">metronome</span>
           </h1>
-          <div className="divider">
+        </div>
+        <div className="flex justify-end flex-1 px-2">
+          <div className="flex items-stretch">
             <Navigation />
           </div>
         </div>
-
-        <Routes>
-          {routes.map((route, index) => (
-            <Route key={index} path={route.path} element={route.element} />
-          ))}
-        </Routes>
       </div>
+
+      <Routes>
+        {routes.map((route, index) => (
+          <Route key={index} path={route.path} element={route.element} />
+        ))}
+      </Routes>
     </Router>
   );
 }

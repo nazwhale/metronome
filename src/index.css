@@ -27,6 +27,10 @@ html, body {
     @apply link; /* Customize styles as needed */
 }
 
+.markdown blockquote {
+    @apply border-l-4 border-black pl-4 italic;
+}
+
 /* Add similar classes for h3, h4, etc. */
 
 /*Ko-fi widget styling*/
