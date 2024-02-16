@@ -20,7 +20,7 @@ const RandomPromptGenerator = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <div className="min-h-[8rem] flex items-center justify-center card shadow-md bg-base-100 bg-accent">
+      <div className="min-h-[8rem] flex items-center justify-center card shadow bg-base-100 bg-neutral-content">
         {activePrompt && (
           <p className="text-xl font-semibold">{activePrompt}</p>
         )}
