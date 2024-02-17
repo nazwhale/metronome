@@ -39,9 +39,9 @@ const RandomPromptGenerator = () => {
         </button>
       </div>
 
-      <div className="divider" />
+      <div className="divider my-8" />
 
-      <div className="mt-6">
+      <div className="mt-6 font-color-gray">
         <h3 className="text-md mb-2">Prompts:</h3>
         <ul className="list-none pl-5 text-sm font-color-gray">
           {prompts.map((prompt, index) => (

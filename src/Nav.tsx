@@ -8,11 +8,11 @@ const Navigation: React.FC = () => {
   return (
     <nav>
       <div className="flex-none">
-        <ul className="menu menu-horizontal px-1">
+        <ul className="menu menu-horizontal">
           <li>
             <details>
-              <summary>Nav</summary>
-              <ul className="p-2 bg-base-100 rounded-t-none">
+              <summary>tools</summary>
+              <ul className="p-2 bg-base-100 rounded-t-none z-50 end-0 w-max">
                 {All.map((metronome) => (
                   <li key={metronome.path} className="list-none w-100%">
                     <Link
