@@ -4,7 +4,7 @@ import Layout from "./Layout.tsx";
 
 const Standard: React.FC = () => {
   const { isPlaying, bpm, currentBeat, currentBar, toggleMetronome, setBpm } =
-    useMetronome(120);
+    useMetronome();
 
   return (
     <Layout

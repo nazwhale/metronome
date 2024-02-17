@@ -13,7 +13,7 @@ const CircleOfFifths: React.FC = () => {
     nextNote,
     toggleMetronome,
     setBpm,
-  } = useMetronome(120, true);
+  } = useMetronome(true);
 
   return (
     <Layout

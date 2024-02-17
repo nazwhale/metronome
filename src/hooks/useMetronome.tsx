@@ -3,17 +3,16 @@ import * as Tone from "tone";
 import { fourthBeatSynth, regularSynth } from "../synth";
 import { circleOfFifths } from "../circleOfFifths";
 import { calculateInterval } from "../utils";
+import { useLocalStorage } from "usehooks-ts";
 
 const BEATS_PER_BAR = 4;
 const FIRST_CHANGE_BAR = 5;
 const BARS_BETWEEN_CHANGES = 4;
+const localStorageKeyBpm = "bpm";
 
-const useMetronome = (
-  initialBpm: number,
-  updateNoteEveryFourBars: boolean = false,
-) => {
+const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useState(initialBpm);
+  const [bpm, setBpm] = useLocalStorage(localStorageKeyBpm, 120);
   const beatRef = useRef(0);
   const barCountRef = useRef(0);
   const currentNoteRef = useRef(circleOfFifths[0]);

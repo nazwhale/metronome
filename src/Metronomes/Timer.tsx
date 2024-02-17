@@ -1,27 +1,18 @@
 import { addSeconds, format, startOfDay } from "date-fns";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useInterval } from "usehooks-ts";
 
 type PropsT = {
   isPlaying: boolean;
 };
 
 const Timer = ({ isPlaying }: PropsT) => {
-  const [time, setTime] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
-      }, 1000);
-    } else {
-      // @ts-expect-error: for some reason using node types here
-      clearInterval(interval as NodeJS.Timeout);
-    }
-
-    return () => clearInterval(interval as NodeJS.Timeout);
-  }, [isPlaying]);
+  useInterval(
+    () => setSeconds(seconds + 1),
+    isPlaying ? 1000 : null, // Delay in milliseconds or null to stop it
+  );
 
   const formatTime = (time: number) => {
     const timeDate = addSeconds(startOfDay(new Date()), time);
@@ -30,7 +21,7 @@ const Timer = ({ isPlaying }: PropsT) => {
 
   return (
     <div>
-      <h1 className="font-mono secondary-content">{formatTime(time)}</h1>
+      <h1 className="font-mono secondary-content">{formatTime(seconds)}</h1>
     </div>
   );
 };
