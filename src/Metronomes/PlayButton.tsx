@@ -7,7 +7,7 @@ type PropsT = {
 
 const PlayButton: React.FC<PropsT> = ({ isPlaying, onToggle }) => {
   const handleInteraction = (event: React.MouseEvent | React.TouchEvent) => {
-    event.preventDefault(); // Prevents double firing of events
+    event.preventDefault(); // Useful for preventing default button behavior
     onToggle(event);
   };
 
@@ -17,7 +17,6 @@ const PlayButton: React.FC<PropsT> = ({ isPlaying, onToggle }) => {
         isPlaying ? "btn-accent" : "btn-primary"
       }`}
       onClick={handleInteraction}
-      onTouchStart={handleInteraction} // Using touchstart instead of touchend
     >
       {isPlaying ? "Stop" : "Start"}
     </button>
