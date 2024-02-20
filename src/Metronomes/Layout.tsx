@@ -6,9 +6,7 @@ import React, { Dispatch, SetStateAction } from "react";
 type PropsT = {
   isPlaying: boolean;
   bpm: number;
-  toggleMetronome: (
-    event: React.MouseEvent | React.TouchEvent,
-  ) => Promise<void>;
+  toggleMetronome: () => void;
   setBpm: Dispatch<SetStateAction<number>>;
   children: React.ReactNode;
 };
