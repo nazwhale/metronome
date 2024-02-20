@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as Tone from "tone";
 import { fourthBeatSynth, regularSynth } from "../synth";
 import { circleOfFifths } from "../circleOfFifths";
@@ -106,49 +106,51 @@ const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
     }
   };
 
-  const toggleMetronome = async (
-    event: React.MouseEvent | React.TouchEvent,
-  ) => {
-    // Log the type of user event triggering this function
-    console.log(`Metronome toggled by user event: ${event?.type || "unknown"}`);
-    console.log(`Metronome toggled. Current state isPlaying: ${isPlaying}`);
-    console.log(`Tone.Context state before resume: ${Tone.context.state}`);
-
-    try {
-      // Log the current time for reference
-      console.log(`Current time: ${new Date().toISOString()}`);
-
-      // Resume the audio context in response to user interaction
-      await Tone.context.resume();
-      console.log(`Tone.Context state after resume: ${Tone.context.state}`);
-
-      // Only call Tone.start() if the context is not already running
-      if (Tone.context.state !== "running") {
-        console.log("Attempting to start Tone...");
-        await Tone.start(); // This starts the audio context
-        console.log("Playback resumed successfully");
+  // Toggles the metronome's state based on the current isPlaying state
+  const toggleMetronome = () => {
+    // If the metronome is currently playing, stop it
+    if (isPlaying) {
+      stopMetronome();
+    } else {
+      // If the metronome is not playing, start it
+      // Wrapped in a try-catch to handle any errors that might occur
+      // when starting the metronome, especially relevant for handling
+      // mobile device restrictions on audio playback
+      try {
+        startMetronome();
+      } catch (error) {
+        console.error("Error starting metronome:", error);
       }
-
-      // Log the state of Tone.Transport
-      console.log(
-        `Tone.Transport state before toggle: ${Tone.Transport.state}`,
-      );
-
-      // Then start or stop the metronome
-      if (isPlaying) {
-        Tone.Transport.stop();
-        console.log("Metronome stopped");
-      } else {
-        Tone.Transport.start();
-        console.log("Metronome started");
-      }
-
-      // Update the state to reflect the new playing status
-      setIsPlaying(!isPlaying);
-      console.log(`Metronome playing state is now: ${!isPlaying}`);
-    } catch (e) {
-      console.error("Could not start audio context:", e);
     }
+  };
+
+  // Starts the metronome
+  const startMetronome = async () => {
+    console.log("Attempting to start metronome...");
+
+    // Ensures the audio context is resumed before starting the metronome
+    // This is crucial for mobile devices due to stricter autoplay policies
+    await Tone.context.resume();
+    console.log("Audio context resumed.");
+
+    // Starts Tone.Transport to begin metronome ticking
+    Tone.Transport.start();
+    console.log("Metronome started.");
+
+    // Directly sets isPlaying to true, indicating the metronome is now playing
+    setIsPlaying(true);
+  };
+
+  // Stops the metronome
+  const stopMetronome = () => {
+    console.log("Stopping metronome...");
+
+    // Stops Tone.Transport, effectively stopping the metronome
+    Tone.Transport.stop();
+    console.log("Metronome stopped.");
+
+    // Directly sets isPlaying to false, indicating the metronome has stopped
+    setIsPlaying(false);
   };
 
   return {
