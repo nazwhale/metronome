@@ -28,8 +28,8 @@ const Timer = ({ isPlaying }: PropsT) => {
 
   // useEffect hook to update splits when isPlaying changes
   useEffect(() => {
-    if (!hasStarted) setHasStarted(true); // Flag to indicate timer has started.
     if (secondsRef.current === 0) return // Ignore initial renders
+    if (!hasStarted) setHasStarted(true); // Flag to indicate timer has started.
 
     // Record a split whenever isPlaying changes.
     setSplits(currentSplits => [...currentSplits, { seconds: secondsRef.current, isPlaying: !isPlaying }]);
