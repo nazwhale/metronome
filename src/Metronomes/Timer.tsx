@@ -45,7 +45,7 @@ const Timer = ({ isPlaying }: PropsT) => {
     <div>
       <h1 className="font-mono secondary-content">{formatTime(seconds)}</h1>
       {splits.map((split, i) => (
-        <p key={i} className="text-sm" style={{ color: split.isPlaying ? 'green' : 'gray'}}>{formatTime(split.seconds)}</p>
+        <p key={i} className={`text-sm ${split.isPlaying ? "text-accent" : "text-gray-400"}`}>{formatTime(split.seconds)}</p>
       ))}
     </div>
   );
