@@ -4,6 +4,10 @@ import { fourthBeatSynth, regularSynth } from "../synth";
 import { circleOfFifths } from "../circleOfFifths";
 import { calculateInterval } from "../utils";
 import { useLocalStorage } from "usehooks-ts";
+import NoSleep from 'nosleep.js';
+
+const noSleep = new NoSleep();
+
 
 const BEATS_PER_BAR = 4;
 const FIRST_CHANGE_BAR = 5;
@@ -137,6 +141,9 @@ const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
     Tone.Transport.start();
     console.log("Metronome started.");
 
+    // Enable NoSleep to prevent the screen from going to sleep
+    await noSleep.enable();
+
     // Directly sets isPlaying to true, indicating the metronome is now playing
     setIsPlaying(true);
   };
@@ -148,6 +155,9 @@ const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
     // Stops Tone.Transport, effectively stopping the metronome
     Tone.Transport.stop();
     console.log("Metronome stopped.");
+
+    // Disable NoSleep to allow the screen to go to sleep again
+    noSleep.disable();
 
     // Directly sets isPlaying to false, indicating the metronome has stopped
     setIsPlaying(false);
