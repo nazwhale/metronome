@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSpeedTrainerMetronome } from "../hooks/useSpeedTrainerMetronome";
 import PlayButton from "./PlayButton";
 
 const SpeedTrainer: React.FC = () => {
+    useEffect(() => {
+        document.title = "Free Speed Trainer Metronome - Build Speed & Accuracy | No Ads";
+    }, []);
     const [startBpm, setStartBpm] = useState(60);
     const [targetBpm, setTargetBpm] = useState(90);
     const [bpmIncrement, setBpmIncrement] = useState(5);
