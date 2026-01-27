@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSpeedTrainerMetronome } from "../hooks/useSpeedTrainerMetronome";
 import PlayButton from "./PlayButton";
+import BeatDots from "./BeatDots";
 
 const SpeedTrainer: React.FC = () => {
     useEffect(() => {
@@ -172,22 +173,17 @@ const SpeedTrainer: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Beat and Bar Stats */}
-                    <div className="bg-neutral-content stats stats-vertical sm:stats-horizontal shadow flex flex-grow max-w-md mx-auto">
-                        <div className="stat">
-                            <div className="stat-title">beat</div>
-                            <div className="stat-value">
-                                <span className="countdown">{currentBeat}</span>
-                            </div>
-                            <div className="stat-desc">out of 4</div>
-                        </div>
+                    {/* Beat Dots */}
+                    <BeatDots currentBeat={currentBeat} />
 
+                    {/* Bar Counter */}
+                    <div className="bg-neutral-content stats shadow max-w-xs mx-auto">
                         <div className="stat">
                             <div className="stat-title">bar</div>
                             <div className="stat-value">
                                 <span className="countdown">{currentBar}</span>
                             </div>
-                            <div className="stat-desc">out of 4</div>
+                            <div className="stat-desc">out of {barsBeforeIncrement}</div>
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import BeatDots from "./BeatDots";
 
 type StatsDisplayProps = {
   currentNote: string;
@@ -14,27 +15,23 @@ const StatsDisplay: React.FC<StatsDisplayProps> = ({
   currentBar,
 }) => {
   return (
-    <div className="bg-neutral-content stats stats-vertical sm:stats-horizontal shadow flex flex-grow max-w-md mx-auto">
-      <div className="stat">
-        <div className="stat-title">note</div>
-        <div className="stat-value">{currentNote}</div>
-        <div className="stat-desc">next up: {nextNote}</div>
-      </div>
-
-      <div className="stat">
-        <div className="stat-title">beat</div>
-        <div className="stat-value">
-          <span className="countdown">{currentBeat}</span>
+    <div className="space-y-4">
+      <BeatDots currentBeat={currentBeat} />
+      
+      <div className="bg-neutral-content stats stats-vertical sm:stats-horizontal shadow flex flex-grow max-w-md mx-auto">
+        <div className="stat">
+          <div className="stat-title">note</div>
+          <div className="stat-value">{currentNote}</div>
+          <div className="stat-desc">next up: {nextNote}</div>
         </div>
-        <div className="stat-desc">out of 4</div>
-      </div>
 
-      <div className="stat">
-        <div className="stat-title">bar</div>
-        <div className="stat-value">
-          <span className="countdown">{currentBar}</span>
+        <div className="stat">
+          <div className="stat-title">bar</div>
+          <div className="stat-value">
+            <span className="countdown">{currentBar}</span>
+          </div>
+          <div className="stat-desc">next note after 4</div>
         </div>
-        <div className="stat-desc">next note after 4</div>
       </div>
     </div>
   );

@@ -2,12 +2,13 @@ import { useMetronome } from "../hooks/useMetronome.tsx";
 import React from "react";
 import Layout from "./Layout.tsx";
 import { useLocalStorage } from "usehooks-ts";
+import BeatDots from "./BeatDots";
 
 type TimeSignature = 3 | 4;
 
 const Standard: React.FC = () => {
   const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>("timeSignature", 4);
-  const { isPlaying, bpm, currentBeat, currentBar, beatsPerBar, toggleMetronome, setBpm } =
+  const { isPlaying, bpm, currentBeat, beatsPerBar, toggleMetronome, setBpm } =
     useMetronome({ beatsPerBar: timeSignature });
 
   return (
@@ -18,7 +19,7 @@ const Standard: React.FC = () => {
       setBpm={setBpm}
     >
       <TimeSignatureSelector value={timeSignature} onChange={setTimeSignature} />
-      <StandardStatsDisplay currentBeat={currentBeat} currentBar={currentBar} beatsPerBar={beatsPerBar} />
+      <BeatDots currentBeat={currentBeat} beatsPerBar={beatsPerBar} />
     </Layout>
   );
 };
@@ -48,35 +49,3 @@ const TimeSignatureSelector: React.FC<TimeSignatureSelectorProps> = ({ value, on
 };
 
 export default Standard;
-
-type StatsDisplayProps = {
-  currentBeat: number;
-  currentBar: number;
-  beatsPerBar: number;
-};
-
-const StandardStatsDisplay: React.FC<StatsDisplayProps> = ({
-  currentBeat,
-  currentBar,
-  beatsPerBar,
-}) => {
-  return (
-    <div className="bg-neutral-content stats stats-vertical sm:stats-horizontal shadow flex flex-grow max-w-md mx-auto">
-      <div className="stat">
-        <div className="stat-title">beat</div>
-        <div className="stat-value">
-          <span className="countdown">{currentBeat}</span>
-        </div>
-        <div className="stat-desc">out of {beatsPerBar}</div>
-      </div>
-
-      <div className="stat">
-        <div className="stat-title">bar</div>
-        <div className="stat-value">
-          <span className="countdown">{currentBar}</span>
-        </div>
-        <div className="stat-desc">out of {beatsPerBar}</div>
-      </div>
-    </div>
-  );
-};
