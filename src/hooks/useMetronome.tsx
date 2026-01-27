@@ -9,12 +9,17 @@ import NoSleep from 'nosleep.js';
 const noSleep = new NoSleep();
 
 
-const BEATS_PER_BAR = 4;
 const FIRST_CHANGE_BAR = 5;
 const BARS_BETWEEN_CHANGES = 4;
 const localStorageKeyBpm = "bpm";
 
-const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
+type UseMetronomeOptions = {
+  updateNoteEveryFourBars?: boolean;
+  beatsPerBar?: number;
+};
+
+const useMetronome = (options: UseMetronomeOptions = {}) => {
+  const { updateNoteEveryFourBars = false, beatsPerBar = 4 } = options;
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useLocalStorage(localStorageKeyBpm, 120);
   const beatRef = useRef(0);
@@ -39,10 +44,10 @@ const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
       Tone.Transport.clear(scheduleId);
       console.log("Transport cleared."); // Debug statement
     };
-  }, [bpm, updateNoteEveryFourBars]);
+  }, [bpm, updateNoteEveryFourBars, beatsPerBar]);
 
   const updateBeat = () => {
-    beatRef.current = (beatRef.current % BEATS_PER_BAR) + 1;
+    beatRef.current = (beatRef.current % beatsPerBar) + 1;
     setCurrentBeat(beatRef.current);
   };
 
@@ -61,9 +66,9 @@ const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
   };
 
   const getBarDisplayValue = (barCount: number) => {
-    return barCount % BEATS_PER_BAR === 0
-      ? BEATS_PER_BAR
-      : barCount % BEATS_PER_BAR;
+    return barCount % beatsPerBar === 0
+      ? beatsPerBar
+      : barCount % beatsPerBar;
   };
 
   const maybeUpdateCurrentNote = (updateNoteEveryFourBars: boolean) => {
@@ -168,6 +173,7 @@ const useMetronome = (updateNoteEveryFourBars: boolean = false) => {
     bpm,
     currentBeat,
     currentBar,
+    beatsPerBar,
     currentNote: currentNoteRef.current,
     nextNote: getNextNote(currentNoteRef.current),
     toggleMetronome,
