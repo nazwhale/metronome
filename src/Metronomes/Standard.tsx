@@ -26,8 +26,8 @@ const Standard: React.FC = () => {
     >
       <TimeSignatureSelector value={timeSignature} onChange={setTimeSignature} />
       <BeatDots currentBeat={currentBeat} beatsPerBar={beatsPerBar} />
-      <MuteBarToggle 
-        enabled={muteAlternatingBars} 
+      <MuteBarToggle
+        enabled={muteAlternatingBars}
         onChange={setMuteAlternatingBars}
         isBarMuted={isBarMuted}
         playBars={playBars}
