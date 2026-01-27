@@ -4,13 +4,18 @@ import Layout from "./Layout.tsx";
 import { useLocalStorage } from "usehooks-ts";
 import BeatDots from "./BeatDots";
 import TapTempo from "./TapTempo";
+import VolumeControl from "./VolumeControl";
+import MuteBarToggle from "./MuteBarToggle";
 
 type TimeSignature = 3 | 4;
 
 const Standard: React.FC = () => {
   const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>("timeSignature", 4);
-  const { isPlaying, bpm, currentBeat, beatsPerBar, toggleMetronome, setBpm } =
-    useMetronome({ beatsPerBar: timeSignature });
+  const [muteAlternatingBars, setMuteAlternatingBars] = useLocalStorage("muteAlternatingBars", false);
+  const [playBars, setPlayBars] = useLocalStorage("playBars", 1);
+  const [muteBars, setMuteBars] = useLocalStorage("muteBars", 1);
+  const { isPlaying, bpm, currentBeat, beatsPerBar, isBarMuted, toggleMetronome, setBpm } =
+    useMetronome({ beatsPerBar: timeSignature, muteAlternatingBars, playBars, muteBars });
 
   return (
     <Layout
@@ -21,7 +26,17 @@ const Standard: React.FC = () => {
     >
       <TimeSignatureSelector value={timeSignature} onChange={setTimeSignature} />
       <BeatDots currentBeat={currentBeat} beatsPerBar={beatsPerBar} />
+      <MuteBarToggle 
+        enabled={muteAlternatingBars} 
+        onChange={setMuteAlternatingBars}
+        isBarMuted={isBarMuted}
+        playBars={playBars}
+        muteBars={muteBars}
+        onPlayBarsChange={setPlayBars}
+        onMuteBarsChange={setMuteBars}
+      />
       <TapTempo onBpmChange={setBpm} />
+      <VolumeControl />
     </Layout>
   );
 };

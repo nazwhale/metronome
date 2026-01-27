@@ -16,10 +16,19 @@ const localStorageKeyBpm = "bpm";
 type UseMetronomeOptions = {
   updateNoteEveryFourBars?: boolean;
   beatsPerBar?: number;
+  muteAlternatingBars?: boolean;
+  playBars?: number;
+  muteBars?: number;
 };
 
 const useMetronome = (options: UseMetronomeOptions = {}) => {
-  const { updateNoteEveryFourBars = false, beatsPerBar = 4 } = options;
+  const { 
+    updateNoteEveryFourBars = false, 
+    beatsPerBar = 4, 
+    muteAlternatingBars = false,
+    playBars = 1,
+    muteBars = 1,
+  } = options;
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useLocalStorage(localStorageKeyBpm, 120);
   const beatRef = useRef(0);
@@ -27,6 +36,7 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
   const currentNoteRef = useRef(circleOfFifths[0]);
   const [currentBeat, setCurrentBeat] = useState(1);
   const [currentBar, setCurrentBar] = useState(1);
+  const [isBarMuted, setIsBarMuted] = useState(false);
 
   useEffect(() => {
     // Debug: Log the BPM and the state of Tone.Transport
@@ -44,7 +54,7 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
       Tone.Transport.clear(scheduleId);
       console.log("Transport cleared."); // Debug statement
     };
-  }, [bpm, updateNoteEveryFourBars, beatsPerBar]);
+  }, [bpm, updateNoteEveryFourBars, beatsPerBar, muteAlternatingBars, playBars, muteBars]);
 
   const updateBeat = () => {
     beatRef.current = (beatRef.current % beatsPerBar) + 1;
@@ -88,6 +98,17 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
     console.log("Triggering synth."); // Debug statement
     console.log(`AudioContext State before playing: ${Tone.context.state}`);
     console.log(`Synth volume: ${regularSynth.volume.value}`);
+
+    // Check if this bar should be muted based on play/mute bar cycle
+    const cycleLength = playBars + muteBars;
+    const positionInCycle = ((barCountRef.current - 1) % cycleLength) + 1;
+    const shouldMuteThisBar = muteAlternatingBars && positionInCycle > playBars;
+    setIsBarMuted(shouldMuteThisBar);
+
+    if (shouldMuteThisBar) {
+      console.log("Bar muted (alternating bars mode)");
+      return;
+    }
 
     if (isFirstBeat()) {
       console.log(`First beat: Playing ${currentNoteRef.current}6`); // Debug statement
@@ -174,6 +195,7 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
     currentBeat,
     currentBar,
     beatsPerBar,
+    isBarMuted,
     currentNote: currentNoteRef.current,
     nextNote: getNextNote(currentNoteRef.current),
     toggleMetronome,

@@ -92,7 +92,7 @@ const TapTempo: React.FC<TapTempoProps> = ({ onBpmChange }) => {
   return (
     <div className="flex flex-col items-center gap-2">
       <button
-        className="btn btn-accent btn-lg"
+        className="btn btn-accent btn-md"
         onClick={handleTap}
         aria-label="Tap to set tempo"
       >
