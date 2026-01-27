@@ -1,6 +1,5 @@
 import BPMSlider from "./BPMSlider";
 import PlayButton from "./PlayButton";
-import Timer from "./Timer";
 import React, { Dispatch, SetStateAction } from "react";
 
 type PropsT = {
@@ -23,7 +22,6 @@ const Layout = ({
       <BPMSlider bpm={bpm} setBpm={setBpm} />
       {children} {/* Render children */}
       <PlayButton isPlaying={isPlaying} onToggle={toggleMetronome} />
-      <Timer isPlaying={isPlaying} />
     </div>
   );
 };

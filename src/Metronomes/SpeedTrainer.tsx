@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSpeedTrainerMetronome } from "../hooks/useSpeedTrainerMetronome";
 import PlayButton from "./PlayButton";
-import Timer from "./Timer";
 
 const SpeedTrainer: React.FC = () => {
     const [startBpm, setStartBpm] = useState(60);
@@ -193,9 +192,6 @@ const SpeedTrainer: React.FC = () => {
 
             {/* Play Button */}
             <PlayButton isPlaying={isPlaying} onToggle={toggleMetronome} />
-
-            {/* Timer */}
-            <Timer isPlaying={isPlaying} />
         </div>
     );
 };
