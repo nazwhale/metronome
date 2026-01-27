@@ -3,6 +3,7 @@ import React from "react";
 import Layout from "./Layout.tsx";
 import { useLocalStorage } from "usehooks-ts";
 import BeatDots from "./BeatDots";
+import TapTempo from "./TapTempo";
 
 type TimeSignature = 3 | 4;
 
@@ -20,6 +21,7 @@ const Standard: React.FC = () => {
     >
       <TimeSignatureSelector value={timeSignature} onChange={setTimeSignature} />
       <BeatDots currentBeat={currentBeat} beatsPerBar={beatsPerBar} />
+      <TapTempo onBpmChange={setBpm} />
     </Layout>
   );
 };
