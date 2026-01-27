@@ -10,9 +10,9 @@ function App() {
       <div className="min-h-screen flex flex-col">
         <div className="navbar bg-neutral text-neutral-content rounded-box mb-8">
           <div className="flex-1 px-2 lg:flex-none">
-            <h1 className="text-lg font-semibold">
+            <Link to="/online-metronome" className="text-lg font-semibold hover:opacity-80">
               tempotick <span className="text-neutral-content/60">metronome</span>
-            </h1>
+            </Link>
           </div>
           <div className="flex justify-end flex-1 px-2">
             <div className="flex items-stretch">
