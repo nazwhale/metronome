@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSpeedTrainerMetronome } from "../hooks/useSpeedTrainerMetronome";
+import { useLocalStorage } from "usehooks-ts";
 import PlayButton from "./PlayButton";
 import BeatDots from "./BeatDots";
+
+// Default: beat 1 accented, rest unaccented
+const createDefaultAccents = (count: number): boolean[] =>
+    Array.from({ length: count }, (_, i) => i === 0);
 
 const SpeedTrainer: React.FC = () => {
     useEffect(() => {
@@ -11,6 +16,16 @@ const SpeedTrainer: React.FC = () => {
     const [targetBpm, setTargetBpm] = useState(90);
     const [bpmIncrement, setBpmIncrement] = useState(5);
     const [barsBeforeIncrement, setBarsBeforeIncrement] = useState(4);
+    const [accents, setAccents] = useLocalStorage<boolean[]>(
+        "speedTrainerAccents",
+        createDefaultAccents(4)
+    );
+
+    const handleAccentToggle = (beatIndex: number) => {
+        const newAccents = [...accents];
+        newAccents[beatIndex] = !newAccents[beatIndex];
+        setAccents(newAccents);
+    };
 
     const { isPlaying, currentBpm, currentBeat, currentBar, toggleMetronome } =
         useSpeedTrainerMetronome({
@@ -18,13 +33,21 @@ const SpeedTrainer: React.FC = () => {
             targetBpm,
             bpmIncrement,
             barsBeforeIncrement,
+            accents,
         });
 
     return (
-        <div className="space-y-8">
+        <div className="flex flex-col items-center gap-8">
+            {/* Beat Dots - always at top */}
+            <BeatDots
+                currentBeat={currentBeat}
+                accents={accents}
+                onAccentToggle={handleAccentToggle}
+            />
+
             {/* Settings - only show when not playing */}
             {!isPlaying && (
-                <div className="space-y-6">
+                <div className="flex flex-col items-center gap-6">
                     {/* Start BPM */}
                     <div className="flex flex-col items-center">
                         <label className="label">
@@ -161,7 +184,7 @@ const SpeedTrainer: React.FC = () => {
 
             {/* Current Stats - show when playing */}
             {isPlaying && (
-                <div className="space-y-4">
+                <div className="flex flex-col items-center gap-4">
                     {/* Current BPM Display */}
                     <div className="flex flex-col items-center">
                         <div className="stat">
@@ -172,9 +195,6 @@ const SpeedTrainer: React.FC = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Beat Dots */}
-                    <BeatDots currentBeat={currentBeat} />
 
                     {/* Bar Counter */}
                     <div className="bg-neutral-content stats shadow max-w-xs mx-auto">

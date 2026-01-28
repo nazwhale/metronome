@@ -1,9 +1,20 @@
 import React from "react";
 import StatsDisplay from "./StatsDisplay.tsx";
+import BeatDots from "./BeatDots.tsx";
 import { useMetronome } from "../hooks/useMetronome.tsx";
 import Layout from "./Layout.tsx";
+import { useLocalStorage } from "usehooks-ts";
+
+// Default: beat 1 accented, rest unaccented
+const createDefaultAccents = (count: number): boolean[] =>
+  Array.from({ length: count }, (_, i) => i === 0);
 
 const CircleOfFifths: React.FC = () => {
+  const [accents, setAccents] = useLocalStorage<boolean[]>(
+    "circleOfFifthsAccents",
+    createDefaultAccents(4)
+  );
+
   const {
     isPlaying,
     bpm,
@@ -13,7 +24,13 @@ const CircleOfFifths: React.FC = () => {
     nextNote,
     toggleMetronome,
     setBpm,
-  } = useMetronome({ updateNoteEveryFourBars: true });
+  } = useMetronome({ updateNoteEveryFourBars: true, accents });
+
+  const handleAccentToggle = (beatIndex: number) => {
+    const newAccents = [...accents];
+    newAccents[beatIndex] = !newAccents[beatIndex];
+    setAccents(newAccents);
+  };
 
   return (
     <Layout
@@ -21,11 +38,17 @@ const CircleOfFifths: React.FC = () => {
       bpm={bpm}
       toggleMetronome={toggleMetronome}
       setBpm={setBpm}
+      topContent={
+        <BeatDots
+          currentBeat={currentBeat}
+          accents={accents}
+          onAccentToggle={handleAccentToggle}
+        />
+      }
     >
       <StatsDisplay
         currentNote={currentNote}
         nextNote={nextNote}
-        currentBeat={currentBeat}
         currentBar={currentBar}
       />
     </Layout>

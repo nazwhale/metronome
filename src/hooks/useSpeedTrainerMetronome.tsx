@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import * as Tone from "tone";
 import { fourthBeatSynth, regularSynth } from "../synth";
 import { circleOfFifths } from "../circleOfFifths";
@@ -13,6 +13,7 @@ type SpeedTrainerConfig = {
     targetBpm: number;
     bpmIncrement: number;
     barsBeforeIncrement: number;
+    accents?: boolean[];
 };
 
 const useSpeedTrainerMetronome = (config: SpeedTrainerConfig) => {
@@ -25,6 +26,18 @@ const useSpeedTrainerMetronome = (config: SpeedTrainerConfig) => {
     const [currentBeat, setCurrentBeat] = useState(1);
     const [currentBar, setCurrentBar] = useState(1);
     const scheduleIdRef = useRef<number | null>(null);
+
+    // Default accents: beat 1 is accented, rest are not
+    const accentPattern = useMemo(
+        () => config.accents ?? Array.from({ length: BEATS_PER_BAR }, (_, i) => i === 0),
+        [config.accents]
+    );
+
+    // Use ref so the scheduled callback always has the latest accent pattern
+    const accentPatternRef = useRef(accentPattern);
+    useEffect(() => {
+        accentPatternRef.current = accentPattern;
+    }, [accentPattern]);
 
     // Setup metronome schedule when playing starts
     useEffect(() => {
@@ -112,7 +125,10 @@ const useSpeedTrainerMetronome = (config: SpeedTrainerConfig) => {
     };
 
     const triggerSynth = (time: number) => {
-        if (isFirstBeat()) {
+        // Check if current beat is accented (beatRef.current is 1-indexed)
+        const isAccentedBeat = accentPatternRef.current[beatRef.current - 1] ?? false;
+
+        if (isAccentedBeat) {
             try {
                 fourthBeatSynth.triggerAttackRelease(
                     currentNoteRef.current + "6",

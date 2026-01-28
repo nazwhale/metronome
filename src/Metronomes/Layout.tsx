@@ -7,7 +7,8 @@ type PropsT = {
   bpm: number;
   toggleMetronome: () => void;
   setBpm: Dispatch<SetStateAction<number>>;
-  children: React.ReactNode;
+  topContent?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 const Layout = ({
@@ -15,12 +16,14 @@ const Layout = ({
   bpm,
   toggleMetronome,
   setBpm,
-  children, // Accept children here
+  topContent,
+  children,
 }: PropsT) => {
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col items-center gap-8">
+      {topContent && <div>{topContent}</div>}
       <BPMSlider bpm={bpm} setBpm={setBpm} />
-      {children} {/* Render children */}
+      {children && <div className="flex flex-col items-center gap-8 w-full">{children}</div>}
       <PlayButton isPlaying={isPlaying} onToggle={toggleMetronome} />
     </div>
   );
