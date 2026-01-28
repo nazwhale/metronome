@@ -3,6 +3,7 @@ import CircleOfFifthsMetronome from "./Metronomes/CircleOfFifths.tsx";
 import SpeedTrainerMetronome from "./Metronomes/SpeedTrainer.tsx";
 import Blog from "./Blog";
 import RandomPromptGenerator from "./RandomPromptGenerator/index.tsx";
+import YouTubeLooper from "./YouTubeLooper/index.tsx";
 
 const All = [
   {
@@ -24,6 +25,11 @@ const All = [
     path: "/prompts-for-guitar",
     component: RandomPromptGenerator,
     name: "prompts for guitarists",
+  },
+  {
+    path: "/youtube-looper",
+    component: YouTubeLooper,
+    name: "youtube looper",
   },
   {
     path: "/articles",
