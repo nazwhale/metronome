@@ -1,9 +1,55 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
+// YouTube IFrame API types
+interface YTPlayer {
+  destroy: () => void;
+  getDuration: () => number;
+  getCurrentTime: () => number;
+  seekTo: (seconds: number, allowSeekAhead: boolean) => void;
+  playVideo: () => void;
+}
+
+interface YTPlayerEvent {
+  target: YTPlayer;
+}
+
+interface YTOnStateChangeEvent {
+  target: YTPlayer;
+  data: number;
+}
+
+interface YTPlayerOptions {
+  videoId: string;
+  playerVars?: {
+    autoplay?: number;
+    modestbranding?: number;
+    rel?: number;
+  };
+  events?: {
+    onReady?: (event: YTPlayerEvent) => void;
+    onStateChange?: (event: YTOnStateChangeEvent) => void;
+  };
+}
+
+interface YTPlayerConstructor {
+  new (element: HTMLElement, options: YTPlayerOptions): YTPlayer;
+}
+
+interface YTNamespace {
+  Player: YTPlayerConstructor;
+  PlayerState: {
+    ENDED: number;
+    PLAYING: number;
+    PAUSED: number;
+    BUFFERING: number;
+    CUED: number;
+  };
+}
+
 declare global {
   interface Window {
-    YT: typeof YT;
+    YT: YTNamespace;
     onYouTubeIframeAPIReady: () => void;
   }
 }
@@ -192,7 +238,7 @@ const YouTubeLooper: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-  const playerRef = useRef<YT.Player | null>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const loopIntervalRef = useRef<number | null>(null);
   const pendingLoopParams = useRef<{ start: number; end: number } | null>(null);
@@ -280,7 +326,7 @@ const YouTubeLooper: React.FC = () => {
         rel: 0,
       },
       events: {
-        onReady: (event: YT.PlayerEvent) => {
+        onReady: (event: YTPlayerEvent) => {
           const dur = event.target.getDuration();
           setDuration(dur);
           
@@ -295,7 +341,7 @@ const YouTubeLooper: React.FC = () => {
             setLoopEnd(dur);
           }
         },
-        onStateChange: (event: YT.OnStateChangeEvent) => {
+        onStateChange: (event: YTOnStateChangeEvent) => {
           // When video ends, restart from loop start if looping whole video
           if (event.data === window.YT.PlayerState.ENDED && !loopEnabled) {
             event.target.seekTo(0, true);
