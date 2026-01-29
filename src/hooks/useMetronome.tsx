@@ -23,28 +23,28 @@ type UseMetronomeOptions = {
 };
 
 const useMetronome = (options: UseMetronomeOptions = {}) => {
-  const { 
-    updateNoteEveryFourBars = false, 
-    beatsPerBar = 4, 
+  const {
+    updateNoteEveryFourBars = false,
+    beatsPerBar = 4,
     muteAlternatingBars = false,
     playBars = 1,
     muteBars = 1,
     accents,
   } = options;
-  
+
   // Default accents: beat 1 is accented, rest are not
   // Memoize to avoid recreating array on every render
   const accentPattern = useMemo(
     () => accents ?? Array.from({ length: beatsPerBar }, (_, i) => i === 0),
     [accents, beatsPerBar]
   );
-  
+
   // Use ref so the scheduled callback always has the latest accent pattern
   const accentPatternRef = useRef(accentPattern);
   useEffect(() => {
     accentPatternRef.current = accentPattern;
   }, [accentPattern]);
-  
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useLocalStorage(localStorageKeyBpm, 120);
   const beatRef = useRef(0);
@@ -60,7 +60,6 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
     console.log(`Tone.Transport state: ${Tone.Transport.state}`);
 
     const scheduleId = Tone.Transport.scheduleRepeat((time) => {
-      console.log("Scheduled repeat triggered."); // Debug statement
       updateBeat();
       updateBarAndNote(updateNoteEveryFourBars);
       triggerSynth(time);
@@ -111,9 +110,12 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
   };
 
   const triggerSynth = (time: number) => {
-    console.log("Triggering synth."); // Debug statement
-    console.log(`AudioContext State before playing: ${Tone.context.state}`);
-    console.log(`Synth volume: ${regularSynth.volume.value}`);
+    // Timing diagnostic: if delta is negative, notes are scheduled in the past and will be silent
+    const currentTime = Tone.context.currentTime;
+    const delta = time - currentTime;
+    if (delta < 0) {
+      console.warn(`⚠️ TIMING ISSUE: Schedule time (${time.toFixed(3)}) is ${Math.abs(delta).toFixed(3)}s in the PAST (currentTime: ${currentTime.toFixed(3)}). Audio will be silent!`);
+    }
 
     // Check if this bar should be muted based on play/mute bar cycle
     const cycleLength = playBars + muteBars;
@@ -122,7 +124,6 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
     setIsBarMuted(shouldMuteThisBar);
 
     if (shouldMuteThisBar) {
-      console.log("Bar muted (alternating bars mode)");
       return;
     }
 
@@ -130,8 +131,6 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
     const isAccentedBeat = accentPatternRef.current[beatRef.current - 1] ?? false;
 
     if (isAccentedBeat) {
-      console.log(`Accented beat ${beatRef.current}: Playing ${currentNoteRef.current}6`); // Debug statement
-
       try {
         fourthBeatSynth.triggerAttackRelease(
           currentNoteRef.current + "6",
@@ -142,7 +141,6 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
         console.error("Error triggering fourthBeatSynth:", error);
       }
     } else {
-      console.log(`Regular beat ${beatRef.current}: Playing ${currentNoteRef.current}5`); // Debug statement
       try {
         regularSynth.triggerAttackRelease(
           currentNoteRef.current + "5",
