@@ -6,6 +6,104 @@ import BeatDots from "./BeatDots";
 import TapTempo from "./TapTempo";
 import VolumeControl from "./VolumeControl";
 import MuteBarToggle from "./MuteBarToggle";
+import QandA, { QAItem } from "../components/QandA";
+
+const FAQ_ITEMS: QAItem[] = [
+  {
+    question: "What does metronome mean?",
+    answer: (
+      <p>
+        The word "metronome" comes from the Greek words "metron" (measure) and "nomos" (law or rule). 
+        A metronome is a device that produces a steady pulse or click at a consistent tempo, measured 
+        in beats per minute (BPM). Musicians use metronomes to practice keeping steady time and to 
+        develop their internal sense of rhythm. Modern metronomes can be mechanical, electronic, or 
+        software-based like this online metronome.
+      </p>
+    ),
+  },
+  {
+    question: "How fast is 120 BPM?",
+    answer: (
+      <p>
+        120 BPM (beats per minute) means there are exactly 2 beats per second, or one beat every 
+        0.5 seconds. This is considered a moderate, comfortable tempo—roughly the speed of a brisk 
+        walk or a typical pop song. It's often called "Allegro moderato" in classical music terminology. 
+        Many popular songs are written around 120 BPM because it feels energetic but not rushed.
+      </p>
+    ),
+  },
+  {
+    question: "How to tell if a song is in 3/4 or 6/8?",
+    answer: (
+      <div>
+        <p className="mb-2">
+          Both 3/4 and 6/8 have a similar "feel" but differ in how beats are grouped:
+        </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>3/4 time</strong> has 3 beats per measure, each beat divided into 2. Count: "1-and-2-and-3-and." Think of a waltz.</li>
+          <li><strong>6/8 time</strong> has 2 main beats per measure, each divided into 3. Count: "1-2-3-4-5-6" with emphasis on 1 and 4. Think of a jig.</li>
+        </ul>
+        <p className="mt-2">
+          The key difference: 3/4 feels like THREE beats (waltz), while 6/8 feels like TWO beats with a triplet swing.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "What are the 4 types of tempo?",
+    answer: (
+      <div>
+        <p className="mb-2">
+          Tempo is broadly categorized into four main types:
+        </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Slow (Largo, Adagio)</strong> – Below 80 BPM. Stately, relaxed, or somber music.</li>
+          <li><strong>Moderate (Andante, Moderato)</strong> – 80-120 BPM. Walking pace, comfortable and natural.</li>
+          <li><strong>Fast (Allegro, Vivace)</strong> – 120-168 BPM. Lively, energetic, upbeat music.</li>
+          <li><strong>Very Fast (Presto, Prestissimo)</strong> – Above 168 BPM. Extremely quick, exciting, virtuosic.</li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    question: "Did Beethoven invent the metronome?",
+    answer: (
+      <p>
+        No, Beethoven did not invent the metronome. The modern metronome was invented by Johann Maelzel 
+        in 1815, though the concept was developed earlier by Dietrich Nikolaus Winkel. However, Beethoven 
+        was one of the first major composers to embrace the metronome, adding metronome markings to his 
+        compositions. He saw it as a way to ensure his music would be performed at the tempos he intended, 
+        though some of his markings are debated by scholars today.
+      </p>
+    ),
+  },
+  {
+    question: "When were metronomes invented?",
+    answer: (
+      <p>
+        The mechanical metronome as we know it was patented by Johann Maelzel in 1815, though Dietrich 
+        Nikolaus Winkel actually invented the double-weighted pendulum mechanism around 1814. Earlier 
+        devices for measuring musical time existed—Étienne Loulié created a simple pendulum device in 
+        1696. The metronome quickly became an essential tool for musicians, and by the early 1800s, 
+        composers began including BPM markings in their scores.
+      </p>
+    ),
+  },
+  {
+    question: "What are the main types of metronome?",
+    answer: (
+      <div>
+        <p className="mb-2">There are several types of metronomes available today:</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Mechanical metronomes</strong> – The classic wind-up pendulum style. Visual and audible, no batteries needed.</li>
+          <li><strong>Digital/Electronic metronomes</strong> – Battery-powered devices with precise timing and extra features like subdivision and accent patterns.</li>
+          <li><strong>Software/App metronomes</strong> – Free or paid apps for phones and computers, often with advanced features.</li>
+          <li><strong>Online metronomes</strong> – Browser-based tools (like this one!) that require no download.</li>
+        </ul>
+      </div>
+    ),
+  },
+];
 
 type TimeSignature = 3 | 4 | 5;
 
@@ -45,33 +143,41 @@ const Standard: React.FC = () => {
   };
 
   return (
-    <Layout
-      isPlaying={isPlaying}
-      bpm={bpm}
-      toggleMetronome={toggleMetronome}
-      setBpm={setBpm}
-      topContent={
-        <BeatDots
-          currentBeat={currentBeat}
-          beatsPerBar={beatsPerBar}
-          accents={accents}
-          onAccentToggle={handleAccentToggle}
+    <>
+      <Layout
+        isPlaying={isPlaying}
+        bpm={bpm}
+        toggleMetronome={toggleMetronome}
+        setBpm={setBpm}
+        topContent={
+          <BeatDots
+            currentBeat={currentBeat}
+            beatsPerBar={beatsPerBar}
+            accents={accents}
+            onAccentToggle={handleAccentToggle}
+          />
+        }
+      >
+        <TimeSignatureSelector value={timeSignature} onChange={setTimeSignature} />
+        <MuteBarToggle
+          enabled={muteAlternatingBars}
+          onChange={setMuteAlternatingBars}
+          isBarMuted={isBarMuted}
+          playBars={playBars}
+          muteBars={muteBars}
+          onPlayBarsChange={setPlayBars}
+          onMuteBarsChange={setMuteBars}
         />
-      }
-    >
-      <TimeSignatureSelector value={timeSignature} onChange={setTimeSignature} />
-      <MuteBarToggle
-        enabled={muteAlternatingBars}
-        onChange={setMuteAlternatingBars}
-        isBarMuted={isBarMuted}
-        playBars={playBars}
-        muteBars={muteBars}
-        onPlayBarsChange={setPlayBars}
-        onMuteBarsChange={setMuteBars}
-      />
-      <TapTempo onBpmChange={setBpm} />
-      <VolumeControl />
-    </Layout>
+        <TapTempo onBpmChange={setBpm} />
+        <VolumeControl />
+      </Layout>
+
+      {/* FAQ Section */}
+      <div className="max-w-lg mx-auto px-4 mt-8">
+        <div className="divider" />
+        <QandA items={FAQ_ITEMS} />
+      </div>
+    </>
   );
 };
 

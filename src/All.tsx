@@ -4,6 +4,7 @@ import SpeedTrainerMetronome from "./Metronomes/SpeedTrainer.tsx";
 import Blog from "./Blog";
 import RandomPromptGenerator from "./RandomPromptGenerator/index.tsx";
 import YouTubeLooper from "./YouTubeLooper/index.tsx";
+import ChordProgressionTrainer from "./ChordProgressionTrainer/index.tsx";
 
 const All = [
   {
@@ -30,6 +31,11 @@ const All = [
     path: "/youtube-looper",
     component: YouTubeLooper,
     name: "youtube looper",
+  },
+  {
+    path: "/chord-progression-trainer",
+    component: ChordProgressionTrainer,
+    name: "chord progression trainer",
   },
   {
     path: "/articles",

@@ -1,5 +1,96 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
+import QandA, { QAItem } from "../components/QandA";
+
+const FAQ_ITEMS: QAItem[] = [
+  {
+    question: "How to use this YouTube video looper",
+    answer: (
+      <div>
+        <p className="mb-2">Using this YouTube looper is simple:</p>
+        <ol className="list-decimal pl-5 space-y-1">
+          <li>Paste any YouTube URL into the input field and click "Load Video"</li>
+          <li>Once the video loads, use the two slider handles to set your loop start and end points</li>
+          <li>The video will automatically loop between these points while "Enable" is toggled on</li>
+          <li>Use "Jump to Start" to restart from your loop point, or "Copy Link" to share your loop with others</li>
+        </ol>
+      </div>
+    ),
+  },
+  {
+    question: "What is this looper useful for?",
+    answer: (
+      <div>
+        <p className="mb-2">This YouTube looper is especially useful for:</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Musicians</strong> – Loop a guitar solo, bass line, or drum fill to learn it by ear</li>
+          <li><strong>Language learners</strong> – Repeat a phrase or dialogue until you understand it</li>
+          <li><strong>Dancers</strong> – Practice choreography by looping specific sections</li>
+          <li><strong>Students</strong> – Review key parts of educational videos</li>
+          <li><strong>Transcribers</strong> – Loop difficult passages while writing out music or lyrics</li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    question: "How to repeat YouTube videos on computer",
+    answer: (
+      <p>
+        While YouTube has a built-in loop feature (right-click the video and select "Loop"), it only loops the 
+        entire video. To loop a specific section, you need a tool like this YouTube looper. Simply paste the 
+        video URL, set your start and end points using the sliders, and the video will continuously repeat 
+        that section. This is much more useful for practice and learning than looping the whole video.
+      </p>
+    ),
+  },
+  {
+    question: "Can a YouTube video be set to loop?",
+    answer: (
+      <p>
+        Yes! On YouTube directly, you can right-click any video and select "Loop" to make it repeat endlessly. 
+        However, this loops the entire video from start to finish. If you want to loop just a portion of a 
+        video—like a specific chorus, solo, or tutorial segment—you'll need to use a looper tool like this 
+        one, which lets you define custom start and end points for your loop.
+      </p>
+    ),
+  },
+  {
+    question: "Can I loop a YouTube video forever?",
+    answer: (
+      <p>
+        Yes, both YouTube's native loop and this looper tool will repeat indefinitely until you stop them. 
+        With this tool, you can loop a specific section forever—perfect for background music, meditation 
+        sounds, practice sessions, or any situation where you want continuous playback of a particular 
+        segment. Just set your loop points and leave it playing.
+      </p>
+    ),
+  },
+  {
+    question: "How to make YouTube play continuously?",
+    answer: (
+      <p>
+        For continuous playback of a single video, right-click and enable "Loop" on YouTube. For continuous 
+        playback of a specific section, use this looper tool to set custom start and end points. For 
+        continuous playback of multiple videos, create a YouTube playlist and enable playlist looping. 
+        This looper is ideal when you need precise control over which part of a video plays on repeat.
+      </p>
+    ),
+  },
+  {
+    question: "Why am I not able to loop videos on YouTube?",
+    answer: (
+      <div>
+        <p className="mb-2">If you're having trouble looping on YouTube, here are common causes:</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Mobile app limitations</strong> – The loop feature may not appear on all mobile versions; try using the desktop site</li>
+          <li><strong>Embedded videos</strong> – Right-click loop may not work on embedded players; open the video on YouTube directly</li>
+          <li><strong>Browser extensions</strong> – Some ad blockers or extensions can interfere with YouTube features</li>
+          <li><strong>Need section looping</strong> – YouTube's native loop only works for full videos; use this tool for section looping</li>
+        </ul>
+      </div>
+    ),
+  },
+];
 
 // YouTube IFrame API types
 interface YTPlayer {
@@ -552,6 +643,12 @@ const YouTubeLooper: React.FC = () => {
 
       <div className="text-sm text-base-content/60 text-center">
         <p>Drag the handles to set loop start and end points. Use "Copy Link" to share.</p>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="w-full mt-8">
+        <div className="divider" />
+        <QandA items={FAQ_ITEMS} />
       </div>
     </div>
   );
