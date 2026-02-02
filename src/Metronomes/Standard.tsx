@@ -6,6 +6,8 @@ import TapTempo from "./TapTempo";
 import VolumeControl from "./VolumeControl";
 import MuteBarToggle from "./MuteBarToggle";
 import QandA, { QAItem } from "../components/QandA";
+import { useIsEmbed } from "../contexts/EmbedContext";
+import { EmbedButton } from "../components/EmbedModal";
 
 const FAQ_ITEMS: QAItem[] = [
   {
@@ -110,14 +112,26 @@ type TimeSignature = 3 | 4 | 5;
 const createDefaultAccents = (count: number): boolean[] =>
   Array.from({ length: count }, (_, i) => i === 0);
 
-const Standard: React.FC = () => {
-  const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>("timeSignature", 4);
+export type StandardMetronomeProps = {
+  initialBpm?: number;
+  initialTimeSignature?: TimeSignature;
+};
+
+const Standard: React.FC<StandardMetronomeProps> = ({ 
+  initialBpm,
+  initialTimeSignature 
+}) => {
+  const isEmbed = useIsEmbed();
+  const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>(
+    "timeSignature", 
+    initialTimeSignature ?? 4
+  );
   const [muteAlternatingBars, setMuteAlternatingBars] = useLocalStorage("muteAlternatingBars", false);
   const [playBars, setPlayBars] = useLocalStorage("playBars", 1);
   const [muteBars, setMuteBars] = useLocalStorage("muteBars", 1);
   const [accents, setAccents] = useLocalStorage<boolean[]>(
     "beatAccents",
-    createDefaultAccents(4)
+    createDefaultAccents(initialTimeSignature ?? 4)
   );
 
   // Adjust accents array when time signature changes
@@ -133,7 +147,7 @@ const Standard: React.FC = () => {
   }, [timeSignature, accents, setAccents]);
 
   const { isPlaying, bpm, currentBeat, beatsPerBar, isBarMuted, toggleMetronome, setBpm } =
-    useMetronome({ beatsPerBar: timeSignature, muteAlternatingBars, playBars, muteBars, accents });
+    useMetronome({ beatsPerBar: timeSignature, muteAlternatingBars, playBars, muteBars, accents, initialBpm });
 
   const handleAccentToggle = (beatIndex: number) => {
     const newAccents = [...accents];
@@ -165,13 +179,23 @@ const Standard: React.FC = () => {
         />
         <TapTempo onBpmChange={setBpm} />
         <VolumeControl />
+        {!isEmbed && (
+          <EmbedButton
+            embedPath="/embed/metronome"
+            queryParams={{ bpm, ts: timeSignature }}
+            height={360}
+            toolName="Metronome"
+          />
+        )}
       </Layout>
 
-      {/* FAQ Section */}
-      <div className="max-w-lg mx-auto px-4 mt-8">
-        <div className="divider" />
-        <QandA items={FAQ_ITEMS} />
-      </div>
+      {/* FAQ Section - hidden in embed mode */}
+      {!isEmbed && (
+        <div className="max-w-lg mx-auto px-4 mt-8">
+          <div className="divider" />
+          <QandA items={FAQ_ITEMS} />
+        </div>
+      )}
     </>
   );
 };

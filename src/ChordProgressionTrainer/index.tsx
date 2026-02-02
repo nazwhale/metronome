@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef } from "react";
 import * as Tone from "tone";
 import QandA, { QAItem } from "../components/QandA";
+import { useIsEmbed } from "../contexts/EmbedContext";
+import { EmbedButton } from "../components/EmbedModal";
 
 const FAQ_ITEMS: QAItem[] = [
   {
@@ -156,6 +158,7 @@ const createChordSynth = () => {
 };
 
 const ChordProgressionTrainer = () => {
+  const isEmbed = useIsEmbed();
   const [progression, setProgression] = useState<ChordKey[]>([]);
   const [hiddenIndex, setHiddenIndex] = useState<number>(0);
   const [options, setOptions] = useState<ChordKey[]>([]);
@@ -361,23 +364,37 @@ const ChordProgressionTrainer = () => {
         </>
       )}
 
-      {/* Chord reference */}
-      <div className="divider my-8" />
-      <div className="text-sm text-base-content/70">
-        <h3 className="font-semibold mb-2">Chord Reference (Key of C):</h3>
-        <ul className="grid grid-cols-2 gap-1">
-          <li><span className="font-mono">I</span> - C major</li>
-          <li><span className="font-mono">ii</span> - D minor</li>
-          <li><span className="font-mono">iii</span> - E minor</li>
-          <li><span className="font-mono">IV</span> - F major</li>
-          <li><span className="font-mono">V</span> - G major</li>
-          <li><span className="font-mono">vi</span> - A minor</li>
-        </ul>
-      </div>
+      {/* Embed Button - hidden in embed mode */}
+      {!isEmbed && (
+        <div className="flex justify-center mt-6">
+          <EmbedButton
+            embedPath="/embed/chord-trainer"
+            height={560}
+            toolName="Chord Trainer"
+          />
+        </div>
+      )}
 
-      {/* FAQ Section */}
-      <div className="divider my-8" />
-      <QandA items={FAQ_ITEMS} />
+      {/* Chord reference and FAQ - hidden in embed mode */}
+      {!isEmbed && (
+        <>
+          <div className="divider my-8" />
+          <div className="text-sm text-base-content/70">
+            <h3 className="font-semibold mb-2">Chord Reference (Key of C):</h3>
+            <ul className="grid grid-cols-2 gap-1">
+              <li><span className="font-mono">I</span> - C major</li>
+              <li><span className="font-mono">ii</span> - D minor</li>
+              <li><span className="font-mono">iii</span> - E minor</li>
+              <li><span className="font-mono">IV</span> - F major</li>
+              <li><span className="font-mono">V</span> - G major</li>
+              <li><span className="font-mono">vi</span> - A minor</li>
+            </ul>
+          </div>
+
+          <div className="divider my-8" />
+          <QandA items={FAQ_ITEMS} />
+        </>
+      )}
     </div>
   );
 };

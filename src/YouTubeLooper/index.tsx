@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import QandA, { QAItem } from "../components/QandA";
+import { useIsEmbed } from "../contexts/EmbedContext";
+import { EmbedButton } from "../components/EmbedModal";
 
 const FAQ_ITEMS: QAItem[] = [
   {
@@ -307,6 +309,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 };
 
 const YouTubeLooper: React.FC = () => {
+  const isEmbed = useIsEmbed();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Set SEO-friendly document title
@@ -645,11 +648,27 @@ const YouTubeLooper: React.FC = () => {
         <p>Drag the handles to set loop start and end points. Use "Copy Link" to share.</p>
       </div>
 
-      {/* FAQ Section */}
-      <div className="w-full mt-8">
-        <div className="divider" />
-        <QandA items={FAQ_ITEMS} />
-      </div>
+      {/* Embed Button - hidden in embed mode */}
+      {!isEmbed && videoId && (
+        <EmbedButton
+          embedPath="/embed/youtube-looper"
+          queryParams={{
+            v: videoId,
+            ...(loopStart > 0 && { start: loopStart.toFixed(1) }),
+            ...(loopEnd > 0 && loopEnd < duration && { end: loopEnd.toFixed(1) }),
+          }}
+          height={640}
+          toolName="YouTube Looper"
+        />
+      )}
+
+      {/* FAQ Section - hidden in embed mode */}
+      {!isEmbed && (
+        <div className="w-full mt-8">
+          <div className="divider" />
+          <QandA items={FAQ_ITEMS} />
+        </div>
+      )}
     </div>
   );
 };

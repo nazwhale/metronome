@@ -3,19 +3,33 @@ import { useSpeedTrainerMetronome } from "../hooks/useSpeedTrainerMetronome";
 import { useLocalStorage } from "usehooks-ts";
 import PlayButton from "./PlayButton";
 import BeatDots from "./BeatDots";
+import { useIsEmbed } from "../contexts/EmbedContext";
+import { EmbedButton } from "../components/EmbedModal";
 
 // Default: beat 1 accented, rest unaccented
 const createDefaultAccents = (count: number): boolean[] =>
     Array.from({ length: count }, (_, i) => i === 0);
 
-const SpeedTrainer: React.FC = () => {
+export type SpeedTrainerSettings = {
+    startBpm?: number;
+    targetBpm?: number;
+    bpmIncrement?: number;
+    barsBeforeIncrement?: number;
+};
+
+export type SpeedTrainerProps = {
+    initialSettings?: SpeedTrainerSettings;
+};
+
+const SpeedTrainer: React.FC<SpeedTrainerProps> = ({ initialSettings }) => {
+    const isEmbed = useIsEmbed();
     useEffect(() => {
         document.title = "Free Speed Trainer Metronome - Build Speed & Accuracy | No Ads";
     }, []);
-    const [startBpm, setStartBpm] = useState(60);
-    const [targetBpm, setTargetBpm] = useState(90);
-    const [bpmIncrement, setBpmIncrement] = useState(5);
-    const [barsBeforeIncrement, setBarsBeforeIncrement] = useState(4);
+    const [startBpm, setStartBpm] = useState(initialSettings?.startBpm ?? 60);
+    const [targetBpm, setTargetBpm] = useState(initialSettings?.targetBpm ?? 90);
+    const [bpmIncrement, setBpmIncrement] = useState(initialSettings?.bpmIncrement ?? 5);
+    const [barsBeforeIncrement, setBarsBeforeIncrement] = useState(initialSettings?.barsBeforeIncrement ?? 4);
     const [accents, setAccents] = useLocalStorage<boolean[]>(
         "speedTrainerAccents",
         createDefaultAccents(4)
@@ -211,6 +225,21 @@ const SpeedTrainer: React.FC = () => {
 
             {/* Play Button */}
             <PlayButton isPlaying={isPlaying} onToggle={toggleMetronome} />
+
+            {/* Embed Button - hidden in embed mode */}
+            {!isEmbed && (
+                <EmbedButton
+                    embedPath="/embed/speed-trainer"
+                    queryParams={{
+                        start: startBpm,
+                        target: targetBpm,
+                        inc: bpmIncrement,
+                        bars: barsBeforeIncrement,
+                    }}
+                    height={520}
+                    toolName="Speed Trainer"
+                />
+            )}
         </div>
     );
 };

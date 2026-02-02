@@ -20,6 +20,7 @@ type UseMetronomeOptions = {
   playBars?: number;
   muteBars?: number;
   accents?: boolean[];
+  initialBpm?: number;
 };
 
 const useMetronome = (options: UseMetronomeOptions = {}) => {
@@ -30,6 +31,7 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
     playBars = 1,
     muteBars = 1,
     accents,
+    initialBpm,
   } = options;
 
   // Default accents: beat 1 is accented, rest are not
@@ -46,7 +48,7 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
   }, [accentPattern]);
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useLocalStorage(localStorageKeyBpm, 120);
+  const [bpm, setBpm] = useLocalStorage(localStorageKeyBpm, initialBpm ?? 120);
   const beatRef = useRef(0);
   const barCountRef = useRef(0);
   const currentNoteRef = useRef(circleOfFifths[0]);

@@ -15,7 +15,7 @@ Music Teachers can paste an `<iframe>` into their site, your tool renders nicely
 
 ---
 
-## Phase 1: Add embed routes + layout (core plumbing)
+## Phase 1: Add embed routes + layout (core plumbing) - DONE
 
 ### 1. Create an `EmbedLayout`
 
@@ -93,7 +93,7 @@ Each route renders the existing tool component inside `EmbedLayout`.
 
 ---
 
-## Phase 2: Presets via query params (shareable practice links)
+## Phase 2: Presets via query params (shareable practice links) - DONE
 
 ### 3. Parse query params into tool defaults
 
@@ -149,8 +149,8 @@ export function EmbedSpeedTrainerPage() {
 
 ---
 
-## Phase 3: “Embed” button on the main tool pages (copy-paste UX)
-
+## Phase 3: “Embed” button on the main tool pages (copy-paste UX) - DONE
+ 
 ### 4. Add an “Embed” modal with copy button
 
 **Files**
