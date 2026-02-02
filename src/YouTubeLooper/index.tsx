@@ -101,6 +101,9 @@ interface YTPlayer {
   getCurrentTime: () => number;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
   playVideo: () => void;
+  getPlaybackRate: () => number;
+  setPlaybackRate: (suggestedRate: number) => void;
+  getAvailablePlaybackRates: () => number[];
 }
 
 interface YTPlayerEvent {
@@ -331,6 +334,7 @@ const YouTubeLooper: React.FC = () => {
   const [isApiReady, setIsApiReady] = useState(false);
   const [copied, setCopied] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
 
   const playerRef = useRef<YTPlayer | null>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -508,6 +512,7 @@ const YouTubeLooper: React.FC = () => {
       setLoopStart(0);
       setLoopEnd(0);
       setLoopEnabled(true);
+      setPlaybackRate(1);
       pendingLoopParams.current = null;
     } else {
       setError("Invalid YouTube URL. Please enter a valid YouTube video link.");
@@ -523,6 +528,7 @@ const YouTubeLooper: React.FC = () => {
     setLoopEnd(0);
     setLoopEnabled(false);
     setDuration(0);
+    setPlaybackRate(1);
   };
 
   const handleJumpToStart = () => {
@@ -547,6 +553,25 @@ const YouTubeLooper: React.FC = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleSpeedChange = (delta: number) => {
+    if (!playerRef.current) return;
+    
+    // Calculate new rate based on percentage change
+    const newRate = Math.max(0.25, Math.min(2, playbackRate + delta));
+    
+    // Round to nearest 0.05 for cleaner display
+    const roundedRate = Math.round(newRate * 20) / 20;
+    
+    playerRef.current.setPlaybackRate(roundedRate);
+    setPlaybackRate(roundedRate);
+  };
+
+  const handleResetSpeed = () => {
+    if (!playerRef.current) return;
+    playerRef.current.setPlaybackRate(1);
+    setPlaybackRate(1);
   };
 
   return (
@@ -634,6 +659,54 @@ const YouTubeLooper: React.FC = () => {
                 Looping: {formatTime(loopStart)} → {formatTime(loopEnd)}
               </div>
             )}
+          </div>
+
+          {/* Speed Controls */}
+          <div className="w-full bg-base-200 rounded-lg p-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <h2 className="text-lg font-semibold">Playback Speed</h2>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => handleSpeedChange(-0.1)}
+                  className="btn btn-sm btn-outline"
+                  disabled={playbackRate <= 0.25}
+                >
+                  -10%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSpeedChange(-0.05)}
+                  className="btn btn-sm btn-outline"
+                  disabled={playbackRate <= 0.25}
+                >
+                  -5%
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetSpeed}
+                  className="btn btn-sm btn-primary min-w-[4.5rem]"
+                >
+                  {Math.round(playbackRate * 100)}%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSpeedChange(0.05)}
+                  className="btn btn-sm btn-outline"
+                  disabled={playbackRate >= 2}
+                >
+                  +5%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSpeedChange(0.1)}
+                  className="btn btn-sm btn-outline"
+                  disabled={playbackRate >= 2}
+                >
+                  +10%
+                </button>
+              </div>
+            </div>
           </div>
         </>
       ) : (
