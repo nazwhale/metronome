@@ -12,7 +12,7 @@ const BPMSlider: React.FC<BPMSliderProps> = ({ bpm, setBpm }) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-2">
       <div className="flex items-center w-fit">
         <button className="btn btn-secondary" onClick={() => setBpm(bpm - 5)}>
           -5

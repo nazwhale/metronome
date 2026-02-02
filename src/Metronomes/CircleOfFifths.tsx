@@ -1,6 +1,5 @@
 import React from "react";
 import StatsDisplay from "./StatsDisplay.tsx";
-import BeatDots from "./BeatDots.tsx";
 import { useMetronome } from "../hooks/useMetronome.tsx";
 import Layout from "./Layout.tsx";
 import { useLocalStorage } from "usehooks-ts";
@@ -19,6 +18,7 @@ const CircleOfFifths: React.FC = () => {
     isPlaying,
     bpm,
     currentBeat,
+    beatsPerBar,
     currentBar,
     currentNote,
     nextNote,
@@ -38,13 +38,10 @@ const CircleOfFifths: React.FC = () => {
       bpm={bpm}
       toggleMetronome={toggleMetronome}
       setBpm={setBpm}
-      topContent={
-        <BeatDots
-          currentBeat={currentBeat}
-          accents={accents}
-          onAccentToggle={handleAccentToggle}
-        />
-      }
+      currentBeat={currentBeat}
+      beatsPerBar={beatsPerBar}
+      accents={accents}
+      onAccentToggle={handleAccentToggle}
     >
       <StatsDisplay
         currentNote={currentNote}

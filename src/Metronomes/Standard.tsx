@@ -2,7 +2,6 @@ import { useMetronome } from "../hooks/useMetronome.tsx";
 import React, { useEffect } from "react";
 import Layout from "./Layout.tsx";
 import { useLocalStorage } from "usehooks-ts";
-import BeatDots from "./BeatDots";
 import TapTempo from "./TapTempo";
 import VolumeControl from "./VolumeControl";
 import MuteBarToggle from "./MuteBarToggle";
@@ -13,10 +12,10 @@ const FAQ_ITEMS: QAItem[] = [
     question: "What does metronome mean?",
     answer: (
       <p>
-        The word "metronome" comes from the Greek words "metron" (measure) and "nomos" (law or rule). 
-        A metronome is a device that produces a steady pulse or click at a consistent tempo, measured 
-        in beats per minute (BPM). Musicians use metronomes to practice keeping steady time and to 
-        develop their internal sense of rhythm. Modern metronomes can be mechanical, electronic, or 
+        The word "metronome" comes from the Greek words "metron" (measure) and "nomos" (law or rule).
+        A metronome is a device that produces a steady pulse or click at a consistent tempo, measured
+        in beats per minute (BPM). Musicians use metronomes to practice keeping steady time and to
+        develop their internal sense of rhythm. Modern metronomes can be mechanical, electronic, or
         software-based like this online metronome.
       </p>
     ),
@@ -25,9 +24,9 @@ const FAQ_ITEMS: QAItem[] = [
     question: "How fast is 120 BPM?",
     answer: (
       <p>
-        120 BPM (beats per minute) means there are exactly 2 beats per second, or one beat every 
-        0.5 seconds. This is considered a moderate, comfortable tempo—roughly the speed of a brisk 
-        walk or a typical pop song. It's often called "Allegro moderato" in classical music terminology. 
+        120 BPM (beats per minute) means there are exactly 2 beats per second, or one beat every
+        0.5 seconds. This is considered a moderate, comfortable tempo—roughly the speed of a brisk
+        walk or a typical pop song. It's often called "Allegro moderato" in classical music terminology.
         Many popular songs are written around 120 BPM because it feels energetic but not rushed.
       </p>
     ),
@@ -69,10 +68,10 @@ const FAQ_ITEMS: QAItem[] = [
     question: "Did Beethoven invent the metronome?",
     answer: (
       <p>
-        No, Beethoven did not invent the metronome. The modern metronome was invented by Johann Maelzel 
-        in 1815, though the concept was developed earlier by Dietrich Nikolaus Winkel. However, Beethoven 
-        was one of the first major composers to embrace the metronome, adding metronome markings to his 
-        compositions. He saw it as a way to ensure his music would be performed at the tempos he intended, 
+        No, Beethoven did not invent the metronome. The modern metronome was invented by Johann Maelzel
+        in 1815, though the concept was developed earlier by Dietrich Nikolaus Winkel. However, Beethoven
+        was one of the first major composers to embrace the metronome, adding metronome markings to his
+        compositions. He saw it as a way to ensure his music would be performed at the tempos he intended,
         though some of his markings are debated by scholars today.
       </p>
     ),
@@ -81,10 +80,10 @@ const FAQ_ITEMS: QAItem[] = [
     question: "When were metronomes invented?",
     answer: (
       <p>
-        The mechanical metronome as we know it was patented by Johann Maelzel in 1815, though Dietrich 
-        Nikolaus Winkel actually invented the double-weighted pendulum mechanism around 1814. Earlier 
-        devices for measuring musical time existed—Étienne Loulié created a simple pendulum device in 
-        1696. The metronome quickly became an essential tool for musicians, and by the early 1800s, 
+        The mechanical metronome as we know it was patented by Johann Maelzel in 1815, though Dietrich
+        Nikolaus Winkel actually invented the double-weighted pendulum mechanism around 1814. Earlier
+        devices for measuring musical time existed—Étienne Loulié created a simple pendulum device in
+        1696. The metronome quickly became an essential tool for musicians, and by the early 1800s,
         composers began including BPM markings in their scores.
       </p>
     ),
@@ -149,14 +148,10 @@ const Standard: React.FC = () => {
         bpm={bpm}
         toggleMetronome={toggleMetronome}
         setBpm={setBpm}
-        topContent={
-          <BeatDots
-            currentBeat={currentBeat}
-            beatsPerBar={beatsPerBar}
-            accents={accents}
-            onAccentToggle={handleAccentToggle}
-          />
-        }
+        currentBeat={currentBeat}
+        beatsPerBar={beatsPerBar}
+        accents={accents}
+        onAccentToggle={handleAccentToggle}
       >
         <TimeSignatureSelector value={timeSignature} onChange={setTimeSignature} />
         <MuteBarToggle
