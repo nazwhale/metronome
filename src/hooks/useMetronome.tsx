@@ -48,6 +48,11 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
   }, [accentPattern]);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  // #region agent log
+  let localStorageWorks = false;
+  try { localStorage.setItem('__test__', '1'); localStorage.removeItem('__test__'); localStorageWorks = true; } catch (e) { localStorageWorks = false; }
+  fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:init',message:'localStorage check',data:{localStorageWorks,initialBpm},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
+  // #endregion
   const [bpm, setBpm] = useLocalStorage(localStorageKeyBpm, initialBpm ?? 120);
   const beatRef = useRef(0);
   const barCountRef = useRef(0);
@@ -157,6 +162,9 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
 
   // Toggles the metronome's state based on the current isPlaying state
   const toggleMetronome = () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:toggleMetronome',message:'toggleMetronome called',data:{isPlaying,transportState:Tone.Transport.state,contextState:Tone.context.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1,H3,H4'})}).catch(()=>{});
+    // #endregion
     // If the metronome is currently playing, stop it
     if (isPlaying) {
       stopMetronome();
@@ -175,26 +183,56 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
 
   // Starts the metronome
   const startMetronome = async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:startMetronome:entry',message:'startMetronome called',data:{contextStateBefore:Tone.context.state,transportStateBefore:Tone.Transport.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1,H4'})}).catch(()=>{});
+    // #endregion
     console.log("Attempting to start metronome...");
 
     // Ensures the audio context is resumed before starting the metronome
     // This is crucial for mobile devices due to stricter autoplay policies
-    await Tone.context.resume();
+    try {
+      await Tone.context.resume();
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:startMetronome:afterResume',message:'context.resume completed',data:{contextStateAfter:Tone.context.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
+    } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:startMetronome:resumeError',message:'context.resume failed',data:{error:String(err)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
+    }
     console.log("Audio context resumed.");
 
     // Starts Tone.Transport to begin metronome ticking
     Tone.Transport.start();
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:startMetronome:afterTransportStart',message:'Transport.start called',data:{transportStateAfter:Tone.Transport.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
+    // #endregion
     console.log("Metronome started.");
 
     // Enable NoSleep to prevent the screen from going to sleep
-    await noSleep.enable();
+    try {
+      await noSleep.enable();
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:startMetronome:noSleepEnabled',message:'noSleep.enable completed',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
+    } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:startMetronome:noSleepError',message:'noSleep.enable failed',data:{error:String(err)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
+    }
 
     // Directly sets isPlaying to true, indicating the metronome is now playing
     setIsPlaying(true);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:startMetronome:exit',message:'setIsPlaying(true) called',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+    // #endregion
   };
 
   // Stops the metronome
   const stopMetronome = () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:stopMetronome:entry',message:'stopMetronome called',data:{transportStateBefore:Tone.Transport.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3,H4'})}).catch(()=>{});
+    // #endregion
     console.log("Stopping metronome...");
 
     // Stops Tone.Transport, effectively stopping the metronome
@@ -206,6 +244,9 @@ const useMetronome = (options: UseMetronomeOptions = {}) => {
 
     // Directly sets isPlaying to false, indicating the metronome has stopped
     setIsPlaying(false);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMetronome.tsx:stopMetronome:exit',message:'setIsPlaying(false) called',data:{transportStateAfter:Tone.Transport.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3,H4'})}).catch(()=>{});
+    // #endregion
   };
 
   return {

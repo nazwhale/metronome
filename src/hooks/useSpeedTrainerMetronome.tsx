@@ -152,6 +152,9 @@ const useSpeedTrainerMetronome = (config: SpeedTrainerConfig) => {
     };
 
     const toggleMetronome = () => {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:toggleMetronome',message:'ST toggleMetronome called',data:{isPlaying,transportState:Tone.Transport.state,contextState:Tone.context.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1,H3,H4'})}).catch(()=>{});
+        // #endregion
         if (isPlaying) {
             stopMetronome();
         } else {
@@ -164,6 +167,9 @@ const useSpeedTrainerMetronome = (config: SpeedTrainerConfig) => {
     };
 
     const startMetronome = async () => {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:startMetronome:entry',message:'ST startMetronome called',data:{contextStateBefore:Tone.context.state,transportStateBefore:Tone.Transport.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1,H4'})}).catch(()=>{});
+        // #endregion
         console.log("Attempting to start speed trainer metronome...");
 
         // Reset state when starting
@@ -174,15 +180,39 @@ const useSpeedTrainerMetronome = (config: SpeedTrainerConfig) => {
         setCurrentBar(1);
         setCurrentBpm(config.startBpm);
 
-        await Tone.context.resume();
+        try {
+            await Tone.context.resume();
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:startMetronome:afterResume',message:'ST context.resume completed',data:{contextStateAfter:Tone.context.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+            // #endregion
+        } catch (err) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:startMetronome:resumeError',message:'ST context.resume failed',data:{error:String(err)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+            // #endregion
+        }
         console.log("Audio context resumed.");
 
         Tone.Transport.start();
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:startMetronome:afterTransportStart',message:'ST Transport.start called',data:{transportStateAfter:Tone.Transport.state},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
+        // #endregion
         console.log("Speed trainer metronome started.");
 
-        await noSleep.enable();
+        try {
+            await noSleep.enable();
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:startMetronome:noSleepEnabled',message:'ST noSleep.enable completed',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+            // #endregion
+        } catch (err) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:startMetronome:noSleepError',message:'ST noSleep.enable failed',data:{error:String(err)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+            // #endregion
+        }
 
         setIsPlaying(true);
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useSpeedTrainerMetronome.tsx:startMetronome:exit',message:'ST setIsPlaying(true) called',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+        // #endregion
     };
 
     const stopMetronome = () => {
