@@ -117,18 +117,13 @@ export type StandardMetronomeProps = {
   initialTimeSignature?: TimeSignature;
 };
 
-const Standard: React.FC<StandardMetronomeProps> = ({ 
+const Standard: React.FC<StandardMetronomeProps> = ({
   initialBpm,
-  initialTimeSignature 
+  initialTimeSignature
 }) => {
   const isEmbed = useIsEmbed();
-  // #region agent log
-  let localStorageWorks = false;
-  try { localStorage.setItem('__test__', '1'); localStorage.removeItem('__test__'); localStorageWorks = true; } catch (e) { localStorageWorks = false; }
-  fetch('http://127.0.0.1:7242/ingest/1e29dd22-9108-4958-aab4-ef776c58af0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Standard.tsx:init',message:'Standard component init',data:{isEmbed,localStorageWorks,initialBpm,initialTimeSignature},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
-  // #endregion
   const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>(
-    "timeSignature", 
+    "timeSignature",
     initialTimeSignature ?? 4
   );
   const [muteAlternatingBars, setMuteAlternatingBars] = useLocalStorage("muteAlternatingBars", false);
