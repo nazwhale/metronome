@@ -652,6 +652,7 @@ const YouTubeLooper: React.FC = () => {
       {!isEmbed && videoId && (
         <EmbedButton
           embedPath="/embed/youtube-looper"
+          canonicalPath="/youtube-looper"
           queryParams={{
             v: videoId,
             ...(loopStart > 0 && { start: loopStart.toFixed(1) }),

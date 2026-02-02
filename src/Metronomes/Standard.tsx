@@ -182,6 +182,7 @@ const Standard: React.FC<StandardMetronomeProps> = ({
         {!isEmbed && (
           <EmbedButton
             embedPath="/embed/metronome"
+            canonicalPath="/online-metronome"
             queryParams={{ bpm, ts: timeSignature }}
             height={360}
             toolName="Metronome"

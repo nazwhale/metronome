@@ -230,6 +230,7 @@ const SpeedTrainer: React.FC<SpeedTrainerProps> = ({ initialSettings }) => {
             {!isEmbed && (
                 <EmbedButton
                     embedPath="/embed/speed-trainer"
+                    canonicalPath="/speed-trainer-metronome"
                     queryParams={{
                         start: startBpm,
                         target: targetBpm,

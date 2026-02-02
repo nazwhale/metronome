@@ -51,6 +51,9 @@ Perfect for lesson pages where students need to practice with a click track.
   loading="lazy"
   allow="autoplay"
 ></iframe>
+<p style="font-size:12px;margin-top:8px;text-align:center;">
+  <a href="https://www.tempotick.com/online-metronome" target="_blank" rel="noopener">Metronome by Tempotick</a>
+</p>
 ```
 
 **Customization options:**
@@ -72,6 +75,9 @@ Great for technique-building exercises where students need to gradually increase
   loading="lazy"
   allow="autoplay"
 ></iframe>
+<p style="font-size:12px;margin-top:8px;text-align:center;">
+  <a href="https://www.tempotick.com/speed-trainer-metronome" target="_blank" rel="noopener">Speed Trainer by Tempotick</a>
+</p>
 ```
 
 **Customization options:**
@@ -95,6 +101,9 @@ Ideal for transcription guides, lick breakdowns, or any lesson based on a YouTub
   loading="lazy"
   allow="autoplay"
 ></iframe>
+<p style="font-size:12px;margin-top:8px;text-align:center;">
+  <a href="https://www.tempotick.com/youtube-looper" target="_blank" rel="noopener">YouTube Looper by Tempotick</a>
+</p>
 ```
 
 **Customization options:**
@@ -117,6 +126,9 @@ Perfect for ear training pages or music theory courses.
   loading="lazy"
   allow="autoplay"
 ></iframe>
+<p style="font-size:12px;margin-top:8px;text-align:center;">
+  <a href="https://www.tempotick.com/chord-progression-trainer" target="_blank" rel="noopener">Chord Trainer by Tempotick</a>
+</p>
 ```
 
 This tool doesn't need customization—it generates random progressions for students to identify.
@@ -150,10 +162,19 @@ Create a "Practice Resources" page for your ensemble with metronomes set to the 
 3. **Test on mobile** – All embeds are responsive, but check that they fit your layout
 4. **Consider the height** – Each tool has a recommended height; too short may cut off controls
 
+### Terms of Use
+
+Our embeds are **completely free** to use on your website. In exchange, we just ask that you:
+
+1. **Keep the attribution link** – The embed code includes a small "by Tempotick" link below the tool. Please keep this visible.
+2. **Make it free for your visitors** – Don't put embeds behind a paywall or require payment to access them.
+
+That's it! No signup, no API keys, no hidden fees.
+
 ### Frequently Asked Questions
 
 **Is embedding free?**
-Yes, completely free. We just ask that you keep the "Powered by Tempotick" link visible.
+Yes, completely free. We just ask that you keep the attribution link visible (it's already included in the embed code).
 
 **Will embeds work on Squarespace, Wix, WordPress, etc.?**
 Yes! Any platform that allows custom HTML or iframe embeds will work. Look for "HTML block," "Embed," or "Custom code" in your site builder.
@@ -176,4 +197,4 @@ Ready to enhance your music teaching website? Head to any of our tools and click
 - [YouTube Looper](/youtube-looper) – For transcription and learning by ear
 - [Chord Progression Trainer](/chord-progression-trainer) – For ear training
 
-Each embed includes a link back to Tempotick so your students can explore the full versions if they want more features. Happy teaching!
+The embed code includes an attribution link back to Tempotick—please keep it visible. Your students can click through to explore the full versions if they want more features. Happy teaching!

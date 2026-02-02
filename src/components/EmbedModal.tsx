@@ -6,6 +6,7 @@ type EmbedModalProps = {
   isOpen: boolean;
   onClose: () => void;
   embedPath: string; // e.g., "/embed/metronome"
+  canonicalPath: string; // e.g., "/online-metronome"
   queryParams?: Record<string, string | number>;
   height: number;
   toolName: string;
@@ -25,7 +26,7 @@ function buildEmbedUrl(embedPath: string, queryParams?: Record<string, string | 
   return url.toString();
 }
 
-function buildIframeSnippet(src: string, height: number): string {
+function buildIframeSnippet(src: string, height: number, toolName: string, canonicalUrl: string): string {
   return `<iframe
   src="${src}"
   width="100%"
@@ -33,13 +34,17 @@ function buildIframeSnippet(src: string, height: number): string {
   style="border:0;border-radius:12px;overflow:hidden"
   loading="lazy"
   allow="autoplay"
-></iframe>`;
+></iframe>
+<p style="font-size:12px;margin-top:8px;text-align:center;">
+  <a href="${canonicalUrl}" target="_blank" rel="noopener">${toolName} by Tempotick</a>
+</p>`;
 }
 
 export function EmbedModal({ 
   isOpen, 
   onClose, 
-  embedPath, 
+  embedPath,
+  canonicalPath,
   queryParams, 
   height,
   toolName 
@@ -49,7 +54,8 @@ export function EmbedModal({
   if (!isOpen) return null;
 
   const embedUrl = buildEmbedUrl(embedPath, queryParams);
-  const iframeSnippet = buildIframeSnippet(embedUrl, height);
+  const canonicalUrl = `${BASE_URL}${canonicalPath}`;
+  const iframeSnippet = buildIframeSnippet(embedUrl, height, toolName, canonicalUrl);
 
   const handleCopy = async () => {
     try {
@@ -118,6 +124,7 @@ export function EmbedModal({
 // Convenience component that includes button + modal
 type EmbedButtonProps = {
   embedPath: string;
+  canonicalPath: string;
   queryParams?: Record<string, string | number>;
   height: number;
   toolName: string;
@@ -125,7 +132,8 @@ type EmbedButtonProps = {
 };
 
 export function EmbedButton({ 
-  embedPath, 
+  embedPath,
+  canonicalPath,
   queryParams, 
   height, 
   toolName,
@@ -149,6 +157,7 @@ export function EmbedButton({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         embedPath={embedPath}
+        canonicalPath={canonicalPath}
         queryParams={queryParams}
         height={height}
         toolName={toolName}

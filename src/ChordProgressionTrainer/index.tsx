@@ -369,6 +369,7 @@ const ChordProgressionTrainer = () => {
         <div className="flex justify-center mt-6">
           <EmbedButton
             embedPath="/embed/chord-trainer"
+            canonicalPath="/chord-progression-trainer"
             height={560}
             toolName="Chord Trainer"
           />
