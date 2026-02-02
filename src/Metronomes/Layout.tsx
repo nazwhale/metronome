@@ -37,8 +37,8 @@ const Layout = ({
         />
         <BPMSlider bpm={bpm} setBpm={setBpm} />
       </div>
-      {children && <div className="flex flex-col items-center gap-8 w-full">{children}</div>}
       <PlayButton isPlaying={isPlaying} onToggle={toggleMetronome} />
+      {children && <div className="flex flex-col items-center gap-8 w-full">{children}</div>}
     </div>
   );
 };
