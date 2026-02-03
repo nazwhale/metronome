@@ -38,9 +38,9 @@ const FAQ_ITEMS: QAItem[] = [
     question: "How to repeat YouTube videos on computer",
     answer: (
       <p>
-        While YouTube has a built-in loop feature (right-click the video and select "Loop"), it only loops the 
-        entire video. To loop a specific section, you need a tool like this YouTube looper. Simply paste the 
-        video URL, set your start and end points using the sliders, and the video will continuously repeat 
+        While YouTube has a built-in loop feature (right-click the video and select "Loop"), it only loops the
+        entire video. To loop a specific section, you need a tool like this YouTube looper. Simply paste the
+        video URL, set your start and end points using the sliders, and the video will continuously repeat
         that section. This is much more useful for practice and learning than looping the whole video.
       </p>
     ),
@@ -49,9 +49,9 @@ const FAQ_ITEMS: QAItem[] = [
     question: "Can a YouTube video be set to loop?",
     answer: (
       <p>
-        Yes! On YouTube directly, you can right-click any video and select "Loop" to make it repeat endlessly. 
-        However, this loops the entire video from start to finish. If you want to loop just a portion of a 
-        video—like a specific chorus, solo, or tutorial segment—you'll need to use a looper tool like this 
+        Yes! On YouTube directly, you can right-click any video and select "Loop" to make it repeat endlessly.
+        However, this loops the entire video from start to finish. If you want to loop just a portion of a
+        video—like a specific chorus, solo, or tutorial segment—you'll need to use a looper tool like this
         one, which lets you define custom start and end points for your loop.
       </p>
     ),
@@ -60,9 +60,9 @@ const FAQ_ITEMS: QAItem[] = [
     question: "Can I loop a YouTube video forever?",
     answer: (
       <p>
-        Yes, both YouTube's native loop and this looper tool will repeat indefinitely until you stop them. 
-        With this tool, you can loop a specific section forever—perfect for background music, meditation 
-        sounds, practice sessions, or any situation where you want continuous playback of a particular 
+        Yes, both YouTube's native loop and this looper tool will repeat indefinitely until you stop them.
+        With this tool, you can loop a specific section forever—perfect for background music, meditation
+        sounds, practice sessions, or any situation where you want continuous playback of a particular
         segment. Just set your loop points and leave it playing.
       </p>
     ),
@@ -71,9 +71,9 @@ const FAQ_ITEMS: QAItem[] = [
     question: "How to make YouTube play continuously?",
     answer: (
       <p>
-        For continuous playback of a single video, right-click and enable "Loop" on YouTube. For continuous 
-        playback of a specific section, use this looper tool to set custom start and end points. For 
-        continuous playback of multiple videos, create a YouTube playlist and enable playlist looping. 
+        For continuous playback of a single video, right-click and enable "Loop" on YouTube. For continuous
+        playback of a specific section, use this looper tool to set custom start and end points. For
+        continuous playback of multiple videos, create a YouTube playlist and enable playlist looping.
         This looper is ideal when you need precise control over which part of a video plays on repeat.
       </p>
     ),
@@ -129,7 +129,7 @@ interface YTPlayerOptions {
 }
 
 interface YTPlayerConstructor {
-  new (element: HTMLElement, options: YTPlayerOptions): YTPlayer;
+  new(element: HTMLElement, options: YTPlayerOptions): YTPlayer;
 }
 
 interface YTNamespace {
@@ -197,7 +197,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 
   const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!trackRef.current || !onSeek) return;
-    
+
     const rect = trackRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const percent = Math.max(0, Math.min(1, clickX / rect.width));
@@ -339,7 +339,7 @@ const YouTubeLooper: React.FC = () => {
       document.title = "Metronome";
     };
   }, []);
-  
+
   const [url, setUrl] = useState("");
   const [videoId, setVideoId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -361,7 +361,7 @@ const YouTubeLooper: React.FC = () => {
   // Load from URL params on mount
   useEffect(() => {
     if (initialLoadDone) return;
-    
+
     const vParam = searchParams.get("v");
     const startParam = searchParams.get("start");
     const endParam = searchParams.get("end");
@@ -369,7 +369,7 @@ const YouTubeLooper: React.FC = () => {
     if (vParam) {
       setVideoId(vParam);
       setUrl(`https://youtube.com/watch?v=${vParam}`);
-      
+
       if (startParam || endParam) {
         const start = startParam ? parseFloat(startParam) : 0;
         const end = endParam ? parseFloat(endParam) : 0;
@@ -388,7 +388,7 @@ const YouTubeLooper: React.FC = () => {
     }
 
     const params: Record<string, string> = { v: vid };
-    
+
     // Only include start/end if they differ from defaults (0 and duration)
     if (start > 0) {
       params.start = start.toFixed(1);
@@ -444,7 +444,7 @@ const YouTubeLooper: React.FC = () => {
         onReady: (event: YTPlayerEvent) => {
           const dur = event.target.getDuration();
           setDuration(dur);
-          
+
           // Apply pending loop params from URL
           if (pendingLoopParams.current) {
             const { start, end } = pendingLoopParams.current;
@@ -580,13 +580,13 @@ const YouTubeLooper: React.FC = () => {
 
   const handleSpeedChange = (delta: number) => {
     if (!playerRef.current) return;
-    
+
     // Calculate new rate based on percentage change
     const newRate = Math.max(0.25, Math.min(2, playbackRate + delta));
-    
+
     // Round to nearest 0.05 for cleaner display
     const roundedRate = Math.round(newRate * 20) / 20;
-    
+
     playerRef.current.setPlaybackRate(roundedRate);
     setPlaybackRate(roundedRate);
   };
@@ -677,6 +677,26 @@ const YouTubeLooper: React.FC = () => {
               onEndChange={setLoopEnd}
               onSeek={handleSeek}
             />
+
+            {/* Set to Current Time buttons */}
+            <div className="flex justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => setLoopStart(currentTime)}
+                className="btn btn-sm btn-outline"
+                disabled={currentTime >= loopEnd - 0.5}
+              >
+                Set Start Here
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoopEnd(currentTime)}
+                className="btn btn-sm btn-outline"
+                disabled={currentTime <= loopStart + 0.5}
+              >
+                Set End Here
+              </button>
+            </div>
 
             {loopEnabled && (
               <div className="text-sm text-success text-center">
