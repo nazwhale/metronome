@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 import { FOLDER_PATH_TO_BLOG_POSTS, formatDateStr } from "./utils.tsx";
 import frontMatter from "front-matter";
 import { BlogPostMetadata } from "./index.tsx";
@@ -56,7 +57,10 @@ const BlogPost = () => {
           <h1>{postData?.title}</h1>
         </div>
         {/* Render the Markdown content */}
-        <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw, rehypeSanitize]}
+        >
           {postContent}
         </ReactMarkdown>
       </article>

@@ -31,6 +31,22 @@ html, body {
     @apply border-l-4 border-black pl-4 italic;
 }
 
+.markdown table {
+    @apply w-full my-4 border-collapse;
+}
+
+.markdown th {
+    @apply text-left py-2 px-3 border-b-2 border-base-300 font-semibold;
+}
+
+.markdown td {
+    @apply py-2 px-3 border-b border-base-300;
+}
+
+.markdown tr:last-child td {
+    @apply border-b-0;
+}
+
 /* Add similar classes for h3, h4, etc. */
 
 /*Ko-fi widget styling*/
