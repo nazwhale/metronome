@@ -1,5 +1,6 @@
 import { useMetronome } from "../hooks/useMetronome.tsx";
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import Layout from "./Layout.tsx";
 import { useLocalStorage } from "usehooks-ts";
 import TapTempo from "./TapTempo";
@@ -19,7 +20,7 @@ const FAQ_ITEMS: QAItem[] = [
       <p>
         The word "metronome" comes from the Greek words "metron" (measure) and "nomos" (law or rule).
         A metronome is a device that produces a steady pulse or click at a consistent tempo, measured
-        in beats per minute (BPM). Musicians use metronomes to practice keeping steady time and to
+        in <Link to="/dictionary/beat" className="link link-primary">beats</Link> per minute (<Link to="/dictionary/bpm" className="link link-primary">BPM</Link>). Musicians use metronomes to practice keeping steady time and to
         develop their internal sense of rhythm. Modern metronomes can be mechanical, electronic, or
         software-based like this online metronome.
       </p>
@@ -29,9 +30,9 @@ const FAQ_ITEMS: QAItem[] = [
     question: "How fast is 120 BPM?",
     answer: (
       <p>
-        120 BPM (beats per minute) means there are exactly 2 beats per second, or one beat every
+        120 <Link to="/dictionary/bpm" className="link link-primary">BPM</Link> (<Link to="/dictionary/beat" className="link link-primary">beats</Link> per minute) means there are exactly 2 beats per second, or one beat every
         0.5 seconds. This is considered a moderate, comfortable tempo—roughly the speed of a brisk
-        walk or a typical pop song. It's often called "Allegro moderato" in classical music terminology.
+        walk or a typical pop song. It's often called "<Link to="/dictionary/allegro" className="link link-primary">Allegro</Link> <Link to="/dictionary/moderato" className="link link-primary">moderato</Link>" in classical music terminology.
         Many popular songs are written around 120 BPM because it feels energetic but not rushed.
       </p>
     ),
@@ -41,10 +42,10 @@ const FAQ_ITEMS: QAItem[] = [
     answer: (
       <div>
         <p className="mb-2">
-          Both 3/4 and 6/8 have a similar "feel" but differ in how beats are grouped:
+          Both 3/4 and 6/8 have a similar "feel" but differ in how <Link to="/dictionary/beat" className="link link-primary">beats</Link> are grouped:
         </p>
         <ul className="list-disc pl-5 space-y-1">
-          <li><strong>3/4 time</strong> has 3 beats per measure, each beat divided into 2. Count: "1-and-2-and-3-and." Think of a waltz.</li>
+          <li><strong>3/4 time</strong> has 3 beats per <Link to="/dictionary/bar" className="link link-primary">measure</Link>, each beat divided into 2. Count: "1-and-2-and-3-and." Think of a waltz.</li>
           <li><strong>6/8 time</strong> has 2 main beats per measure, each divided into 3. Count: "1-2-3-4-5-6" with emphasis on 1 and 4. Think of a jig.</li>
         </ul>
         <p className="mt-2">
@@ -61,10 +62,10 @@ const FAQ_ITEMS: QAItem[] = [
           Tempo is broadly categorized into four main types:
         </p>
         <ul className="list-disc pl-5 space-y-1">
-          <li><strong>Slow (Largo, Adagio)</strong> – Below 80 BPM. Stately, relaxed, or somber music.</li>
-          <li><strong>Moderate (Andante, Moderato)</strong> – 80-120 BPM. Walking pace, comfortable and natural.</li>
-          <li><strong>Fast (Allegro, Vivace)</strong> – 120-168 BPM. Lively, energetic, upbeat music.</li>
-          <li><strong>Very Fast (Presto, Prestissimo)</strong> – Above 168 BPM. Extremely quick, exciting, virtuosic.</li>
+          <li><strong>Slow (<Link to="/dictionary/largo" className="link link-primary">Largo</Link>, <Link to="/dictionary/adagio" className="link link-primary">Adagio</Link>)</strong> – Below 80 <Link to="/dictionary/bpm" className="link link-primary">BPM</Link>. Stately, relaxed, or somber music.</li>
+          <li><strong>Moderate (<Link to="/dictionary/andante" className="link link-primary">Andante</Link>, <Link to="/dictionary/moderato" className="link link-primary">Moderato</Link>)</strong> – 80-120 BPM. Walking pace, comfortable and natural.</li>
+          <li><strong>Fast (<Link to="/dictionary/allegro" className="link link-primary">Allegro</Link>, <Link to="/dictionary/vivace" className="link link-primary">Vivace</Link>)</strong> – 120-168 BPM. Lively, energetic, upbeat music.</li>
+          <li><strong>Very Fast (<Link to="/dictionary/presto" className="link link-primary">Presto</Link>, <Link to="/dictionary/prestissimo" className="link link-primary">Prestissimo</Link>)</strong> – Above 168 BPM. Extremely quick, exciting, virtuosic.</li>
         </ul>
       </div>
     ),
