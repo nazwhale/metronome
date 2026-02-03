@@ -5,6 +5,7 @@ import Blog from "./Blog";
 import RandomPromptGenerator from "./RandomPromptGenerator/index.tsx";
 import YouTubeLooper from "./YouTubeLooper/index.tsx";
 import ChordProgressionTrainer from "./ChordProgressionTrainer/index.tsx";
+import MelodicDictationTrainer from "./MelodicDictationTrainer/index.tsx";
 
 const All = [
   {
@@ -36,6 +37,11 @@ const All = [
     path: "/chord-progression-trainer",
     component: ChordProgressionTrainer,
     name: "chord progression trainer",
+  },
+  {
+    path: "/melodic-dictation-trainer",
+    component: MelodicDictationTrainer,
+    name: "melodic dictation trainer",
   },
   {
     path: "/articles",

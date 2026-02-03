@@ -6,6 +6,7 @@ import EmbedMetronome from "./pages/embed/EmbedMetronome.tsx";
 import EmbedSpeedTrainer from "./pages/embed/EmbedSpeedTrainer.tsx";
 import EmbedYouTubeLooper from "./pages/embed/EmbedYouTubeLooper.tsx";
 import EmbedChordTrainer from "./pages/embed/EmbedChordTrainer.tsx";
+import EmbedMelodicDictation from "./pages/embed/EmbedMelodicDictation.tsx";
 
 const routes = [
   {
@@ -40,6 +41,10 @@ const routes = [
   {
     path: "/embed/chord-trainer",
     element: <EmbedChordTrainer />,
+  },
+  {
+    path: "/embed/melodic-dictation",
+    element: <EmbedMelodicDictation />,
   },
 ];
 
