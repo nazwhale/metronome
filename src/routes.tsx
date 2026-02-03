@@ -1,6 +1,8 @@
 import StandardMetronome from "./Metronomes/Standard.tsx";
 import Blog from "./Blog";
 import Post from "./Blog/Post.tsx";
+import Dictionary from "./Dictionary";
+import TermPage from "./Dictionary/TermPage.tsx";
 import All from "./All.tsx";
 import EmbedMetronome from "./pages/embed/EmbedMetronome.tsx";
 import EmbedSpeedTrainer from "./pages/embed/EmbedSpeedTrainer.tsx";
@@ -20,6 +22,14 @@ const routes = [
   {
     path: "/articles/:slug",
     element: <Post />,
+  },
+  {
+    path: "/dictionary",
+    element: <Dictionary />,
+  },
+  {
+    path: "/dictionary/:slug",
+    element: <TermPage />,
   },
   ...All.map((metronome) => ({
     path: metronome.path,

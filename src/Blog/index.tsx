@@ -65,17 +65,24 @@ const Blog = () => {
   }, []);
 
   return (
-    <div>
-      <ul>
+    <div className="max-w-3xl mx-auto px-4">
+      <header className="mb-8">
+        <h1 className="text-4xl font-bold mb-2">Articles</h1>
+        <p className="text-base-content/70">
+          Tips, guides, and insights to help you on your musical journey.
+        </p>
+      </header>
+
+      <ul className="space-y-3">
         {posts.map((post, index) => (
           <li key={index}>
             <Link
-              className={`link link-neutral`}
+              className="link link-neutral hover:link-primary"
               to={`/articles/${post.metadata.slug}`}
             >
               {post.metadata.title}
             </Link>
-            <span className="text-secondary-content/50">
+            <span className="text-base-content/50">
               {" "}
               • {formatDateStr(post.metadata.date)}
             </span>

@@ -56,22 +56,50 @@ function App() {
 }
 
 const Footer = () => {
+  const tools = All.filter((item) =>
+    [
+      "/online-metronome",
+      "/circle-of-fifths-metronome",
+      "/speed-trainer-metronome",
+      "/youtube-looper",
+    ].includes(item.path)
+  );
+
+  const trainers = All.filter((item) =>
+    [
+      "/chord-progression-trainer",
+      "/melodic-dictation-trainer",
+      "/prompts-for-guitar",
+    ].includes(item.path)
+  );
+
   return (
-    <footer className="footer footer-center bg-neutral text-neutral-content rounded-box p-6 mt-8">
-      <nav className="flex flex-wrap justify-center gap-4">
-        {All.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className="link link-hover"
-          >
+    <footer className="footer bg-neutral text-neutral-content rounded-box p-10 mt-8">
+      <nav>
+        <h6 className="footer-title">Tools</h6>
+        {tools.map((item) => (
+          <Link key={item.path} to={item.path} className="link link-hover">
             {item.name}
           </Link>
         ))}
       </nav>
-      <aside>
-        <p className="text-neutral-content/60 text-sm">tempotick metronome</p>
-      </aside>
+      <nav>
+        <h6 className="footer-title">Practice</h6>
+        {trainers.map((item) => (
+          <Link key={item.path} to={item.path} className="link link-hover">
+            {item.name}
+          </Link>
+        ))}
+      </nav>
+      <nav>
+        <h6 className="footer-title">Learn</h6>
+        <Link to="/dictionary" className="link link-hover">
+          musical dictionary
+        </Link>
+        <Link to="/articles" className="link link-hover">
+          articles
+        </Link>
+      </nav>
     </footer>
   );
 };

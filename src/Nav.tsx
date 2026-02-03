@@ -38,6 +38,18 @@ const Navigation: React.FC = () => {
               </ul>
             </details>
           </li>
+          <li>
+            <Link
+              to="/dictionary"
+              className={`link link-hover ${
+                location.pathname.startsWith("/dictionary")
+                  ? "link-success"
+                  : "link-primary"
+              }`}
+            >
+              dictionary
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
