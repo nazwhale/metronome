@@ -17,6 +17,18 @@ function getArticleSlugs() {
   return fileNames;
 }
 
+function getDictionaryTermSlugs() {
+  // Read the terms.ts file and extract slugs
+  const termsFilePath = path.resolve(__dirname, "src/Dictionary/terms.ts");
+  const fileContent = fs.readFileSync(termsFilePath, "utf-8");
+
+  // Extract all slug values using regex
+  const slugMatches = fileContent.matchAll(/slug:\s*["']([^"']+)["']/g);
+  const slugs = Array.from(slugMatches, (match) => `/dictionary/${match[1]}`);
+
+  return slugs;
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   server: { port: 9999 },
@@ -29,8 +41,15 @@ export default defineConfig({
         "/",
         "/online-metronome",
         "/circle-of-fifths-metronome",
+        "/speed-trainer-metronome",
+        "/youtube-looper",
+        "/chord-progression-trainer",
+        "/melodic-dictation-trainer",
+        "/prompts-for-guitar",
         "/articles",
         ...getArticleSlugs(),
+        "/dictionary",
+        ...getDictionaryTermSlugs(),
       ],
       priority: 0.7,
       generateRobotsTxt: true,
