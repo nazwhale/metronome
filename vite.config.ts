@@ -50,8 +50,9 @@ export default defineConfig({
         ...getArticleSlugs(),
         "/dictionary",
         ...getDictionaryTermSlugs(),
-        // Spanish routes
+        // Localized routes
         "/es/metronomo",
+        "/fi/metronomi",
       ],
       priority: 0.7,
       generateRobotsTxt: true,

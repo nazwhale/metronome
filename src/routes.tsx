@@ -10,8 +10,9 @@ import EmbedYouTubeLooper from "./pages/embed/EmbedYouTubeLooper.tsx";
 import EmbedChordTrainer from "./pages/embed/EmbedChordTrainer.tsx";
 import EmbedMelodicDictation from "./pages/embed/EmbedMelodicDictation.tsx";
 
-// Spanish pages
+// Localized pages
 import Metronomo from "./pages/es/Metronomo.tsx";
+import Metronomi from "./pages/fi/Metronomi.tsx";
 
 const routes = [
   {
@@ -34,10 +35,14 @@ const routes = [
     path: "/dictionary/:slug",
     element: <TermPage />,
   },
-  // Spanish language routes
+  // Localized language routes
   {
     path: "/es/metronomo",
     element: <Metronomo />,
+  },
+  {
+    path: "/fi/metronomi",
+    element: <Metronomi />,
   },
   ...All.map((metronome) => ({
     path: metronome.path,

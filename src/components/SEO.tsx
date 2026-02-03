@@ -44,6 +44,7 @@ export const SEO: React.FC<SEOProps> = ({
         <>
           <link rel="alternate" hrefLang="en" href={hreflangUrls.en} />
           <link rel="alternate" hrefLang="es" href={hreflangUrls.es} />
+          <link rel="alternate" hrefLang="fi" href={hreflangUrls.fi} />
           <link rel="alternate" hrefLang="x-default" href={hreflangUrls.xDefault} />
         </>
       )}

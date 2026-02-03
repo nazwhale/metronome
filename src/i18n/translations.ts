@@ -1,7 +1,7 @@
 // Internationalization translations for tempotick
-// Currently supports: English (en), Spanish (es)
+// Currently supports: English (en), Spanish (es), Finnish (fi)
 
-export type Language = "en" | "es";
+export type Language = "en" | "es" | "fi";
 
 export const BASE_URL = "https://www.tempotick.com";
 
@@ -11,11 +11,12 @@ export type TranslatedPage = "metronome";
 // Hreflang configuration for pages with translations
 export const hreflangConfig: Record<
   TranslatedPage,
-  { en: string; es: string }
+  { en: string; es: string; fi: string }
 > = {
   metronome: {
     en: "/online-metronome",
     es: "/es/metronomo",
+    fi: "/fi/metronomi",
   },
 };
 
@@ -25,6 +26,7 @@ export const getHreflangUrls = (page: TranslatedPage) => {
   return {
     en: `${BASE_URL}${paths.en}`,
     es: `${BASE_URL}${paths.es}`,
+    fi: `${BASE_URL}${paths.fi}`,
     xDefault: `${BASE_URL}${paths.en}`, // English is the default
   };
 };
@@ -115,6 +117,48 @@ export const metronomeTranslations = {
       },
     ],
   },
+  fi: {
+    title: "Ilmainen Metronomi Netissä - Mainokseton | tempotick",
+    description:
+      "Ilmainen metronomi netissä tap tempolla, tahtilajilla ja aksenttikuvioilla. Ei mainoksia, ei häiriöitä. Harjoittele täydellisellä ajoituksella.",
+    faq: [
+      {
+        question: "Mitä metronomi tarkoittaa?",
+        answer:
+          'Sana "metronomi" tulee kreikan sanoista "metron" (mitta) ja "nomos" (laki tai sääntö). Metronomi on laite, joka tuottaa tasaisen pulssin tai naksautuksen vakiotempoissa, mitattuna iskuina minuutissa (BPM). Muusikot käyttävät metronomeja harjoitellakseen tasaisen ajan pitämistä ja kehittääkseen sisäistä rytmitajuaan. Nykyaikaiset metronomit voivat olla mekaanisia, elektronisia tai ohjelmistopohjaisia, kuten tämä metronomi netissä.',
+      },
+      {
+        question: "Kuinka nopea on 120 BPM?",
+        answer:
+          '120 BPM (iskua minuutissa) tarkoittaa, että iskuja on täsmälleen 2 sekunnissa eli yksi isku joka 0,5 sekunti. Tätä pidetään kohtuullisena, mukavana tempona – suunnilleen reippaan kävelyn tai tyypillisen pop-kappaleen nopeus. Klassisen musiikin terminologiassa sitä kutsutaan usein "Allegro moderatoksi". Monet suositut kappaleet on kirjoitettu noin 120 BPM:n tempoon, koska se tuntuu energiseltä mutta ei kiireiseltä.',
+      },
+      {
+        question: "Miten erottaa onko kappale 3/4 vai 6/8 tahtilajissa?",
+        answer:
+          'Sekä 3/4 että 6/8 tuntuvat samankaltaisilta, mutta eroavat iskujen ryhmittelyssä. 3/4-tahtilajissa on 3 iskua tahdissa, jokainen isku jaettu kahteen (ajattele valssia). 6/8-tahtilajissa on 2 pääiskua tahdissa, kumpikin jaettu kolmeen (ajattele jiigiä). Keskeinen ero: 3/4 tuntuu KOLMELTA iskulta, kun taas 6/8 tuntuu KAHDELTA iskulta trioliswingillä.',
+      },
+      {
+        question: "Mitkä ovat 4 tempotyyppiä?",
+        answer:
+          "Tempo jaetaan yleensä neljään päätyyppiin: Hidas (Largo, Adagio) – Alle 80 BPM; Kohtalainen (Andante, Moderato) – 80-120 BPM; Nopea (Allegro, Vivace) – 120-168 BPM; Erittäin nopea (Presto, Prestissimo) – Yli 168 BPM.",
+      },
+      {
+        question: "Keksikö Beethoven metronomin?",
+        answer:
+          "Ei, Beethoven ei keksinyt metronomia. Modernin metronomin keksi Johann Maelzel vuonna 1815, vaikka konseptin kehitti aiemmin Dietrich Nikolaus Winkel. Beethoven oli kuitenkin yksi ensimmäisistä suurista säveltäjistä, joka omaksui metronomin ja lisäsi metronomimerkinnät sävellyksiinsä.",
+      },
+      {
+        question: "Milloin metronomit keksittiin?",
+        answer:
+          "Mekaaninen metronomi sellaisena kuin sen tunnemme patentoitiin Johann Maelzelin toimesta vuonna 1815, vaikka Dietrich Nikolaus Winkel itse asiassa keksi kaksoispainoisen heilurimekanismin noin vuonna 1814. Aiempia laitteita musiikin ajan mittaamiseen oli olemassa – Étienne Loulié loi yksinkertaisen heilurilaitteen vuonna 1696.",
+      },
+      {
+        question: "Mitkä ovat metronomien päätyypit?",
+        answer:
+          "Nykyään on saatavilla useita metronomityyppejä: Mekaaniset metronomit – Klassinen vedettävä heilurityyli; Digitaaliset/elektroniset metronomit – Paristokäyttöiset laitteet tarkalla ajoituksella; Ohjelmisto-/sovellus-metronomit – Ilmaisia tai maksullisia sovelluksia puhelimille ja tietokoneille; Metronomit netissä – Selainpohjaiset työkalut (kuten tämä!), jotka eivät vaadi latausta.",
+      },
+    ],
+  },
 };
 
 // UI translations for metronome controls
@@ -168,6 +212,31 @@ export const uiTranslations = {
     volume: "Volumen",
     // FAQ
     faqTitle: "Preguntas Frecuentes",
+  },
+  fi: {
+    // BPM Slider
+    bpm: "BPM",
+    every: "joka",
+    // Play Button
+    start: "Käynnistä",
+    stop: "Pysäytä",
+    // Tap Tempo
+    tapTempo: "Napauta Tempo",
+    pressToTap: "Paina 'T' tai klikkaa",
+    tap: "napautus",
+    taps: "napautusta",
+    pressT: "Paina 'T'",
+    // Mute Bar Toggle
+    play: "Soita",
+    bar: "tahti",
+    bars: "tahtia",
+    mute: "Mykistä",
+    mutedBar: "Mykistetty tahti",
+    playingBar: "Soittaa",
+    // Volume
+    volume: "Äänenvoimakkuus",
+    // FAQ
+    faqTitle: "Usein Kysytyt Kysymykset",
   },
 };
 
