@@ -5,15 +5,15 @@ date: "2026-02-03"
 
 Use these 7 words to instantly recall any major triad (Root–3rd–5th):
 
-| Root | Word | Triad |
-|------|------|-------|
-| A | **A**C**C**E**n**t | A–C#–E |
-| B | **B**iD**D**e**F**ord**S** | B–D#–F# |
-| C | **C**E**i**lin**G** | C–E–G |
-| D | **D**u**FF**m**A**n | D–F#–A |
-| E | **E**G**G**Bo**x** | E–G#–B |
-| F | **F**A**C**e | F–A–C |
-| G | **G**ar**B**e**D** | G–B–D |
+| Root | Word | Triad | Meaning |
+|------|------|-------|---------|
+| A | **ACCE**nt | A–C#–E | emphasis |
+| B | **B**i**DD**e**F**ord**s** | B–D#–F# | city in Maine/town in Devon |
+| C | **CE**ilin**G** | C–E–G | ceiling |
+| D | **D**u**FF**m**A**n | D–F#–A | Simpsons character |
+| E | **EGGB**ox | E–G#–B | where eggs live |
+| F | **FAC**e | F–A–C | face |
+| G | **G**ar**B**e**D** | G–B–D | dressed |
 
 ### The Rules
 
