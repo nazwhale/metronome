@@ -10,6 +10,9 @@ import EmbedYouTubeLooper from "./pages/embed/EmbedYouTubeLooper.tsx";
 import EmbedChordTrainer from "./pages/embed/EmbedChordTrainer.tsx";
 import EmbedMelodicDictation from "./pages/embed/EmbedMelodicDictation.tsx";
 
+// Spanish pages
+import Metronomo from "./pages/es/Metronomo.tsx";
+
 const routes = [
   {
     path: "/",
@@ -30,6 +33,11 @@ const routes = [
   {
     path: "/dictionary/:slug",
     element: <TermPage />,
+  },
+  // Spanish language routes
+  {
+    path: "/es/metronomo",
+    element: <Metronomo />,
   },
   ...All.map((metronome) => ({
     path: metronome.path,

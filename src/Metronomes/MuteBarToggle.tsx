@@ -1,4 +1,5 @@
 import React from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 type MuteBarToggleProps = {
   enabled: boolean;
@@ -19,6 +20,8 @@ const MuteBarToggle: React.FC<MuteBarToggleProps> = ({
   onPlayBarsChange,
   onMuteBarsChange,
 }) => {
+  const { t } = useLanguage();
+  
   const handleNumberChange = (
     value: string, 
     setter: (value: number) => void
@@ -32,7 +35,7 @@ const MuteBarToggle: React.FC<MuteBarToggleProps> = ({
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="flex items-center gap-2">
-        <span className="label-text">Play</span>
+        <span className="label-text">{t.play}</span>
         <input
           type="number"
           min={1}
@@ -42,7 +45,7 @@ const MuteBarToggle: React.FC<MuteBarToggleProps> = ({
           className="input input-bordered input-sm w-16 text-center"
           disabled={!enabled}
         />
-        <span className="label-text">bar{playBars !== 1 ? "s" : ""} / Mute</span>
+        <span className="label-text">{playBars !== 1 ? t.bars : t.bar} / {t.mute}</span>
         <input
           type="number"
           min={1}
@@ -52,7 +55,7 @@ const MuteBarToggle: React.FC<MuteBarToggleProps> = ({
           className="input input-bordered input-sm w-16 text-center"
           disabled={!enabled}
         />
-        <span className="label-text">bar{muteBars !== 1 ? "s" : ""}</span>
+        <span className="label-text">{muteBars !== 1 ? t.bars : t.bar}</span>
         <input
           type="checkbox"
           className="toggle toggle-primary ml-2"
@@ -62,7 +65,7 @@ const MuteBarToggle: React.FC<MuteBarToggleProps> = ({
       </div>
       {enabled && (
         <div className={`badge ${isBarMuted ? "badge-warning" : "badge-success"}`}>
-          {isBarMuted ? "Muted bar" : "Playing bar"}
+          {isBarMuted ? t.mutedBar : t.playingBar}
         </div>
       )}
     </div>

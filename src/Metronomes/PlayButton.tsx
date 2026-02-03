@@ -1,4 +1,5 @@
 import React from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 type PropsT = {
   isPlaying: boolean;
@@ -6,6 +7,8 @@ type PropsT = {
 };
 
 const PlayButton: React.FC<PropsT> = ({ isPlaying, onToggle }) => {
+  const { t } = useLanguage();
+  
   const handleInteraction = (event: React.MouseEvent | React.TouchEvent) => {
     event.preventDefault(); // Useful for preventing default button behavior
     onToggle(event);
@@ -18,7 +21,7 @@ const PlayButton: React.FC<PropsT> = ({ isPlaying, onToggle }) => {
       }`}
       onClick={handleInteraction}
     >
-      {isPlaying ? "Stop" : "Start"}
+      {isPlaying ? t.stop : t.start}
     </button>
   );
 };

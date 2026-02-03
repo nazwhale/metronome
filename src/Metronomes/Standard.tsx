@@ -8,6 +8,9 @@ import MuteBarToggle from "./MuteBarToggle";
 import QandA, { QAItem } from "../components/QandA";
 import { useIsEmbed } from "../contexts/EmbedContext";
 import { EmbedButton } from "../components/EmbedModal";
+import SEO from "../components/SEO";
+import { metronomeTranslations } from "../i18n/translations";
+import { LanguageProvider } from "../contexts/LanguageContext";
 
 const FAQ_ITEMS: QAItem[] = [
   {
@@ -156,7 +159,18 @@ const Standard: React.FC<StandardMetronomeProps> = ({
   };
 
   return (
-    <>
+    <LanguageProvider lang="en">
+      {/* SEO with hreflang tags - only on main page, not embeds */}
+      {!isEmbed && (
+        <SEO
+          title={metronomeTranslations.en.title}
+          description={metronomeTranslations.en.description}
+          lang="en"
+          canonicalPath="/online-metronome"
+          translatedPage="metronome"
+        />
+      )}
+
       <Layout
         isPlaying={isPlaying}
         bpm={bpm}
@@ -197,7 +211,7 @@ const Standard: React.FC<StandardMetronomeProps> = ({
           <QandA items={FAQ_ITEMS} />
         </div>
       )}
-    </>
+    </LanguageProvider>
   );
 };
 

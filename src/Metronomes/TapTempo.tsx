@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 type TapTempoProps = {
   onBpmChange: (bpm: number) => void;
@@ -11,6 +12,7 @@ const MIN_TAPS_FOR_BPM = 2;
 const MAX_TAPS_TO_TRACK = 8;
 
 const TapTempo: React.FC<TapTempoProps> = ({ onBpmChange }) => {
+  const { t } = useLanguage();
   const [tapCount, setTapCount] = useState(0);
   const tapTimesRef = useRef<number[]>([]);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -96,15 +98,15 @@ const TapTempo: React.FC<TapTempoProps> = ({ onBpmChange }) => {
         onClick={handleTap}
         aria-label="Tap to set tempo"
       >
-        Tap Tempo
+        {t.tapTempo}
       </button>
       <div className="text-sm text-base-content/60">
         {tapCount > 0 ? (
           <span>
-            {tapCount} tap{tapCount !== 1 ? "s" : ""} • Press 'T' to tap
+            {tapCount} {tapCount !== 1 ? t.taps : t.tap} • {t.pressT}
           </span>
         ) : (
-          <span>Press 'T' or click to tap</span>
+          <span>{t.pressToTap}</span>
         )}
       </div>
     </div>

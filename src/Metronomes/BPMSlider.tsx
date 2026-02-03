@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 type BPMSliderProps = {
   bpm: number;
@@ -6,6 +7,8 @@ type BPMSliderProps = {
 };
 
 const BPMSlider: React.FC<BPMSliderProps> = ({ bpm, setBpm }) => {
+  const { t } = useLanguage();
+  
   const onBpmChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newBpm = Number(event.target.value);
     setBpm(newBpm);
@@ -18,10 +21,10 @@ const BPMSlider: React.FC<BPMSliderProps> = ({ bpm, setBpm }) => {
           -5
         </button>
         <div className="stat">
-          <div className="stat-title">BPM</div>
+          <div className="stat-title">{t.bpm}</div>
           <div className="stat-value">{bpm}</div>
           <div className="stat-desc">
-            every {calculateInterval(bpm).toFixed(2)}s
+            {t.every} {calculateInterval(bpm).toFixed(2)}s
           </div>
         </div>
 
