@@ -179,6 +179,7 @@ type RangeSliderProps = {
   currentTime: number;
   onStartChange: (value: number) => void;
   onEndChange: (value: number) => void;
+  onSeek?: (value: number) => void;
 };
 
 const RangeSlider: React.FC<RangeSliderProps> = ({
@@ -189,8 +190,20 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   currentTime,
   onStartChange,
   onEndChange,
+  onSeek,
 }) => {
+  const trackRef = useRef<HTMLDivElement>(null);
   const getPercent = (value: number) => ((value - min) / (max - min)) * 100;
+
+  const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!trackRef.current || !onSeek) return;
+    
+    const rect = trackRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percent = Math.max(0, Math.min(1, clickX / rect.width));
+    const seekTime = min + percent * (max - min);
+    onSeek(seekTime);
+  };
 
   const startPercent = getPercent(startValue);
   const endPercent = getPercent(endValue);
@@ -206,7 +219,11 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
       </div>
 
       {/* Slider container */}
-      <div className="relative h-8 flex items-center">
+      <div
+        ref={trackRef}
+        className="relative h-8 flex items-center cursor-pointer"
+        onClick={handleTrackClick}
+      >
         {/* Track background */}
         <div className="absolute w-full h-2 bg-base-300 rounded-full" />
 
@@ -537,6 +554,12 @@ const YouTubeLooper: React.FC = () => {
     }
   };
 
+  const handleSeek = (time: number) => {
+    if (playerRef.current) {
+      playerRef.current.seekTo(time, true);
+    }
+  };
+
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -652,6 +675,7 @@ const YouTubeLooper: React.FC = () => {
               currentTime={currentTime}
               onStartChange={setLoopStart}
               onEndChange={setLoopEnd}
+              onSeek={handleSeek}
             />
 
             {loopEnabled && (
