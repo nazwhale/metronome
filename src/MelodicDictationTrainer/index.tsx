@@ -235,7 +235,7 @@ const MelodicDictationTrainer = () => {
   };
 
   // Get styling for solfege buttons
-  const getSolfegeButtonStyle = (note: SolfegeName) => {
+  const getSolfegeButtonStyle = () => {
     const baseStyle = "btn min-w-12 h-12 sm:min-w-14 sm:h-14 text-sm sm:text-base font-bold";
 
     if (isRevealed) {
@@ -412,7 +412,7 @@ const MelodicDictationTrainer = () => {
               {availableNotes.map((note) => (
                 <button
                   key={note}
-                  className={getSolfegeButtonStyle(note)}
+                  className={getSolfegeButtonStyle()}
                   onClick={() => handleSelectNote(note)}
                   disabled={isRevealed || userAnswer.length >= melodyLength}
                 >
