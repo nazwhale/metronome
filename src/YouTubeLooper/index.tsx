@@ -95,6 +95,12 @@ const FAQ_ITEMS: QAItem[] = [
 ];
 
 // YouTube IFrame API types
+interface YTVideoData {
+  title: string;
+  video_id: string;
+  author: string;
+}
+
 interface YTPlayer {
   destroy: () => void;
   getDuration: () => number;
@@ -104,6 +110,7 @@ interface YTPlayer {
   getPlaybackRate: () => number;
   setPlaybackRate: (suggestedRate: number) => void;
   getAvailablePlaybackRates: () => number[];
+  getVideoData: () => YTVideoData;
 }
 
 interface YTPlayerEvent {
@@ -149,6 +156,36 @@ declare global {
     onYouTubeIframeAPIReady: () => void;
   }
 }
+
+// Saved loop type
+interface SavedLoop {
+  id: string;
+  name: string;
+  videoId: string;
+  start: number;
+  end: number;
+  playbackRate: number;
+  createdAt: number;
+}
+
+const SAVED_LOOPS_KEY = "youtube-looper-saved-loops";
+
+const loadSavedLoops = (): SavedLoop[] => {
+  try {
+    const stored = localStorage.getItem(SAVED_LOOPS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveSavedLoops = (loops: SavedLoop[]) => {
+  try {
+    localStorage.setItem(SAVED_LOOPS_KEY, JSON.stringify(loops));
+  } catch {
+    // localStorage might be full or unavailable
+  }
+};
 
 const extractVideoId = (url: string): string | null => {
   const patterns = [
@@ -352,11 +389,20 @@ const YouTubeLooper: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [savedLoops, setSavedLoops] = useState<SavedLoop[]>([]);
+  const [loopName, setLoopName] = useState("");
+  const [showSaveInput, setShowSaveInput] = useState(false);
+  const [videoTitle, setVideoTitle] = useState<string>("");
 
   const playerRef = useRef<YTPlayer | null>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const loopIntervalRef = useRef<number | null>(null);
   const pendingLoopParams = useRef<{ start: number; end: number } | null>(null);
+
+  // Load saved loops from localStorage on mount
+  useEffect(() => {
+    setSavedLoops(loadSavedLoops());
+  }, []);
 
   // Load from URL params on mount
   useEffect(() => {
@@ -445,6 +491,16 @@ const YouTubeLooper: React.FC = () => {
           const dur = event.target.getDuration();
           setDuration(dur);
 
+          // Get video title
+          try {
+            const videoData = event.target.getVideoData();
+            if (videoData?.title) {
+              setVideoTitle(videoData.title);
+            }
+          } catch {
+            // getVideoData might not be available in some cases
+          }
+
           // Apply pending loop params from URL
           if (pendingLoopParams.current) {
             const { start, end } = pendingLoopParams.current;
@@ -530,6 +586,7 @@ const YouTubeLooper: React.FC = () => {
       setLoopEnd(0);
       setLoopEnabled(true);
       setPlaybackRate(1);
+      setVideoTitle("");
       pendingLoopParams.current = null;
     } else {
       setError("Invalid YouTube URL. Please enter a valid YouTube video link.");
@@ -546,6 +603,7 @@ const YouTubeLooper: React.FC = () => {
     setLoopEnabled(false);
     setDuration(0);
     setPlaybackRate(1);
+    setVideoTitle("");
   };
 
   const handleJumpToStart = () => {
@@ -595,6 +653,54 @@ const YouTubeLooper: React.FC = () => {
     if (!playerRef.current) return;
     playerRef.current.setPlaybackRate(1);
     setPlaybackRate(1);
+  };
+
+  const handleSaveLoop = () => {
+    if (!videoId) return;
+
+    // Default name: video title with time range, or just time range if no title
+    const timeRange = `${formatTime(loopStart)} - ${formatTime(loopEnd)}`;
+    const defaultName = videoTitle
+      ? `${videoTitle} (${timeRange})`
+      : `Loop ${timeRange}`;
+
+    const newLoop: SavedLoop = {
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: loopName.trim() || defaultName,
+      videoId,
+      start: loopStart,
+      end: loopEnd,
+      playbackRate,
+      createdAt: Date.now(),
+    };
+
+    const updatedLoops = [newLoop, ...savedLoops];
+    setSavedLoops(updatedLoops);
+    saveSavedLoops(updatedLoops);
+    setLoopName("");
+    setShowSaveInput(false);
+  };
+
+  const handleLoadLoop = (loop: SavedLoop) => {
+    setVideoId(loop.videoId);
+    setUrl(`https://youtube.com/watch?v=${loop.videoId}`);
+    pendingLoopParams.current = { start: loop.start, end: loop.end };
+    setLoopEnabled(true);
+    setPlaybackRate(loop.playbackRate);
+
+    // If player already exists with same video, apply settings immediately
+    if (playerRef.current && videoId === loop.videoId) {
+      setLoopStart(loop.start);
+      setLoopEnd(loop.end);
+      playerRef.current.seekTo(loop.start, true);
+      playerRef.current.setPlaybackRate(loop.playbackRate);
+    }
+  };
+
+  const handleDeleteLoop = (loopId: string) => {
+    const updatedLoops = savedLoops.filter((loop) => loop.id !== loopId);
+    setSavedLoops(updatedLoops);
+    saveSavedLoops(updatedLoops);
   };
 
   return (
@@ -752,6 +858,57 @@ const YouTubeLooper: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Save Loop */}
+          <div className="w-full bg-base-200 rounded-lg p-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <h2 className="text-lg font-semibold">Save Loop</h2>
+              {!showSaveInput ? (
+                <button
+                  type="button"
+                  onClick={() => setShowSaveInput(true)}
+                  className="btn btn-sm btn-outline"
+                >
+                  Save Current Loop
+                </button>
+              ) : (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input
+                    type="text"
+                    value={loopName}
+                    onChange={(e) => setLoopName(e.target.value)}
+                    placeholder="Loop name (optional)"
+                    className="input input-sm input-bordered w-48"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveLoop();
+                      if (e.key === "Escape") {
+                        setShowSaveInput(false);
+                        setLoopName("");
+                      }
+                    }}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveLoop}
+                    className="btn btn-sm btn-primary"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSaveInput(false);
+                      setLoopName("");
+                    }}
+                    className="btn btn-sm btn-ghost"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </>
       ) : (
         !error && (
@@ -764,6 +921,47 @@ const YouTubeLooper: React.FC = () => {
       <div className="text-sm text-base-content/60 text-center">
         <p>Drag the handles to set loop start and end points. Use "Copy Link" to share.</p>
       </div>
+
+      {/* Saved Loops List */}
+      {savedLoops.length > 0 && (
+        <div className="w-full bg-base-200 rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-3">Saved Loops</h2>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {savedLoops.map((loop) => (
+              <div
+                key={loop.id}
+                className="flex items-center justify-between bg-base-100 rounded-lg p-3 gap-2"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">{loop.name}</div>
+                  <div className="text-sm text-base-content/60">
+                    {formatTime(loop.start)} → {formatTime(loop.end)}
+                    {loop.playbackRate !== 1 && (
+                      <span className="ml-2">({Math.round(loop.playbackRate * 100)}% speed)</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleLoadLoop(loop)}
+                    className="btn btn-sm btn-primary"
+                  >
+                    Load
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteLoop(loop.id)}
+                    className="btn btn-sm btn-ghost text-error"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Embed Button - hidden in embed mode */}
       {!isEmbed && videoId && (
