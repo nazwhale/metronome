@@ -9,6 +9,7 @@ import QandA, { QAItem } from "../../components/QandA";
 import SEO from "../../components/SEO";
 import { metronomeTranslations, uiTranslations } from "../../i18n/translations";
 import { LanguageProvider } from "../../contexts/LanguageContext";
+import type { HreflangUrls } from "../../components/SEO";
 
 // Finnish FAQ items
 const FAQ_ITEMS: QAItem[] = metronomeTranslations.fi.faq.map((item) => ({
@@ -22,7 +23,25 @@ type TimeSignature = 3 | 4 | 5;
 const createDefaultAccents = (count: number): boolean[] =>
   Array.from({ length: count }, (_, i) => i === 0);
 
-const Metronomi: React.FC = () => {
+export type MetronomiProps = {
+  initialBpm?: number;
+  seoTitle?: string;
+  seoDescription?: string;
+  canonicalPathOverride?: string;
+  hreflangUrls?: HreflangUrls;
+  pageTitle?: string;
+  pageSubheading?: string;
+};
+
+const Metronomi: React.FC<MetronomiProps> = ({
+  initialBpm,
+  seoTitle,
+  seoDescription,
+  canonicalPathOverride,
+  hreflangUrls,
+  pageTitle,
+  pageSubheading,
+} = {}) => {
   const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>(
     "timeSignature",
     4
@@ -64,6 +83,7 @@ const Metronomi: React.FC = () => {
     playBars,
     muteBars,
     accents,
+    initialBpm,
   });
 
   const handleAccentToggle = (beatIndex: number) => {
@@ -75,19 +95,33 @@ const Metronomi: React.FC = () => {
   return (
     <LanguageProvider lang="fi">
       <SEO
-        title={metronomeTranslations.fi.title}
-        description={metronomeTranslations.fi.description}
+        title={seoTitle ?? metronomeTranslations.fi.title}
+        description={seoDescription ?? metronomeTranslations.fi.description}
         lang="fi"
-        canonicalPath="/fi/metronomi"
-        translatedPage="metronome"
+        canonicalPath={canonicalPathOverride ?? "/fi/metronomi"}
+        translatedPage={canonicalPathOverride ? undefined : "metronome"}
+        hreflangUrls={hreflangUrls}
       />
 
-      {/* Hero text with target keyword */}
+      {/* Hero: BPM-specific when provided, else default */}
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold">Metronomi Netissä</h1>
-        <p className="text-base-content/70 mt-2">
-          Ilmainen ja mainokseton metronomi muusikoille
-        </p>
+        {(pageTitle ?? pageSubheading) ? (
+          <>
+            {pageTitle && (
+              <h1 className="text-2xl font-bold">{pageTitle}</h1>
+            )}
+            {pageSubheading && (
+              <p className="text-base-content/70 mt-2">{pageSubheading}</p>
+            )}
+          </>
+        ) : (
+          <>
+            <h1 className="text-2xl font-bold">Metronomi Netissä</h1>
+            <p className="text-base-content/70 mt-2">
+              Ilmainen ja mainokseton metronomi muusikoille
+            </p>
+          </>
+        )}
       </div>
 
       <Layout

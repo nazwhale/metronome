@@ -9,7 +9,7 @@ import MuteBarToggle from "./MuteBarToggle";
 import QandA, { QAItem } from "../components/QandA";
 import { useIsEmbed } from "../contexts/EmbedContext";
 import { EmbedButton } from "../components/EmbedModal";
-import SEO from "../components/SEO";
+import SEO, { HreflangUrls } from "../components/SEO";
 import { metronomeTranslations } from "../i18n/translations";
 import { LanguageProvider } from "../contexts/LanguageContext";
 
@@ -119,11 +119,25 @@ const createDefaultAccents = (count: number): boolean[] =>
 export type StandardMetronomeProps = {
   initialBpm?: number;
   initialTimeSignature?: TimeSignature;
+  /** When set (e.g. for /online-metronome/100-bpm routes), overrides default SEO and hreflang */
+  seoTitle?: string;
+  seoDescription?: string;
+  canonicalPathOverride?: string;
+  hreflangUrls?: HreflangUrls;
+  /** Optional hero title and subheading (e.g. "Practice at 100 BPM") */
+  pageTitle?: string;
+  pageSubheading?: string;
 };
 
 const Standard: React.FC<StandardMetronomeProps> = ({
   initialBpm,
-  initialTimeSignature
+  initialTimeSignature,
+  seoTitle,
+  seoDescription,
+  canonicalPathOverride,
+  hreflangUrls,
+  pageTitle,
+  pageSubheading,
 }) => {
   const isEmbed = useIsEmbed();
   const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>(
@@ -164,12 +178,24 @@ const Standard: React.FC<StandardMetronomeProps> = ({
       {/* SEO with hreflang tags - only on main page, not embeds */}
       {!isEmbed && (
         <SEO
-          title={metronomeTranslations.en.title}
-          description={metronomeTranslations.en.description}
+          title={seoTitle ?? metronomeTranslations.en.title}
+          description={seoDescription ?? metronomeTranslations.en.description}
           lang="en"
-          canonicalPath="/online-metronome"
-          translatedPage="metronome"
+          canonicalPath={canonicalPathOverride ?? "/online-metronome"}
+          translatedPage={canonicalPathOverride ? undefined : "metronome"}
+          hreflangUrls={hreflangUrls}
         />
+      )}
+
+      {(pageTitle ?? pageSubheading) && (
+        <div className="text-center mb-6">
+          {pageTitle && (
+            <h1 className="text-2xl font-bold">{pageTitle}</h1>
+          )}
+          {pageSubheading && (
+            <p className="text-base-content/70 mt-2">{pageSubheading}</p>
+          )}
+        </div>
       )}
 
       <Layout

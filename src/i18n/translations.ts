@@ -20,6 +20,37 @@ export const hreflangConfig: Record<
   },
 };
 
+// BPM-specific page hero (title + subheading). Use {{bpm}} in the string, replace with actual BPM.
+export const bpmPageCopy: Record<
+  Language,
+  { title: string; subheading: string }
+> = {
+  en: {
+    title: "Practice at {{bpm}} BPM",
+    subheading:
+      "Free online metronome at {{bpm}} BPM — tap tempo, time signatures, no ads.",
+  },
+  es: {
+    title: "Practica a {{bpm}} BPM",
+    subheading:
+      "Metrónomo online gratis a {{bpm}} BPM — tap tempo, compases, sin anuncios.",
+  },
+  fi: {
+    title: "Harjoittele {{bpm}} BPM:ssä",
+    subheading:
+      "Ilmainen metronomi {{bpm}} BPM — tap tempo, tahtilaji, ei mainoksia.",
+  },
+};
+
+export function getBpmPageCopy(
+  lang: Language,
+  bpm: number
+): { title: string; subheading: string } {
+  const t = bpmPageCopy[lang];
+  const replace = (s: string) => s.replace(/\{\{bpm\}\}/g, String(bpm));
+  return { title: replace(t.title), subheading: replace(t.subheading) };
+}
+
 // Get full URLs for hreflang tags
 export const getHreflangUrls = (page: TranslatedPage) => {
   const paths = hreflangConfig[page];

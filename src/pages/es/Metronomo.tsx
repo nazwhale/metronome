@@ -9,6 +9,7 @@ import QandA, { QAItem } from "../../components/QandA";
 import SEO from "../../components/SEO";
 import { metronomeTranslations, uiTranslations } from "../../i18n/translations";
 import { LanguageProvider } from "../../contexts/LanguageContext";
+import type { HreflangUrls } from "../../components/SEO";
 
 // Spanish FAQ items
 const FAQ_ITEMS: QAItem[] = metronomeTranslations.es.faq.map((item) => ({
@@ -22,7 +23,25 @@ type TimeSignature = 3 | 4 | 5;
 const createDefaultAccents = (count: number): boolean[] =>
   Array.from({ length: count }, (_, i) => i === 0);
 
-const Metronomo: React.FC = () => {
+export type MetronomoProps = {
+  initialBpm?: number;
+  seoTitle?: string;
+  seoDescription?: string;
+  canonicalPathOverride?: string;
+  hreflangUrls?: HreflangUrls;
+  pageTitle?: string;
+  pageSubheading?: string;
+};
+
+const Metronomo: React.FC<MetronomoProps> = ({
+  initialBpm,
+  seoTitle,
+  seoDescription,
+  canonicalPathOverride,
+  hreflangUrls,
+  pageTitle,
+  pageSubheading,
+} = {}) => {
   const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>(
     "timeSignature",
     4
@@ -64,6 +83,7 @@ const Metronomo: React.FC = () => {
     playBars,
     muteBars,
     accents,
+    initialBpm,
   });
 
   const handleAccentToggle = (beatIndex: number) => {
@@ -75,12 +95,24 @@ const Metronomo: React.FC = () => {
   return (
     <LanguageProvider lang="es">
       <SEO
-        title={metronomeTranslations.es.title}
-        description={metronomeTranslations.es.description}
+        title={seoTitle ?? metronomeTranslations.es.title}
+        description={seoDescription ?? metronomeTranslations.es.description}
         lang="es"
-        canonicalPath="/es/metronomo"
-        translatedPage="metronome"
+        canonicalPath={canonicalPathOverride ?? "/es/metronomo"}
+        translatedPage={canonicalPathOverride ? undefined : "metronome"}
+        hreflangUrls={hreflangUrls}
       />
+
+      {(pageTitle ?? pageSubheading) && (
+        <div className="text-center mb-6">
+          {pageTitle && (
+            <h1 className="text-2xl font-bold">{pageTitle}</h1>
+          )}
+          {pageSubheading && (
+            <p className="text-base-content/70 mt-2">{pageSubheading}</p>
+          )}
+        </div>
+      )}
 
       <Layout
         isPlaying={isPlaying}

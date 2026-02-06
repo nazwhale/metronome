@@ -13,6 +13,9 @@ import EmbedMelodicDictation from "./pages/embed/EmbedMelodicDictation.tsx";
 // Localized pages
 import Metronomo from "./pages/es/Metronomo.tsx";
 import Metronomi from "./pages/fi/Metronomi.tsx";
+import BpmMetronomePage from "./pages/BpmMetronomePage.tsx";
+import BpmMetronomoPage from "./pages/es/BpmMetronomoPage.tsx";
+import BpmMetronomiPage from "./pages/fi/BpmMetronomiPage.tsx";
 
 const routes = [
   {
@@ -35,19 +38,32 @@ const routes = [
     path: "/dictionary/:slug",
     element: <TermPage />,
   },
-  // Localized language routes
+  // Localized language routes (before BPM so /es/metronomo matches literally)
   {
     path: "/es/metronomo",
     element: <Metronomo />,
   },
   {
+    path: "/es/metronomo/:bpm-bpm",
+    element: <BpmMetronomoPage />,
+  },
+  {
     path: "/fi/metronomi",
     element: <Metronomi />,
+  },
+  {
+    path: "/fi/metronomi/:bpm-bpm",
+    element: <BpmMetronomiPage />,
   },
   ...All.map((metronome) => ({
     path: metronome.path,
     element: <metronome.component />,
   })),
+  // BPM-specific routes under main metronome path (e.g. /online-metronome/100-bpm)
+  {
+    path: "/online-metronome/:bpm-bpm",
+    element: <BpmMetronomePage />,
+  },
   // Embed routes with query param support
   {
     path: "/embed/metronome",
