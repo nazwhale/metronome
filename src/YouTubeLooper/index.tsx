@@ -716,7 +716,13 @@ const YouTubeLooper: React.FC = () => {
         >
           YouTube
         </a>{" "}
-        URL to watch and loop a section of a video while you practice.
+        URL to watch and loop a section of a video while you practice.{" "}
+        <a
+          href="/youtube-looper?v=X791IzOwt3Q&start=355.1"
+          className="link link-primary"
+        >
+          Try one
+        </a>
       </p>
 
       <form onSubmit={handleSubmit} className="w-full flex flex-col sm:flex-row gap-4">
