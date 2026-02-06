@@ -51,6 +51,25 @@ export function getBpmPageCopy(
   return { title: replace(t.title), subheading: replace(t.subheading) };
 }
 
+// Copy for "Practice at a set tempo" links (main metronome) and "All tempos" back link (BPM pages)
+export const tempoLinksCopy: Record<
+  Language,
+  { setTempoLabel: string; allTempos: string }
+> = {
+  en: {
+    setTempoLabel: "Practice at a set tempo:",
+    allTempos: "All tempos",
+  },
+  es: {
+    setTempoLabel: "Practica a un tempo fijo:",
+    allTempos: "Todos los tempos",
+  },
+  fi: {
+    setTempoLabel: "Harjoittele tietyssä tempossa:",
+    allTempos: "Kaikki tempot",
+  },
+};
+
 // Get full URLs for hreflang tags
 export const getHreflangUrls = (page: TranslatedPage) => {
   const paths = hreflangConfig[page];

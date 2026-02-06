@@ -10,8 +10,9 @@ import QandA, { QAItem } from "../components/QandA";
 import { useIsEmbed } from "../contexts/EmbedContext";
 import { EmbedButton } from "../components/EmbedModal";
 import SEO, { HreflangUrls } from "../components/SEO";
-import { metronomeTranslations } from "../i18n/translations";
+import { metronomeTranslations, tempoLinksCopy } from "../i18n/translations";
 import { LanguageProvider } from "../contexts/LanguageContext";
+import { ALLOWED_BPM_VALUES } from "../pages/BpmMetronomePage";
 
 const FAQ_ITEMS: QAItem[] = [
   {
@@ -195,6 +196,11 @@ const Standard: React.FC<StandardMetronomeProps> = ({
           {pageSubheading && (
             <p className="text-base-content/70 mt-2">{pageSubheading}</p>
           )}
+          <p className="mt-2">
+            <Link to="/online-metronome" className="link link-primary text-sm">
+              {tempoLinksCopy.en.allTempos}
+            </Link>
+          </p>
         </div>
       )}
 
@@ -220,6 +226,20 @@ const Standard: React.FC<StandardMetronomeProps> = ({
         />
         <TapTempo onBpmChange={setBpm} />
         <VolumeControl />
+        {!isEmbed && !canonicalPathOverride && (
+          <p className="text-center text-base-content/80 text-sm">
+            {tempoLinksCopy.en.setTempoLabel}{" "}
+            {ALLOWED_BPM_VALUES.map((b) => (
+              <React.Fragment key={b}>
+                <Link to={`/online-metronome/${b}-bpm`} className="link link-primary font-medium">
+                  {b}
+                </Link>
+                {b !== ALLOWED_BPM_VALUES[ALLOWED_BPM_VALUES.length - 1] ? " · " : ""}
+              </React.Fragment>
+            ))}{" "}
+            BPM
+          </p>
+        )}
         {!isEmbed && (
           <EmbedButton
             embedPath="/embed/metronome"

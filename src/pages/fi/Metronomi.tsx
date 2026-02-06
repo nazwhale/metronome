@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useLocalStorage } from "usehooks-ts";
 import { useMetronome } from "../../hooks/useMetronome";
+import { ALLOWED_BPM_VALUES } from "../BpmMetronomePage";
 import Layout from "../../Metronomes/Layout";
 import TapTempo from "../../Metronomes/TapTempo";
 import VolumeControl from "../../Metronomes/VolumeControl";
 import MuteBarToggle from "../../Metronomes/MuteBarToggle";
 import QandA, { QAItem } from "../../components/QandA";
 import SEO from "../../components/SEO";
-import { metronomeTranslations, uiTranslations } from "../../i18n/translations";
+import { metronomeTranslations, uiTranslations, tempoLinksCopy } from "../../i18n/translations";
 import { LanguageProvider } from "../../contexts/LanguageContext";
 import type { HreflangUrls } from "../../components/SEO";
 
@@ -113,6 +115,11 @@ const Metronomi: React.FC<MetronomiProps> = ({
             {pageSubheading && (
               <p className="text-base-content/70 mt-2">{pageSubheading}</p>
             )}
+            <p className="mt-2">
+              <Link to="/fi/metronomi" className="link link-primary text-sm">
+                {tempoLinksCopy.fi.allTempos}
+              </Link>
+            </p>
           </>
         ) : (
           <>
@@ -146,6 +153,20 @@ const Metronomi: React.FC<MetronomiProps> = ({
         />
         <TapTempo onBpmChange={setBpm} />
         <VolumeControl />
+        {!canonicalPathOverride && (
+          <p className="text-center text-base-content/80 text-sm">
+            {tempoLinksCopy.fi.setTempoLabel}{" "}
+            {ALLOWED_BPM_VALUES.map((b) => (
+              <React.Fragment key={b}>
+                <Link to={`/fi/metronomi/${b}-bpm`} className="link link-primary font-medium">
+                  {b}
+                </Link>
+                {b !== ALLOWED_BPM_VALUES[ALLOWED_BPM_VALUES.length - 1] ? " · " : ""}
+              </React.Fragment>
+            ))}{" "}
+            BPM
+          </p>
+        )}
       </Layout>
 
       {/* FAQ Section */}
