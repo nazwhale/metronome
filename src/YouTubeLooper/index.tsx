@@ -707,7 +707,16 @@ const YouTubeLooper: React.FC = () => {
     <div className="flex flex-col items-center gap-6 w-full max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold">YouTube Looper</h1>
       <p className="text-base-content/70 text-center">
-        Enter a YouTube URL to watch and loop a section of a video while you practice.
+        Enter a{" "}
+        <a
+          href="https://www.youtube.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link link-primary"
+        >
+          YouTube
+        </a>{" "}
+        URL to watch and loop a section of a video while you practice.
       </p>
 
       <form onSubmit={handleSubmit} className="w-full flex flex-col sm:flex-row gap-4">
