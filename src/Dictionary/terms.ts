@@ -121,7 +121,7 @@ export const dictionaryTerms: DictionaryTerm[] = [
     fullDefinition:
       "A bar (also called a measure) is a segment of time in music defined by a given number of beats, as indicated by the time signature. Bars are separated by vertical bar lines in written music. For example, in 4/4 time, each bar contains four quarter-note beats. Bars help organize music into manageable units and provide a framework for rhythm and structure.",
     tags: ["Rhythm", "Notation"],
-    relatedTerms: ["Beat"],
+    relatedTerms: ["Beat", "Measure", "Time signature"],
     examples: [
       "A 12-bar blues follows a specific chord progression",
       "The piece is 32 bars long",
@@ -284,6 +284,32 @@ export const dictionaryTerms: DictionaryTerm[] = [
     ],
   },
   {
+    term: "Downbeat",
+    slug: "downbeat",
+    shortDefinition: "The first beat of a bar; the strongest pulse in the measure.",
+    fullDefinition:
+      "The downbeat is the first beat of a bar or measure—the moment when a conductor's hand moves downward. It carries the strongest accent in most time signatures and is the natural point of resolution in a rhythmic cycle. Musicians often count \"one\" on the downbeat. In 4/4 time, the downbeat is beat 1; the other beats (2, 3, 4) are upbeats relative to the next downbeat. Feeling the downbeat clearly is essential for staying in time and playing with others.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Beat", "Upbeat", "Bar", "Accent"],
+    examples: [
+      "The bass drum hits on the downbeat in most rock and pop songs",
+      "Dancers often step on the downbeat to feel the start of each bar",
+    ],
+  },
+  {
+    term: "Eighth note",
+    slug: "eighth-note",
+    shortDefinition: "A note lasting half a beat in common time; two per quarter note.",
+    fullDefinition:
+      "An eighth note (or quaver) is a note value that lasts half the duration of a quarter note. In 4/4 time, two eighth notes fit into one beat. They are written with a filled-in oval, a stem, and a single flag (or a beam connecting multiple eighths). Eighth notes are the building blocks of many rhythmic patterns, from simple \"and\" subdivisions to fast runs. Counting \"1-and-2-and\" helps place eighth notes evenly within the beat.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Beat", "Quarter note", "Note value", "Subdivision"],
+    examples: [
+      "Eighth-note grooves drive much of funk and R&B",
+      "Practice scales in eighth notes at 60 BPM to build even timing",
+    ],
+  },
+  {
     term: "Etude",
     slug: "etude",
     shortDefinition: "A study piece designed to develop a specific technical skill.",
@@ -349,6 +375,45 @@ export const dictionaryTerms: DictionaryTerm[] = [
     ],
   },
   {
+    term: "Measure",
+    slug: "measure",
+    shortDefinition: "A segment of music containing a set number of beats; also called a bar.",
+    fullDefinition:
+      "A measure (also called a bar) is one unit of musical time as defined by the time signature. It contains a fixed number of beats—for example, four quarter-note beats in 4/4, or three in 3/4. Vertical bar lines separate measures in notation and help musicians read and count. The term \"measure\" is common in American English, while \"bar\" is used in British English and in casual speech. Both mean the same thing.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Bar", "Beat", "Time signature"],
+    examples: [
+      "The chorus is eight measures long",
+      "In 3/4 time, each measure has three beats",
+    ],
+  },
+  {
+    term: "Meter",
+    slug: "meter",
+    shortDefinition: "The recurring pattern of strong and weak beats that organizes music in time.",
+    fullDefinition:
+      "Meter (or metre) is the underlying structure that organizes beats into recurring groups. It is indicated by the time signature and felt as a pattern of strong and weak beats—for example, strong-weak-weak-weak in 4/4, or strong-weak-weak in 3/4. Meter can be simple (each beat divides in two, as in 2/4 or 3/4) or compound (each beat divides in three, as in 6/8). Understanding meter helps you count, read rhythm, and stay in time.",
+    tags: ["Rhythm", "Theory"],
+    relatedTerms: ["Time signature", "Beat", "Bar"],
+    examples: [
+      "A waltz is in triple meter (three beats per measure)",
+      "Most pop songs are in duple or quadruple meter",
+    ],
+  },
+  {
+    term: "Metronome",
+    slug: "metronome",
+    shortDefinition: "A device that produces a steady pulse at a set tempo to help musicians practice timing.",
+    fullDefinition:
+      "A metronome is a tool that produces a regular click, beep, or flash at a chosen tempo, measured in beats per minute (BPM). It helps musicians develop a steady sense of time, practice difficult passages at slow speeds, and gradually increase speed. The mechanical metronome was patented by Johann Maelzel in 1815; today metronomes are also digital, in apps, or built into software. Practicing with a metronome improves rhythm, consistency, and the ability to play with other musicians.",
+    tags: ["Tempo", "Performance"],
+    relatedTerms: ["Bpm", "Beat", "Tempo", "Tap tempo"],
+    examples: [
+      "Set the metronome to 60 BPM when learning a new piece slowly",
+      "Many online metronomes offer tap tempo to match an existing beat",
+    ],
+  },
+  {
     term: "Mezzo-soprano",
     slug: "mezzo-soprano",
     shortDefinition: "A female voice range between soprano and alto.",
@@ -398,6 +463,19 @@ export const dictionaryTerms: DictionaryTerm[] = [
     examples: [
       "Chopin's Nocturne in E-flat major, Op. 9 No. 2 is one of the most beloved",
       "Debussy's 'Nocturnes' for orchestra paint impressionistic night scenes",
+    ],
+  },
+  {
+    term: "Note value",
+    slug: "note-value",
+    shortDefinition: "The duration of a note—how long it is held—in relation to the beat.",
+    fullDefinition:
+      "Note values are the building blocks of rhythm. They define how long each note lasts. Common values include the whole note (four beats in 4/4), half note (two beats), quarter note (one beat), eighth note (half a beat), and sixteenth note (quarter of a beat). Each value can be doubled or halved: two eighth notes equal one quarter note. Rests use the same durations but indicate silence. Time signatures specify which note value gets the beat.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Beat", "Quarter note", "Eighth note", "Rest", "Time signature"],
+    examples: [
+      "In 4/4 time, a quarter note gets one beat",
+      "A dotted half note lasts three beats in common time",
     ],
   },
   {
@@ -453,6 +531,19 @@ export const dictionaryTerms: DictionaryTerm[] = [
     ],
   },
   {
+    term: "Quarter note",
+    slug: "quarter-note",
+    shortDefinition: "A note lasting one beat in 4/4 time; the most common unit of the beat.",
+    fullDefinition:
+      "A quarter note (or crotchet) is a note value that typically receives one beat in 4/4 time—the time signature used in most popular and classical music. It is written as a filled-in oval with a stem. Four quarter notes fill one bar in 4/4. The quarter note is the default \"one beat\" reference: tempo is often described in quarter notes per minute (e.g. \"quarter = 120\" means 120 quarter notes per minute). Subdividing the quarter into two eighth notes or four sixteenth notes is the basis of most rhythmic practice.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Beat", "Eighth note", "Note value", "Bpm"],
+    examples: [
+      "In 4/4, each bar has four quarter-note beats",
+      "Set your metronome to quarter-note clicks when learning a piece",
+    ],
+  },
+  {
     term: "Rondo",
     slug: "rondo",
     shortDefinition: "A musical form with a recurring main theme alternating with contrasting sections.",
@@ -463,6 +554,32 @@ export const dictionaryTerms: DictionaryTerm[] = [
     examples: [
       "Beethoven's 'Für Elise' is a rondo (ABACA form)",
       "Mozart frequently used rondo form for concerto final movements",
+    ],
+  },
+  {
+    term: "Rest",
+    slug: "rest",
+    shortDefinition: "A symbol indicating silence for a specific duration.",
+    fullDefinition:
+      "A rest is a notation symbol that indicates silence for a given length of time. Rests use the same duration system as notes: whole rest, half rest, quarter rest, eighth rest, and so on. A quarter rest in 4/4 time means one beat of silence. Rests are essential for rhythm—they create space, phrasing, and emphasis. Counting rests accurately is as important as counting notes when reading and performing music.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Note value", "Beat", "Bar"],
+    examples: [
+      "The rest on beat 1 creates a dramatic pause before the entrance",
+      "Eighth-note rests add punch to syncopated rhythms",
+    ],
+  },
+  {
+    term: "Rhythm",
+    slug: "rhythm",
+    shortDefinition: "The pattern of sounds and silences in time; how notes and rests are arranged.",
+    fullDefinition:
+      "Rhythm is the way music is organized in time—the pattern of note lengths, accents, and silences over a steady pulse. It is distinct from tempo (speed) and meter (grouping of beats): rhythm is the specific sequence of short and long sounds. Good rhythm means playing notes at the right time relative to the beat. Musicians develop rhythm through counting, subdividing, and practicing with a metronome. Rhythm is one of the core elements of music, alongside melody and harmony.",
+    tags: ["Rhythm", "Theory"],
+    relatedTerms: ["Beat", "Tempo", "Meter", "Syncopation", "Subdivision"],
+    examples: [
+      "The rhythm of the bass line drives the song forward",
+      "Clapping the rhythm before playing helps internalize difficult passages",
     ],
   },
   {
@@ -518,6 +635,19 @@ export const dictionaryTerms: DictionaryTerm[] = [
     ],
   },
   {
+    term: "Subdivision",
+    slug: "subdivision",
+    shortDefinition: "Dividing the beat into smaller parts (e.g. two eighths or four sixteenths per beat).",
+    fullDefinition:
+      "Subdivision is the act of dividing each beat into smaller, equal parts. The most common subdivisions are two parts per beat (eighth notes: \"1-and-2-and\") and four parts per beat (sixteenth notes: \"1-e-and-a-2-e-and-a\"). Feeling subdivision helps you place notes precisely and play complex rhythms accurately. Metronomes can be set to click on every beat or on subdivisions; practicing with subdivision clicks is especially useful for fast or syncopated music.",
+    tags: ["Rhythm", "Tempo"],
+    relatedTerms: ["Beat", "Eighth note", "Quarter note", "Rhythm", "Metronome"],
+    examples: [
+      "Subdivide the beat in your head when the tempo is very slow",
+      "Many metronomes allow subdivision clicks (e.g. eighth-note clicks)",
+    ],
+  },
+  {
     term: "Symphony",
     slug: "symphony",
     shortDefinition: "A large-scale orchestral composition, typically in four movements.",
@@ -531,6 +661,58 @@ export const dictionaryTerms: DictionaryTerm[] = [
     ],
   },
   {
+    term: "Syncopation",
+    slug: "syncopation",
+    shortDefinition: "Emphasis on beats or subdivisions that are normally weak; off-beat accentuation.",
+    fullDefinition:
+      "Syncopation is the deliberate shifting of accent onto normally weak beats or the \"and\" of the beat. It creates tension and groove by contradicting the expected pulse. In notation, syncopation often appears as notes tied across the beat or accents on upbeats. Jazz, funk, Latin music, and much pop music rely heavily on syncopation. Feeling the underlying steady beat while playing syncopated rhythms is a key skill for rhythm section players and soloists alike.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Accent", "Beat", "Upbeat", "Rhythm"],
+    examples: [
+      "The syncopated bass line gives the song its bounce",
+      "Clave patterns in Latin music are built on syncopation",
+    ],
+  },
+  {
+    term: "Tap tempo",
+    slug: "tap-tempo",
+    shortDefinition: "A feature that sets tempo by tapping a button in time with the desired beat.",
+    fullDefinition:
+      "Tap tempo is a function on metronomes, drum machines, and audio software that lets you set the tempo by tapping a button or key in time with the beat you want. The device measures the time between your taps and calculates the BPM. It is useful for matching a metronome to a song you're learning, finding the tempo of a recording, or quickly dialing in a feel without scrolling through numbers. Many online and app metronomes offer tap tempo.",
+    tags: ["Tempo", "Performance"],
+    relatedTerms: ["Metronome", "Bpm", "Tempo", "Beat"],
+    examples: [
+      "Use tap tempo to find the BPM of a track before practicing along",
+      "Tap four beats and the metronome will lock to your tempo",
+    ],
+  },
+  {
+    term: "Tempo",
+    slug: "tempo",
+    shortDefinition: "The speed of the music, usually measured in beats per minute (BPM).",
+    fullDefinition:
+      "Tempo is the speed at which a piece of music is played—how fast or slow the beat goes. It is usually given in beats per minute (BPM) or with Italian terms such as Allegro (fast), Andante (walking pace), or Adagio (slow). A conductor or metronome sets and maintains the tempo. Choosing the right tempo is essential for the character of a piece; many composers specify tempo precisely with BPM or descriptive markings. Practicing at a slow tempo and gradually increasing speed is a standard approach for learning difficult passages.",
+    tags: ["Tempo", "Performance"],
+    relatedTerms: ["Bpm", "Metronome", "Beat", "Allegro", "Andante", "Adagio"],
+    examples: [
+      "The tempo marking at the top of the score says quarter = 120",
+      "Start at 60 BPM and increase by 5 once you can play cleanly",
+    ],
+  },
+  {
+    term: "Time signature",
+    slug: "time-signature",
+    shortDefinition: "A notation at the start of a piece that shows how many beats per bar and which note gets the beat.",
+    fullDefinition:
+      "The time signature (or meter signature) appears at the beginning of a piece as two numbers, one above the other. The top number tells you how many beats are in each bar; the bottom number indicates which note value counts as one beat (4 = quarter note, 8 = eighth note). For example, 4/4 means four quarter-note beats per bar; 3/4 means three quarter-note beats per bar (common in waltzes); 6/8 means six eighth notes per bar, often felt as two beats of three. The time signature defines the meter and how you count the music.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Meter", "Bar", "Measure", "Beat", "Note value"],
+    examples: [
+      "4/4 is also called common time and is the most common time signature",
+      "In 6/8 time, you often count \"1-2-3-4-5-6\" or feel two big beats per bar",
+    ],
+  },
+  {
     term: "Tenor",
     slug: "tenor",
     shortDefinition: "The highest common male voice range.",
@@ -541,6 +723,19 @@ export const dictionaryTerms: DictionaryTerm[] = [
     examples: [
       "Luciano Pavarotti was one of the most famous operatic tenors",
       "The tenor section often sings the melody in barbershop quartets",
+    ],
+  },
+  {
+    term: "Upbeat",
+    slug: "upbeat",
+    shortDefinition: "The last beat of a bar, or any beat that leads into the next downbeat.",
+    fullDefinition:
+      "The upbeat is the beat that leads into the next downbeat—often the last beat of a bar, or the \"and\" between beats. In 4/4 time, beats 2, 3, and 4 are upbeats in relation to the following downbeat (beat 1 of the next bar). Conductors often give an upbeat to prepare an entrance. Many phrases begin on an upbeat (pickup or anacrusis) so that the downbeat lands on a strong word or note. Feeling the difference between downbeat and upbeat helps with timing and ensemble playing.",
+    tags: ["Rhythm", "Notation"],
+    relatedTerms: ["Downbeat", "Beat", "Bar", "Syncopation"],
+    examples: [
+      "The singer enters on the upbeat before beat 1 of the chorus",
+      "A conductor's preparatory gesture is often on the upbeat",
     ],
   },
   {

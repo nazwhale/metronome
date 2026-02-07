@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
   getTermsByLetter,
   getAvailableLetters,
@@ -10,6 +11,11 @@ import {
 import LetterSection from "./components/LetterSection";
 import AlphabetNav from "./components/AlphabetNav";
 import TagBadge from "./components/TagBadge";
+import { BASE_URL } from "../i18n/translations";
+
+const DICTIONARY_TITLE = "Musical Dictionary - Terms & Definitions | tempotick";
+const DICTIONARY_DESCRIPTION =
+  "Look up musical terms from A to Z: tempo, rhythm, notation, and more. Clear definitions and examples for musicians and students.";
 
 const Dictionary = () => {
   const [searchParams] = useSearchParams();
@@ -40,8 +46,22 @@ const Dictionary = () => {
     return grouped;
   }, [filteredTerms]);
 
+  const canonicalUrl = `${BASE_URL}/dictionary`;
+
   return (
     <div className="max-w-3xl mx-auto px-4">
+      <Helmet>
+        <title>{DICTIONARY_TITLE}</title>
+        <meta name="description" content={DICTIONARY_DESCRIPTION} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={DICTIONARY_TITLE} />
+        <meta property="og:description" content={DICTIONARY_DESCRIPTION} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={DICTIONARY_TITLE} />
+        <meta name="twitter:description" content={DICTIONARY_DESCRIPTION} />
+      </Helmet>
       <header className="mb-8">
         <h1 className="text-4xl font-bold mb-2">Musical Dictionary</h1>
         <p className="text-base-content/70">

@@ -1,7 +1,17 @@
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { getTermBySlug } from "./terms";
 import RelatedTerms from "./components/RelatedTerms";
 import TagBadge from "./components/TagBadge";
+import { BASE_URL } from "../i18n/translations";
+
+const SITE_NAME = "tempotick";
+
+function metaDescription(shortDefinition: string, maxLength = 155): string {
+  const trimmed = shortDefinition.trim();
+  if (trimmed.length <= maxLength) return trimmed;
+  return trimmed.slice(0, maxLength - 3).trim() + "...";
+}
 
 const TermPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -10,6 +20,9 @@ const TermPage = () => {
   if (!term) {
     return (
       <div className="max-w-3xl mx-auto px-4 text-center py-12">
+        <Helmet>
+          <title>Term Not Found | Musical Dictionary | {SITE_NAME}</title>
+        </Helmet>
         <h1 className="text-3xl font-bold mb-4">Term Not Found</h1>
         <p className="text-base-content/70 mb-6">
           Sorry, we couldn't find that term in our dictionary.
@@ -21,8 +34,52 @@ const TermPage = () => {
     );
   }
 
+  const pageTitle = `${term.term} - Musical Dictionary | ${SITE_NAME}`;
+  const description = metaDescription(term.shortDefinition);
+  const canonicalUrl = `${BASE_URL}/dictionary/${term.slug}`;
+
+  const definedTermJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "DefinedTerm",
+    name: term.term,
+    description: term.shortDefinition,
+    inDefinedTermSet: {
+      "@type": "DefinedTermSet",
+      name: "Musical Dictionary",
+      url: `${BASE_URL}/dictionary`,
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+      { "@type": "ListItem", position: 2, name: "Musical Dictionary", item: `${BASE_URL}/dictionary` },
+      { "@type": "ListItem", position: 3, name: term.term, item: canonicalUrl },
+    ],
+  };
+
   return (
     <div className="max-w-3xl mx-auto px-4">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={description} />
+        <script type="application/ld+json">
+          {JSON.stringify(definedTermJsonLd)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbJsonLd)}
+        </script>
+      </Helmet>
       <nav className="mb-6">
         <Link
           to="/dictionary"
