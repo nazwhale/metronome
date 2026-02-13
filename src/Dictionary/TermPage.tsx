@@ -90,7 +90,7 @@ const TermPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4">
+    <div className="max-w-3xl mx-auto px-4 text-left">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={description} />
@@ -138,7 +138,7 @@ const TermPage = () => {
           <p className="text-xl text-base-content/80">{term.shortDefinition}</p>
         </header>
 
-        <section className="prose prose-lg max-w-none">
+        <section className="prose prose-lg max-w-none text-left">
           {term.fullDefinition.split(/\n\n+/).map((paragraph, i) => (
             <p key={i}>{linkifyDefinition(paragraph.trim(), term.slug)}</p>
           ))}

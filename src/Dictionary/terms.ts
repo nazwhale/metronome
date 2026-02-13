@@ -16,7 +16,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "a-cappella",
     shortDefinition: "Vocal music performed without instrumental accompaniment.",
     fullDefinition:
-      "A cappella (Italian for 'in the manner of the chapel') refers to music performed by singers without instrumental accompaniment. The term originated from church music traditions where voices sang without organ support. Today, a cappella encompasses many genres, from barbershop quartets to contemporary vocal groups that use voices to imitate instruments.",
+      "A cappella (Italian for 'in the manner of the chapel') refers to music performed by singers without instrumental accompaniment. The term originated from church music traditions where voices sang without organ support.\n\n" +
+      "Today, a cappella encompasses many genres, from barbershop quartets to contemporary vocal groups that use voices to imitate instruments.",
     tags: ["Vocal", "Performance"],
     relatedTerms: ["Soprano", "Alto", "Tenor", "Bass"],
     examples: [
@@ -134,7 +135,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "baritone",
     shortDefinition: "A male voice range between tenor and bass.",
     fullDefinition:
-      "Baritone is a male voice type that lies between the higher tenor and lower bass ranges. The typical baritone range spans from A2 to A4. Baritones have a rich, warm quality and are the most common male voice type. In opera, baritone roles often portray villains, father figures, or comic characters. Many popular music singers, from Frank Sinatra to Elvis Presley, were baritones.",
+      "Baritone is a male voice type that lies between the higher tenor and lower bass ranges. The typical baritone range spans from A2 to A4. Baritones have a rich, warm quality and are the most common male voice type.\n\n" +
+      "In opera, baritone roles often portray villains, father figures, or comic characters. Many popular music singers, from Frank Sinatra to Elvis Presley, were baritones.",
     tags: ["Vocal", "Voice Type"],
     relatedTerms: ["Tenor", "Bass", "Alto", "Soprano"],
     examples: [
@@ -186,7 +188,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "cadence",
     shortDefinition: "A sequence of chords that brings a phrase or piece to a close.",
     fullDefinition:
-      "A cadence is a harmonic progression that creates a sense of resolution or pause in music, typically occurring at the end of a phrase, section, or piece. Common types include the perfect cadence (V-I), which sounds final and resolved; the plagal cadence (IV-I), often heard as 'Amen'; the imperfect cadence (ending on V), which sounds incomplete; and the deceptive cadence, which surprises the listener with an unexpected resolution.",
+      "A cadence is a harmonic progression that creates a sense of resolution or pause in music, typically occurring at the end of a phrase, section, or piece.\n\n" +
+      "Common types include the perfect cadence (V–I), which sounds final and resolved; the plagal cadence (IV–I), often heard as 'Amen'; the imperfect cadence (ending on V), which sounds incomplete; and the deceptive cadence, which surprises the listener with an unexpected resolution.",
     tags: ["Harmony", "Theory"],
     relatedTerms: ["Chord"],
     examples: [
@@ -199,7 +202,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "canon",
     shortDefinition: "A compositional technique where a melody is imitated by one or more voices.",
     fullDefinition:
-      "A canon is a contrapuntal compositional technique where a melody introduced by one voice is imitated strictly by one or more other voices, entering at staggered intervals. The imitating voices may enter at the same pitch (canon at the unison) or at different intervals. 'Row, Row, Row Your Boat' is a simple example of a canon, also known as a round. More complex canons include inversions, retrogrades, and augmentations of the original melody.",
+      "A canon is a contrapuntal compositional technique where a melody introduced by one voice is imitated strictly by one or more other voices, entering at staggered intervals. The imitating voices may enter at the same pitch (canon at the unison) or at different intervals.\n\n" +
+      "'Row, Row, Row Your Boat' is a simple example of a canon, also known as a round. More complex canons include inversions, retrogrades, and augmentations of the original melody.",
     tags: ["Form", "Theory"],
     relatedTerms: ["Fugue", "Counterpoint"],
     examples: [
@@ -238,7 +242,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "concerto",
     shortDefinition: "A composition featuring a solo instrument accompanied by an orchestra.",
     fullDefinition:
-      "A concerto is a musical composition, typically in three movements, that showcases a solo instrument (or small group of instruments) against an orchestral accompaniment. The form developed during the Baroque period with composers like Vivaldi and Bach, and reached its height in the Classical and Romantic eras with Mozart, Beethoven, and Brahms. Concertos often feature virtuosic passages called cadenzas where the soloist plays alone.",
+      "A concerto is a musical composition, typically in three movements, that showcases a solo instrument (or small group of instruments) against an orchestral accompaniment. The form developed during the Baroque period with composers like Vivaldi and Bach, and reached its height in the Classical and Romantic eras with Mozart, Beethoven, and Brahms.\n\n" +
+      "Concertos often feature virtuosic passages called cadenzas where the soloist plays alone.",
     tags: ["Form"],
     relatedTerms: ["Symphony", "Sonata", "Cadence"],
     examples: [
@@ -277,7 +282,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "dynamics",
     shortDefinition: "The variation in loudness in music.",
     fullDefinition:
-      "Dynamics refers to the varying levels of loudness in music and the way musicians express these variations. Common dynamic markings include pianissimo (pp, very soft), piano (p, soft), mezzo-piano (mp, moderately soft), mezzo-forte (mf, moderately loud), forte (f, loud), and fortissimo (ff, very loud). Dynamics add expression and emotional depth to musical performance.",
+      "Dynamics refers to the varying levels of loudness in music and the way musicians express these variations. Common dynamic markings include pianissimo (pp, very soft), piano (p, soft), mezzo-piano (mp, moderately soft), mezzo-forte (mf, moderately loud), forte (f, loud), and fortissimo (ff, very loud).\n\n" +
+      "Dynamics add expression and emotional depth to musical performance.",
     tags: ["Dynamics", "Notation", "Performance"],
     relatedTerms: ["Crescendo", "Accent"],
     examples: [
@@ -290,7 +296,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "downbeat",
     shortDefinition: "The first beat of a bar; the strongest pulse in the measure.",
     fullDefinition:
-      "The downbeat is the first beat of a bar or measure—the moment when a conductor's hand moves downward. It carries the strongest accent in most time signatures and is the natural point of resolution in a rhythmic cycle. Musicians often count \"one\" on the downbeat. In 4/4 time, the downbeat is beat 1; the other beats (2, 3, 4) are upbeats relative to the next downbeat. Feeling the downbeat clearly is essential for staying in time and playing with others.",
+      "The downbeat is the first beat of a bar or measure—the moment when a conductor's hand moves downward. It carries the strongest accent in most time signatures and is the natural point of resolution in a rhythmic cycle. Musicians often count \"one\" on the downbeat.\n\n" +
+      "In 4/4 time, the downbeat is beat 1; the other beats (2, 3, 4) are upbeats relative to the next downbeat. Feeling the downbeat clearly is essential for staying in time and playing with others.",
     tags: ["Rhythm", "Notation"],
     relatedTerms: ["Beat", "Upbeat", "Bar", "Accent"],
     examples: [
@@ -303,7 +310,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "eighth-note",
     shortDefinition: "A note lasting half a beat in common time; two per quarter note.",
     fullDefinition:
-      "An eighth note (or quaver) is a note value that lasts half the duration of a quarter note. In 4/4 time, two eighth notes fit into one beat. They are written with a filled-in oval, a stem, and a single flag (or a beam connecting multiple eighths). Eighth notes are the building blocks of many rhythmic patterns, from simple \"and\" subdivisions to fast runs. Counting \"1-and-2-and\" helps place eighth notes evenly within the beat.",
+      "An eighth note (or quaver) is a note value that lasts half the duration of a quarter note. In 4/4 time, two eighth notes fit into one beat. They are written with a filled-in oval, a stem, and a single flag (or a beam connecting multiple eighths).\n\n" +
+      "Eighth notes are the building blocks of many rhythmic patterns, from simple \"and\" subdivisions to fast runs. Counting \"1-and-2-and\" helps place eighth notes evenly within the beat.",
     tags: ["Rhythm", "Notation"],
     relatedTerms: ["Beat", "Quarter note", "Note value", "Subdivision"],
     examples: [
@@ -329,7 +337,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "fugue",
     shortDefinition: "A contrapuntal composition built on a theme developed through imitative voices.",
     fullDefinition:
-      "A fugue is a contrapuntal composition in which a short melody (the subject) is introduced by one voice and successively taken up by others, developed through various keys and techniques. Fugues typically begin with an exposition where each voice enters with the subject, followed by episodes and further entries. J.S. Bach's 'Well-Tempered Clavier' contains 48 preludes and fugues and represents the pinnacle of fugal writing.",
+      "A fugue is a contrapuntal composition in which a short melody (the subject) is introduced by one voice and successively taken up by others, developed through various keys and techniques. Fugues typically begin with an exposition where each voice enters with the subject, followed by episodes and further entries.\n\n" +
+      "J.S. Bach's 'Well-Tempered Clavier' contains 48 preludes and fugues and represents the pinnacle of fugal writing.",
     tags: ["Form", "Theory"],
     relatedTerms: ["Canon", "Counterpoint", "Prelude"],
     examples: [
@@ -412,7 +421,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "meter",
     shortDefinition: "The recurring pattern of strong and weak beats that organizes music in time.",
     fullDefinition:
-      "Meter (or metre) is the underlying structure that organizes beats into recurring groups. It is indicated by the time signature and felt as a pattern of strong and weak beats—for example, strong-weak-weak-weak in 4/4, or strong-weak-weak in 3/4. Meter can be simple (each beat divides in two, as in 2/4 or 3/4) or compound (each beat divides in three, as in 6/8). Understanding meter helps you count, read rhythm, and stay in time.",
+      "Meter (or metre) is the underlying structure that organizes beats into recurring groups. It is indicated by the time signature and felt as a pattern of strong and weak beats—for example, strong-weak-weak-weak in 4/4, or strong-weak-weak in 3/4.\n\n" +
+      "Meter can be simple (each beat divides in two, as in 2/4 or 3/4) or compound (each beat divides in three, as in 6/8). Understanding meter helps you count, read rhythm, and stay in time.",
     tags: ["Rhythm", "Theory"],
     relatedTerms: ["Time signature", "Beat", "Bar"],
     examples: [
@@ -425,7 +435,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "metronome",
     shortDefinition: "A device that produces a steady pulse at a set tempo to help musicians practice timing.",
     fullDefinition:
-      "A metronome is a tool that produces a regular click, beep, or flash at a chosen tempo, measured in beats per minute (BPM). It helps musicians develop a steady sense of time, practice difficult passages at slow speeds, and gradually increase speed. The mechanical metronome was patented by Johann Maelzel in 1815; today metronomes are also digital, in apps, or built into software. Practicing with a metronome improves rhythm, consistency, and the ability to play with other musicians.",
+      "A metronome is a tool that produces a regular click, beep, or flash at a chosen tempo, measured in beats per minute (BPM). It helps musicians develop a steady sense of time, practice difficult passages at slow speeds, and gradually increase speed.\n\n" +
+      "The mechanical metronome was patented by Johann Maelzel in 1815; today metronomes are also digital, in apps, or built into software. Practicing with a metronome improves rhythm, consistency, and the ability to play with other musicians.",
     tags: ["Tempo", "Performance"],
     relatedTerms: ["Bpm", "Beat", "Tempo", "Tap tempo"],
     examples: [
@@ -490,7 +501,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "note-value",
     shortDefinition: "The duration of a note—how long it is held—in relation to the beat.",
     fullDefinition:
-      "Note values are the building blocks of rhythm. They define how long each note lasts. Common values include the whole note (four beats in 4/4), half note (two beats), quarter note (one beat), eighth note (half a beat), and sixteenth note (quarter of a beat). Each value can be doubled or halved: two eighth notes equal one quarter note. Rests use the same durations but indicate silence. Time signatures specify which note value gets the beat.",
+      "Note values are the building blocks of rhythm. They define how long each note lasts. Common values include the whole note (four beats in 4/4), half note (two beats), quarter note (one beat), eighth note (half a beat), and sixteenth note (quarter of a beat). Each value can be doubled or halved: two eighth notes equal one quarter note.\n\n" +
+      "Rests use the same durations but indicate silence. Time signatures specify which note value gets the beat.",
     tags: ["Rhythm", "Notation"],
     relatedTerms: ["Beat", "Quarter note", "Eighth note", "Rest", "Time signature"],
     examples: [
@@ -503,7 +515,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "opera",
     shortDefinition: "A dramatic work combining music, singing, and theatrical elements.",
     fullDefinition:
-      "Opera is a form of theatre in which music is the primary artistic element, combining vocal and orchestral music with drama, acting, scenery, and costumes. Originating in Italy around 1600, opera encompasses recitatives (speech-like singing), arias (expressive solo songs), choruses, and orchestral passages. Major operatic traditions include Italian (Verdi, Puccini), German (Wagner, Strauss), and French (Bizet, Debussy).",
+      "Opera is a form of theatre in which music is the primary artistic element, combining vocal and orchestral music with drama, acting, scenery, and costumes. Originating in Italy around 1600, opera encompasses recitatives (speech-like singing), arias (expressive solo songs), choruses, and orchestral passages.\n\n" +
+      "Major operatic traditions include Italian (Verdi, Puccini), German (Wagner, Strauss), and French (Bizet, Debussy).",
     tags: ["Form", "Vocal"],
     relatedTerms: ["Soprano", "Tenor", "Baritone", "Bass", "A cappella"],
     examples: [
@@ -555,7 +568,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "quarter-note",
     shortDefinition: "A note lasting one beat in 4/4 time; the most common unit of the beat.",
     fullDefinition:
-      "A quarter note (or crotchet) is a note value that typically receives one beat in 4/4 time—the time signature used in most popular and classical music. It is written as a filled-in oval with a stem. Four quarter notes fill one bar in 4/4. The quarter note is the default \"one beat\" reference: tempo is often described in quarter notes per minute (e.g. \"quarter = 120\" means 120 quarter notes per minute). Subdividing the quarter into two eighth notes or four sixteenth notes is the basis of most rhythmic practice.",
+      "A quarter note (or crotchet) is a note value that typically receives one beat in 4/4 time—the time signature used in most popular and classical music. It is written as a filled-in oval with a stem. Four quarter notes fill one bar in 4/4. The quarter note is the default \"one beat\" reference: tempo is often described in quarter notes per minute (e.g. \"quarter = 120\" means 120 quarter notes per minute).\n\n" +
+      "Subdividing the quarter into two eighth notes or four sixteenth notes is the basis of most rhythmic practice.",
     tags: ["Rhythm", "Notation"],
     relatedTerms: ["Beat", "Eighth note", "Note value", "Bpm"],
     examples: [
@@ -594,7 +608,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "rhythm",
     shortDefinition: "The pattern of sounds and silences in time; how notes and rests are arranged.",
     fullDefinition:
-      "Rhythm is the way music is organized in time—the pattern of note lengths, accents, and silences over a steady pulse. It is distinct from tempo (speed) and meter (grouping of beats): rhythm is the specific sequence of short and long sounds. Good rhythm means playing notes at the right time relative to the beat. Musicians develop rhythm through counting, subdividing, and practicing with a metronome. Rhythm is one of the core elements of music, alongside melody and harmony.",
+      "Rhythm is the way music is organized in time—the pattern of note lengths, accents, and silences over a steady pulse. It is distinct from tempo (speed) and meter (grouping of beats): rhythm is the specific sequence of short and long sounds.\n\n" +
+      "Good rhythm means playing notes at the right time relative to the beat. Musicians develop rhythm through counting, subdividing, and practicing with a metronome. Rhythm is one of the core elements of music, alongside melody and harmony.",
     tags: ["Rhythm", "Theory"],
     relatedTerms: ["Beat", "Tempo", "Meter", "Syncopation", "Subdivision"],
     examples: [
@@ -620,7 +635,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "sonata",
     shortDefinition: "A multi-movement composition for one or two instruments.",
     fullDefinition:
-      "A sonata is a composition for one or two instruments, typically in three or four movements with contrasting tempos and characters. The Classical sonata usually includes a fast opening movement in sonata form, a slow lyrical movement, and a lively finale (often a rondo). Sonata form itself—with its exposition, development, and recapitulation—became the most important structural principle in Classical music.",
+      "A sonata is a composition for one or two instruments, typically in three or four movements with contrasting tempos and characters. The Classical sonata usually includes a fast opening movement in sonata form, a slow lyrical movement, and a lively finale (often a rondo).\n\n" +
+      "Sonata form itself—with its exposition, development, and recapitulation—became the most important structural principle in Classical music.",
     tags: ["Form"],
     relatedTerms: ["Symphony", "Concerto", "Rondo", "Scherzo"],
     examples: [
@@ -672,7 +688,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "symphony",
     shortDefinition: "A large-scale orchestral composition, typically in four movements.",
     fullDefinition:
-      "A symphony is an extended musical composition for orchestra, typically in four movements: a fast opening movement (often in sonata form), a slow movement, a minuet or scherzo, and a fast finale. Developed in the Classical period by Haydn and Mozart, the symphony reached its grandest expression with Beethoven, Brahms, Mahler, and Shostakovich. Symphonies remain central to the orchestral repertoire.",
+      "A symphony is an extended musical composition for orchestra, typically in four movements: a fast opening movement (often in sonata form), a slow movement, a minuet or scherzo, and a fast finale.\n\n" +
+      "Developed in the Classical period by Haydn and Mozart, the symphony reached its grandest expression with Beethoven, Brahms, Mahler, and Shostakovich. Symphonies remain central to the orchestral repertoire.",
     tags: ["Form"],
     relatedTerms: ["Concerto", "Sonata", "Scherzo", "Minuet", "Rondo"],
     examples: [
@@ -685,7 +702,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "syncopation",
     shortDefinition: "Emphasis on beats or subdivisions that are normally weak; off-beat accentuation.",
     fullDefinition:
-      "Syncopation is the deliberate shifting of accent onto normally weak beats or the \"and\" of the beat. It creates tension and groove by contradicting the expected pulse. In notation, syncopation often appears as notes tied across the beat or accents on upbeats. Jazz, funk, Latin music, and much pop music rely heavily on syncopation. Feeling the underlying steady beat while playing syncopated rhythms is a key skill for rhythm section players and soloists alike.",
+      "Syncopation is the deliberate shifting of accent onto normally weak beats or the \"and\" of the beat. It creates tension and groove by contradicting the expected pulse. In notation, syncopation often appears as notes tied across the beat or accents on upbeats.\n\n" +
+      "Jazz, funk, Latin music, and much pop music rely heavily on syncopation. Feeling the underlying steady beat while playing syncopated rhythms is a key skill for rhythm section players and soloists alike.",
     tags: ["Rhythm", "Notation"],
     relatedTerms: ["Accent", "Beat", "Upbeat", "Rhythm"],
     examples: [
@@ -698,7 +716,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "tap-tempo",
     shortDefinition: "A feature that sets tempo by tapping a button in time with the desired beat.",
     fullDefinition:
-      "Tap tempo is a function on metronomes, drum machines, and audio software that lets you set the tempo by tapping a button or key in time with the beat you want. The device measures the time between your taps and calculates the BPM. It is useful for matching a metronome to a song you're learning, finding the tempo of a recording, or quickly dialing in a feel without scrolling through numbers. Many online and app metronomes offer tap tempo.",
+      "Tap tempo is a function on metronomes, drum machines, and audio software that lets you set the tempo by tapping a button or key in time with the beat you want. The device measures the time between your taps and calculates the BPM.\n\n" +
+      "It is useful for matching a metronome to a song you're learning, finding the tempo of a recording, or quickly dialing in a feel without scrolling through numbers. Many online and app metronomes offer tap tempo.",
     tags: ["Tempo", "Performance"],
     relatedTerms: ["Metronome", "Bpm", "Tempo", "Beat"],
     examples: [
@@ -711,7 +730,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "tempo",
     shortDefinition: "The speed of the music, usually measured in beats per minute (BPM).",
     fullDefinition:
-      "Tempo is the speed at which a piece of music is played—how fast or slow the beat goes. It is usually given in beats per minute (BPM) or with Italian terms such as Allegro (fast), Andante (walking pace), or Adagio (slow). A conductor or metronome sets and maintains the tempo. Choosing the right tempo is essential for the character of a piece; many composers specify tempo precisely with BPM or descriptive markings. Practicing at a slow tempo and gradually increasing speed is a standard approach for learning difficult passages.",
+      "Tempo is the speed at which a piece of music is played—how fast or slow the beat goes. It is usually given in beats per minute (BPM) or with Italian terms such as Allegro (fast), Andante (walking pace), or Adagio (slow). A conductor or metronome sets and maintains the tempo.\n\n" +
+      "Choosing the right tempo is essential for the character of a piece; many composers specify tempo precisely with BPM or descriptive markings. Practicing at a slow tempo and gradually increasing speed is a standard approach for learning difficult passages.",
     tags: ["Tempo", "Performance"],
     relatedTerms: ["Bpm", "Metronome", "Beat", "Allegro", "Andante", "Adagio"],
     examples: [
@@ -724,7 +744,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "time-signature",
     shortDefinition: "A notation at the start of a piece that shows how many beats per bar and which note gets the beat.",
     fullDefinition:
-      "The time signature (or meter signature) appears at the beginning of a piece as two numbers, one above the other. The top number tells you how many beats are in each bar; the bottom number indicates which note value counts as one beat (4 = quarter note, 8 = eighth note). For example, 4/4 means four quarter-note beats per bar; 3/4 means three quarter-note beats per bar (common in waltzes); 6/8 means six eighth notes per bar, often felt as two beats of three. The time signature defines the meter and how you count the music.",
+      "The time signature (or meter signature) appears at the beginning of a piece as two numbers, one above the other. The top number tells you how many beats are in each bar; the bottom number indicates which note value counts as one beat (4 = quarter note, 8 = eighth note).\n\n" +
+      "For example, 4/4 means four quarter-note beats per bar; 3/4 means three quarter-note beats per bar (common in waltzes); 6/8 means six eighth notes per bar, often felt as two beats of three. The time signature defines the meter and how you count the music.",
     tags: ["Rhythm", "Notation"],
     relatedTerms: ["Meter", "Bar", "Measure", "Beat", "Note value"],
     examples: [
@@ -737,7 +758,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "triad",
     shortDefinition: "A three-note chord built from a root, third, and fifth.",
     fullDefinition:
-      "A triad is the most basic type of chord in Western music: three notes stacked in thirds, named the root, third, and fifth. Triads come in four qualities—major, minor, diminished, and augmented—depending on the intervals between these notes. Major and minor triads are the building blocks of most harmony; diminished and augmented triads add color and tension. Triads can be played in root position (root on the bottom) or inverted (third or fifth on the bottom).",
+      "A triad is the most basic type of chord in Western music: three notes stacked in thirds, named the root, third, and fifth. Triads come in four qualities—major, minor, diminished, and augmented—depending on the intervals between these notes.\n\n" +
+      "Major and minor triads are the building blocks of most harmony; diminished and augmented triads add color and tension. Triads can be played in root position (root on the bottom) or inverted (third or fifth on the bottom).",
     tags: ["Harmony", "Theory"],
     relatedTerms: ["Chord", "Arpeggio", "Cadence"],
     examples: [
@@ -763,7 +785,8 @@ export const dictionaryTerms: DictionaryTerm[] = [
     slug: "upbeat",
     shortDefinition: "The last beat of a bar, or any beat that leads into the next downbeat.",
     fullDefinition:
-      "The upbeat is the beat that leads into the next downbeat—often the last beat of a bar, or the \"and\" between beats. In 4/4 time, beats 2, 3, and 4 are upbeats in relation to the following downbeat (beat 1 of the next bar). Conductors often give an upbeat to prepare an entrance. Many phrases begin on an upbeat (pickup or anacrusis) so that the downbeat lands on a strong word or note. Feeling the difference between downbeat and upbeat helps with timing and ensemble playing.",
+      "The upbeat is the beat that leads into the next downbeat—often the last beat of a bar, or the \"and\" between beats. In 4/4 time, beats 2, 3, and 4 are upbeats in relation to the following downbeat (beat 1 of the next bar).\n\n" +
+      "Conductors often give an upbeat to prepare an entrance. Many phrases begin on an upbeat (pickup or anacrusis) so that the downbeat lands on a strong word or note. Feeling the difference between downbeat and upbeat helps with timing and ensemble playing.",
     tags: ["Rhythm", "Notation"],
     relatedTerms: ["Downbeat", "Beat", "Bar", "Syncopation"],
     examples: [
