@@ -25,11 +25,10 @@ const Navigation: React.FC = () => {
                     <Link
                       to={metronome.path}
                       onClick={closeDropdown}
-                      className={`link link-hover ${
-                        location.pathname === metronome.path
-                          ? "link-success"
-                          : "link-primary"
-                      }`}
+                      className={`link link-hover ${location.pathname === metronome.path
+                        ? "link-success"
+                        : "link-primary"
+                        }`}
                     >
                       {metronome.name}
                     </Link>
@@ -41,11 +40,10 @@ const Navigation: React.FC = () => {
           <li>
             <Link
               to="/dictionary"
-              className={`link link-hover ${
-                location.pathname.startsWith("/dictionary")
-                  ? "link-success"
-                  : "link-primary"
-              }`}
+              className={`link link-hover focus-visible:text-neutral-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-content focus-visible:ring-offset-2 focus-visible:ring-offset-neutral ${location.pathname.startsWith("/dictionary")
+                ? "text-neutral-content font-semibold underline underline-offset-4"
+                : ""
+                }`}
             >
               dictionary
             </Link>
