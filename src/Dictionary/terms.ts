@@ -6,6 +6,8 @@ export interface DictionaryTerm {
   tags?: string[];
   relatedTerms?: string[];
   examples?: string[];
+  /** Optional external links (e.g. Wikipedia) shown at the end of the definition. */
+  externalLinks?: { label: string; url: string }[];
 }
 
 export const dictionaryTerms: DictionaryTerm[] = [
@@ -333,6 +335,24 @@ export const dictionaryTerms: DictionaryTerm[] = [
     examples: [
       "Bach's 'Toccata and Fugue in D minor' is widely recognized",
       "The finale of Mozart's 'Jupiter Symphony' incorporates fugal techniques",
+    ],
+  },
+  {
+    term: "Inversion",
+    slug: "inversion",
+    shortDefinition: "A chord or interval with a note other than the root in the bass.",
+    fullDefinition:
+      "An inversion is a chord (or triad) played with a note other than the root in the bass. In root position the root is the lowest note; in first inversion the third is in the bass; in second inversion the fifth is in the bass.\n\n" +
+      "The same three notes are present—only the order changes—so the harmonic quality stays the same but the voicing and colour shift. Inversions are used for smoother voice leading, clearer bass lines, and variety when comping or arranging.\n\n" +
+      "On guitar, learning triad inversions on a single string set (e.g. G–B–e) helps you see the same chord in different shapes across the neck.",
+    tags: ["Harmony", "Theory"],
+    relatedTerms: ["Chord", "Triad", "Arpeggio"],
+    examples: [
+      "A C major triad in first inversion has E in the bass (E–G–C)",
+      "Second inversion often appears in cadences (e.g. I6/4–V–I)",
+    ],
+    externalLinks: [
+      { label: "Inversion (music) on Wikipedia", url: "https://en.wikipedia.org/wiki/Inversion_(music)" },
     ],
   },
   {

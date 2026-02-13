@@ -139,7 +139,26 @@ const TermPage = () => {
         </header>
 
         <section className="prose prose-lg max-w-none">
-          <p>{linkifyDefinition(term.fullDefinition, term.slug)}</p>
+          {term.fullDefinition.split(/\n\n+/).map((paragraph, i) => (
+            <p key={i}>{linkifyDefinition(paragraph.trim(), term.slug)}</p>
+          ))}
+          {term.externalLinks && term.externalLinks.length > 0 && (
+            <p className="mt-4">
+              {term.externalLinks.map((link, i) => (
+                <span key={i}>
+                  {i > 0 && " · "}
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link link-primary"
+                  >
+                    {link.label}
+                  </a>
+                </span>
+              ))}
+            </p>
+          )}
         </section>
 
         {term.examples && term.examples.length > 0 && (
