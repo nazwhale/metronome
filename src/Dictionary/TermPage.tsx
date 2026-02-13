@@ -1,9 +1,38 @@
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { getTermBySlug } from "./terms";
+import { getTermBySlug, dictionaryTerms } from "./terms";
 import RelatedTerms from "./components/RelatedTerms";
 import TagBadge from "./components/TagBadge";
 import { BASE_URL } from "../i18n/translations";
+
+function linkifyDefinition(text: string, currentSlug: string): React.ReactNode {
+  const termsByLength = [...dictionaryTerms]
+    .filter((t) => t.slug !== currentSlug)
+    .sort((a, b) => b.term.length - a.term.length);
+  let result: string = text;
+  for (const t of termsByLength) {
+    const escaped = t.term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    result = result.replace(
+      new RegExp(`\\b(${escaped})\\b`, "gi"),
+      `__${t.slug}__`,
+    );
+  }
+  const parts = result.split(/(__\w+(?:-\w+)*__)/g);
+  return parts.map((part, i) => {
+    const match = part.match(/^__([\w-]+)__$/);
+    if (match) {
+      const term = getTermBySlug(match[1]);
+      return term ? (
+        <Link key={i} to={`/dictionary/${term.slug}`} className="link link-primary">
+          {term.term}
+        </Link>
+      ) : (
+        part
+      );
+    }
+    return part;
+  });
+}
 
 const SITE_NAME = "tempotick";
 
@@ -110,7 +139,7 @@ const TermPage = () => {
         </header>
 
         <section className="prose prose-lg max-w-none">
-          <p>{term.fullDefinition}</p>
+          <p>{linkifyDefinition(term.fullDefinition, term.slug)}</p>
         </section>
 
         {term.examples && term.examples.length > 0 && (

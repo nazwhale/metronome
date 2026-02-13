@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { Link } from "react-router-dom";
 import * as Tone from "tone";
 import QandA, { QAItem } from "../components/QandA";
 import { useIsEmbed } from "../contexts/EmbedContext";
@@ -22,7 +23,7 @@ const FAQ_ITEMS: QAItem[] = [
     question: "What is the 1/3/5 rule for chords?",
     answer: (
       <p>
-        The 1/3/5 rule refers to how basic triads (three-note chords) are built. 
+        The 1/3/5 rule refers to how basic <Link to="/dictionary/triad" className="link link-primary">triads</Link> (three-note chords) are built. 
         You take the 1st note (root), 3rd note, and 5th note of a scale to form a chord. 
         For example, in C major: C (1) – E (3) – G (5) creates a C major chord. 
         For minor chords, the 3rd is lowered by a half step: C – E♭ – G creates C minor. 

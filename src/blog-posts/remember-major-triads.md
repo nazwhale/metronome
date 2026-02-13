@@ -3,7 +3,7 @@ title: "How to Remember All 7 Major Triads"
 date: "2026-02-03"
 ---
 
-Use these 7 words to instantly recall any major triad (Root–3rd–5th):
+Use these 7 words to instantly recall any major [triad](/dictionary/triad) (Root–3rd–5th):
 
 | Root | Word | Triad | Meaning |
 |------|------|-------|---------|

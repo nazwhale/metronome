@@ -212,7 +212,7 @@ export const dictionaryTerms: DictionaryTerm[] = [
     fullDefinition:
       "A chord is a group of three or more notes played simultaneously, forming the basis of harmony in Western music. The most basic chord is a triad, consisting of a root, third, and fifth. Chords are classified by their quality (major, minor, diminished, augmented) and can be extended with additional notes (7ths, 9ths, etc.). Understanding chords is fundamental to composition, arrangement, and improvisation.",
     tags: ["Harmony", "Theory"],
-    relatedTerms: ["Arpeggio", "Cadence"],
+    relatedTerms: ["Arpeggio", "Cadence", "Triad"],
     examples: [
       "A C major chord contains the notes C, E, and G",
       "Jazz musicians often use extended chords with 9ths and 13ths",
@@ -710,6 +710,19 @@ export const dictionaryTerms: DictionaryTerm[] = [
     examples: [
       "4/4 is also called common time and is the most common time signature",
       "In 6/8 time, you often count \"1-2-3-4-5-6\" or feel two big beats per bar",
+    ],
+  },
+  {
+    term: "Triad",
+    slug: "triad",
+    shortDefinition: "A three-note chord built from a root, third, and fifth.",
+    fullDefinition:
+      "A triad is the most basic type of chord in Western music: three notes stacked in thirds, named the root, third, and fifth. Triads come in four qualities—major, minor, diminished, and augmented—depending on the intervals between these notes. Major and minor triads are the building blocks of most harmony; diminished and augmented triads add color and tension. Triads can be played in root position (root on the bottom) or inverted (third or fifth on the bottom).",
+    tags: ["Harmony", "Theory"],
+    relatedTerms: ["Chord", "Arpeggio", "Cadence"],
+    examples: [
+      "A C major triad contains the notes C, E, and G",
+      "The 1/3/5 rule for building chords refers to forming triads from scale degrees",
     ],
   },
   {
