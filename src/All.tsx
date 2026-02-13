@@ -6,6 +6,7 @@ import RandomPromptGenerator from "./RandomPromptGenerator/index.tsx";
 import YouTubeLooper from "./YouTubeLooper/index.tsx";
 import ChordProgressionTrainer from "./ChordProgressionTrainer/index.tsx";
 import MelodicDictationTrainer from "./MelodicDictationTrainer/index.tsx";
+import GuitarTriadTrainer from "./GuitarTriadTrainer/index.tsx";
 
 const All = [
   {
@@ -42,6 +43,11 @@ const All = [
     path: "/melodic-dictation-trainer",
     component: MelodicDictationTrainer,
     name: "melodic dictation trainer",
+  },
+  {
+    path: "/guitar-triad-trainer",
+    component: GuitarTriadTrainer,
+    name: "guitar triad trainer",
   },
   {
     path: "/articles",

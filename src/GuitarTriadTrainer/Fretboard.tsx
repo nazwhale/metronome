@@ -1,0 +1,78 @@
+import type { TriadPosition } from "./data";
+
+/** String order: high e (top), B, G (bottom) — like looking at the neck */
+const STRING_ORDER: [number, number, number] = [2, 1, 0]; // e, B, G
+const STRING_LABELS: Record<number, string> = { 0: "G", 1: "B", 2: "e" };
+
+interface FretboardProps {
+  positions: TriadPosition[];
+  positionWindow: [number, number];
+}
+
+export default function Fretboard({ positions, positionWindow }: FretboardProps) {
+  const [minFret, maxFret] = positionWindow;
+  const fretCount = maxFret - minFret + 1;
+
+  /** Get the triad position (with degree) at this cell, if any */
+  const getPositionAt = (stringIndex: number, fret: number): TriadPosition | undefined =>
+    positions.find((p) => p.stringIndex === stringIndex && p.fret === fret);
+
+  return (
+    <div className="inline-block font-mono text-sm" role="img" aria-label="Fretboard diagram with triad positions on e, B, G strings">
+      <div className="flex flex-col gap-0.5">
+        {STRING_ORDER.map((stringIndex) => (
+          <div key={stringIndex} className="flex items-center gap-0">
+            <span className="w-4 text-base-content/70 mr-2">
+              {STRING_LABELS[stringIndex]}
+            </span>
+            <div className="flex">
+              {minFret === 0 && (
+                <div
+                  className="w-6 h-6 flex items-center justify-center border-r border-base-content/30"
+                  aria-hidden
+                >
+                  |
+                </div>
+              )}
+              {Array.from({ length: fretCount }, (_, i) => {
+                const fret = minFret + i;
+                const pos = getPositionAt(stringIndex, fret);
+                return (
+                  <div
+                    key={fret}
+                    className={`w-8 h-8 flex items-center justify-center border-r border-base-content/20 ${
+                      pos ? "bg-primary/20" : ""
+                    }`}
+                  >
+                    {pos ? (
+                      <span
+                        className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-content text-xs font-bold"
+                        role="img"
+                        aria-label={`Degree ${pos.degree}, fret ${fret + 1}`}
+                      >
+                        {pos.degree}
+                      </span>
+                    ) : (
+                      <span className="invisible w-4 h-4" aria-hidden />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex pl-6 mt-1">
+        {minFret === 0 && <span className="w-6 text-base-content/50 text-xs">0</span>}
+        {Array.from({ length: fretCount }, (_, i) => (
+          <span
+            key={i}
+            className="w-8 text-center text-base-content/50 text-xs"
+          >
+            {minFret + i}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}

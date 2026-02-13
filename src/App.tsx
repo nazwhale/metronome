@@ -70,6 +70,7 @@ const Footer = () => {
       "/chord-progression-trainer",
       "/melodic-dictation-trainer",
       "/prompts-for-guitar",
+      "/guitar-triad-trainer",
     ].includes(item.path)
   );
 

@@ -31,6 +31,10 @@ function getDictionaryTermSlugs() {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  test: {
+    globals: true,
+    environment: "node",
+  },
   server: { port: 9999 },
   plugins: [
     react(),
