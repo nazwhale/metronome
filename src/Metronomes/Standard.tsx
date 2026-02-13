@@ -1,6 +1,6 @@
 import { useMetronome } from "../hooks/useMetronome.tsx";
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Layout from "./Layout.tsx";
 import { useLocalStorage } from "usehooks-ts";
 import TapTempo from "./TapTempo";
@@ -141,6 +141,9 @@ const Standard: React.FC<StandardMetronomeProps> = ({
   pageSubheading,
 }) => {
   const isEmbed = useIsEmbed();
+  const location = useLocation();
+  // Homepage (/) must use self-canonical so Google indexes it; otherwise GSC reports "Alternative page with proper canonical tag"
+  const canonicalPath = canonicalPathOverride ?? (location.pathname === "/" ? "/" : "/online-metronome");
   const [timeSignature, setTimeSignature] = useLocalStorage<TimeSignature>(
     "timeSignature",
     initialTimeSignature ?? 4
@@ -182,7 +185,7 @@ const Standard: React.FC<StandardMetronomeProps> = ({
           title={seoTitle ?? metronomeTranslations.en.title}
           description={seoDescription ?? metronomeTranslations.en.description}
           lang="en"
-          canonicalPath={canonicalPathOverride ?? "/online-metronome"}
+          canonicalPath={canonicalPath}
           translatedPage={canonicalPathOverride ? undefined : "metronome"}
           hreflangUrls={hreflangUrls}
         />
