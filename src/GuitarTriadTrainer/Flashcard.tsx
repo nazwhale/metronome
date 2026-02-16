@@ -1,10 +1,9 @@
-import Fretboard from "./Fretboard";
+import Fretboard, { FretRangeDiagram } from "./Fretboard";
 import {
   type CardId,
   getTriadPositions,
   getFretWindow,
   getPromptFretWindow,
-  formatFretWindow,
   positionLabel,
 } from "./data";
 
@@ -38,11 +37,27 @@ export default function Flashcard({
       <div className="card-body items-center text-center">
         {!flipped ? (
           <>
-            <p className="text-lg">
-              {card.key} major · G-B-e · {positionLabel(card.position)} · frets{" "}
-              {formatFretWindow(promptFretWindow)}
-            </p>
-            <div className="w-full mt-3" role="progressbar" aria-valuenow={Math.round(timeProgress * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="Time before losing a life">
+            <dl className="text-left inline-block mt-0">
+              <div className="flex gap-3">
+                <dt className="text-base-content/60 text-sm w-24 shrink-0">Key</dt>
+                <dd className="font-semibold text-base m-0">{card.key} major</dd>
+              </div>
+            </dl>
+            <p className="text-sm text-base-content/70 mt-3">Play in this range:</p>
+            <div className="mt-2">
+              <FretRangeDiagram fretWindow={promptFretWindow} />
+            </div>
+            <dl className="text-left inline-block mt-3 space-y-1.5">
+              <div className="flex gap-3">
+                <dt className="text-base-content/60 text-sm w-24 shrink-0">String set</dt>
+                <dd className="font-medium text-base m-0">G–B–e</dd>
+              </div>
+              <div className="flex gap-3">
+                <dt className="text-base-content/60 text-sm w-24 shrink-0">Position</dt>
+                <dd className="font-medium text-base m-0">{positionLabel(card.position)}</dd>
+              </div>
+            </dl>
+            <div className="w-full mt-4" role="progressbar" aria-valuenow={Math.round(timeProgress * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="Time before losing a life">
               <div className="h-2 w-full rounded-full bg-base-300 overflow-hidden">
                 <div
                   className="h-full bg-warning transition-[width] duration-75 ease-linear"

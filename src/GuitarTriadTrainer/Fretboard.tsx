@@ -4,6 +4,50 @@ import type { TriadPosition } from "./data";
 const STRING_ORDER: [number, number, number] = [2, 1, 0]; // e, B, G
 const STRING_LABELS: Record<number, string> = { 0: "G", 1: "B", 2: "e" };
 
+/** Minimal fretboard strip showing only the fret range (no positions). For the question side. */
+export function FretRangeDiagram({ fretWindow }: { fretWindow: [number, number] }) {
+  const [minFret, maxFret] = fretWindow;
+  const fretCount = maxFret - minFret + 1;
+
+  return (
+    <div
+      className="inline-block font-mono text-sm rounded-md overflow-hidden border border-base-content/20 bg-base-300/40"
+      role="img"
+      aria-label={`Fret range ${minFret} to ${maxFret}`}
+    >
+      <div className="flex flex-col gap-0 py-1 px-1">
+        {STRING_ORDER.map((stringIndex) => (
+          <div key={stringIndex} className="flex items-center gap-0">
+            <span className="w-4 text-base-content/60 text-xs mr-1.5 flex justify-center">
+              {STRING_LABELS[stringIndex]}
+            </span>
+            <div className="flex">
+              {Array.from({ length: fretCount }, (_, i) => (
+                <div
+                  key={i}
+                  className="w-7 h-5 flex items-center justify-center border-r border-base-content/25 last:border-r-0"
+                >
+                  {" "}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex pl-5 mt-0.5 px-1">
+        {Array.from({ length: fretCount }, (_, i) => (
+          <span
+            key={i}
+            className="w-7 text-center text-base-content/50 text-xs tabular-nums"
+          >
+            {minFret + i}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface FretboardProps {
   positions: TriadPosition[];
   positionWindow: [number, number];

@@ -7,9 +7,12 @@ import TapTempo from "./TapTempo";
 import VolumeControl from "./VolumeControl";
 import MuteBarToggle from "./MuteBarToggle";
 import QandA, { QAItem } from "../components/QandA";
+import ToolPracticeGuide from "../components/ToolPracticeGuide";
 import { useIsEmbed } from "../contexts/EmbedContext";
 import { EmbedButton } from "../components/EmbedModal";
 import SEO, { HreflangUrls } from "../components/SEO";
+import WebApplicationSchema from "../components/WebApplicationSchema";
+import { BASE_URL } from "../i18n/translations";
 import { metronomeTranslations, tempoLinksCopy } from "../i18n/translations";
 import { LanguageProvider } from "../contexts/LanguageContext";
 import { ALLOWED_BPM_VALUES } from "../pages/BpmMetronomePage";
@@ -181,29 +184,37 @@ const Standard: React.FC<StandardMetronomeProps> = ({
     <LanguageProvider lang="en">
       {/* SEO with hreflang tags - only on main page, not embeds */}
       {!isEmbed && (
-        <SEO
-          title={seoTitle ?? metronomeTranslations.en.title}
-          description={seoDescription ?? metronomeTranslations.en.description}
-          lang="en"
-          canonicalPath={canonicalPath}
-          translatedPage={canonicalPathOverride ? undefined : "metronome"}
-          hreflangUrls={hreflangUrls}
-        />
+        <>
+          <SEO
+            title={seoTitle ?? metronomeTranslations.en.title}
+            description={seoDescription ?? metronomeTranslations.en.description}
+            lang="en"
+            canonicalPath={canonicalPath}
+            translatedPage={canonicalPathOverride ? undefined : "metronome"}
+            hreflangUrls={hreflangUrls}
+          />
+          <WebApplicationSchema
+            name="TempoTick Online Metronome"
+            url={`${BASE_URL}/online-metronome`}
+            description="Free online metronome with time signatures, accents, mute bars and tap tempo for practice."
+            applicationCategory="MusicApplication"
+          />
+        </>
       )}
 
-      {(pageTitle ?? pageSubheading) && (
+      {!isEmbed && (
         <div className="text-center mb-6">
-          {pageTitle && (
-            <h1 className="text-2xl font-bold">{pageTitle}</h1>
-          )}
+          <h1 className="text-2xl font-bold">{pageTitle ?? "Online metronome"}</h1>
           {pageSubheading && (
             <p className="text-base-content/70 mt-2">{pageSubheading}</p>
           )}
-          <p className="mt-2">
-            <Link to="/online-metronome" className="link link-primary text-sm">
-              {tempoLinksCopy.en.allTempos}
-            </Link>
-          </p>
+          {pageTitle && (
+            <p className="mt-2">
+              <Link to="/online-metronome" className="link link-primary text-sm">
+                {tempoLinksCopy.en.allTempos}
+              </Link>
+            </p>
+          )}
         </div>
       )}
 
@@ -254,10 +265,62 @@ const Standard: React.FC<StandardMetronomeProps> = ({
         )}
       </Layout>
 
-      {/* FAQ Section - hidden in embed mode */}
+      {/* Practice guide & FAQ - hidden in embed mode */}
       {!isEmbed && (
         <div className="max-w-lg mx-auto px-4 mt-8">
           <div className="divider" />
+          <ToolPracticeGuide
+            title="Practice with the online metronome"
+            features={[
+              "Tap tempo — set BPM by tapping the button or pressing T",
+              "Time signatures — 3/4, 4/4, and 5/4",
+              "Beat accents — accent any beat in the bar",
+              "Play bar / Mute bar — alternate playing and silent bars to train your internal pulse",
+              "Volume control",
+              "Free — no ads, no download",
+            ]}
+            howToUseSteps={[
+              "Set your BPM with the slider or use Tap tempo (button or T key) to match a song or internal pulse.",
+              "Choose a time signature (3/4, 4/4, or 5/4) to match the music you’re practising.",
+              "Optionally set beat accents (click the beat circles) or enable Play bar / Mute bar for silent-bar practice.",
+              "Press play and practise with the click. Start at a comfortable tempo, then slow down to fix timing issues.",
+              "Use mute bars to check you keep time when the click is silent—increase mute bars as you get more confident.",
+            ]}
+            exampleRoutine={
+              <>
+                <p className="m-0">
+                  <strong>Warm-up (2–3 min):</strong> Set 60–80 BPM in 4/4. Play scales or a simple pattern; focus on landing exactly on the click.
+                </p>
+                <p className="m-0">
+                  <strong>Main (10–15 min):</strong> Set the metronome to the tempo of a piece or exercise. Play through; if you rush or drag, lower the BPM and repeat until it’s steady.
+                </p>
+                <p className="m-0">
+                  <strong>Internal pulse (5 min):</strong> Enable Play bar / Mute bar (e.g. 1 bar play, 1 bar mute). Keep playing in time during the silent bars. Increase mute bars as you improve.
+                </p>
+              </>
+            }
+            settingsExplained={
+              <>
+                <p className="m-0">
+                  <strong>BPM:</strong> Beats per minute. Use the slider or tap tempo to set the speed. Slower tempos help fix timing; increase gradually as you get steadier.
+                </p>
+                <p className="m-0 mt-1.5">
+                  <strong>Time signature:</strong> 3/4 (three beats per bar), 4/4 (four), or 5/4 (five). Match the metre of the music you’re practising.
+                </p>
+                <p className="m-0 mt-1.5">
+                  <strong>Beat accents:</strong> Click a beat number to accent it (louder click). Useful for emphasising the downbeat or other beats in the bar.
+                </p>
+                <p className="m-0 mt-1.5">
+                  <strong>Play bar / Mute bar:</strong> Play a set number of bars with the click, then the same number silent. Tests whether you can keep time without the click.
+                </p>
+              </>
+            }
+            otherTools={[
+              { path: "/speed-trainer-metronome", name: "Speed trainer metronome" },
+              { path: "/guitar-triad-trainer", name: "Guitar triad trainer" },
+            ]}
+          />
+          <div className="divider my-8" />
           <QandA items={FAQ_ITEMS} />
         </div>
       )}

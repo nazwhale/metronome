@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSpeedTrainerMetronome } from "../hooks/useSpeedTrainerMetronome";
 import { useLocalStorage } from "usehooks-ts";
 import PlayButton from "./PlayButton";
 import BeatDots from "./BeatDots";
 import { useIsEmbed } from "../contexts/EmbedContext";
 import { EmbedButton } from "../components/EmbedModal";
+import SEO from "../components/SEO";
+import WebApplicationSchema from "../components/WebApplicationSchema";
+import ToolPracticeGuide from "../components/ToolPracticeGuide";
+import { BASE_URL } from "../i18n/translations";
 
 // Default: beat 1 accented, rest unaccented
 const createDefaultAccents = (count: number): boolean[] =>
@@ -23,9 +27,6 @@ export type SpeedTrainerProps = {
 
 const SpeedTrainer: React.FC<SpeedTrainerProps> = ({ initialSettings }) => {
     const isEmbed = useIsEmbed();
-    useEffect(() => {
-        document.title = "Free Speed Trainer Metronome - Build Speed & Accuracy | No Ads";
-    }, []);
     const [startBpm, setStartBpm] = useState(initialSettings?.startBpm ?? 60);
     const [targetBpm, setTargetBpm] = useState(initialSettings?.targetBpm ?? 90);
     const [bpmIncrement, setBpmIncrement] = useState(initialSettings?.bpmIncrement ?? 5);
@@ -51,7 +52,28 @@ const SpeedTrainer: React.FC<SpeedTrainerProps> = ({ initialSettings }) => {
         });
 
     return (
+        <>
+            {!isEmbed && (
+                <>
+                    <SEO
+                        title="Speed Trainer Metronome - Metronome That Speeds Up | tempotick"
+                        description="Free speed trainer metronome. An increasing metronome that speeds up from start to target BPM so you can build speed gradually. Set increment and bars—no ads."
+                        lang="en"
+                        canonicalPath="/speed-trainer-metronome"
+                    />
+                    <WebApplicationSchema
+                        name="Speed Trainer Metronome"
+                        url={`${BASE_URL}/speed-trainer-metronome`}
+                        description="Free metronome trainer that speeds up: set start and target BPM, and the metronome tick increases automatically. Build speed with an accelerating metronome."
+                        applicationCategory="MusicApplication"
+                    />
+                </>
+            )}
+
         <div className="flex flex-col items-center gap-8">
+            {!isEmbed && (
+                <h1 className="text-2xl font-bold text-center">Speed trainer metronome</h1>
+            )}
             {/* Beat Dots - always at top */}
             <BeatDots
                 currentBeat={currentBeat}
@@ -242,6 +264,60 @@ const SpeedTrainer: React.FC<SpeedTrainerProps> = ({ initialSettings }) => {
                 />
             )}
         </div>
+
+            {!isEmbed && (
+                <div className="max-w-lg mx-auto px-4 mt-8 w-full">
+                    <div className="divider" />
+                    <ToolPracticeGuide
+                        title="Practice with the speed trainer metronome"
+                        features={[
+                            "Metronome that speeds up — start BPM increases to target BPM automatically",
+                            "Set start and target BPM, and how much to increase each step (BPM increment)",
+                            "Bars before increment — how many bars at each tempo before the tick speeds up",
+                            "Beat accents — accent any beat in the bar",
+                            "Free — no ads, no download",
+                        ]}
+                        howToUseSteps={[
+                            "Set Start BPM to a tempo you can play cleanly (e.g. 60–80). Set Target BPM to your goal (e.g. 100–120).",
+                            "Choose BPM Increment (e.g. 5). The metronome will increase by this amount after each step.",
+                            "Set Bars Before Increment (e.g. 4). You’ll hear that many bars at each tempo before it speeds up.",
+                            "Press play. Practise your exercise or piece; when the metronome speeds up, stay with the tick.",
+                            "If you fall behind, stop and lower start BPM or use a smaller increment. Repeat until you reach target cleanly.",
+                        ]}
+                        exampleRoutine={
+                            <>
+                                <p className="m-0">
+                                    <strong>Warm-up (2–3 min):</strong> Start 60, target 80, +5 BPM every 4 bars. Play a simple scale or pattern; get used to the increasing metronome.
+                                </p>
+                                <p className="m-0">
+                                    <strong>Main (10–15 min):</strong> Start at your “comfortable” tempo, target at your “goal” tempo. Use 4–8 bars per step. Focus on staying with the tick as it accelerates.
+                                </p>
+                                <p className="m-0">
+                                    <strong>Cool-down:</strong> Run the same exercise with a smaller increment (e.g. +2) so the speed increase is more gradual. Builds control at the edge of your speed.
+                                </p>
+                            </>
+                        }
+                        settingsExplained={
+                            <>
+                                <p className="m-0">
+                                    <strong>Start BPM & Target BPM:</strong> The metronome begins at start and increases until it reaches target. Pick a start you can play accurately and a target you’re working toward.
+                                </p>
+                                <p className="m-0 mt-1.5">
+                                    <strong>BPM Increment:</strong> How much the tempo goes up at each step (e.g. +5 BPM). Smaller steps make the accelerating metronome easier to follow; larger steps push you faster.
+                                </p>
+                                <p className="m-0 mt-1.5">
+                                    <strong>Bars before increment:</strong> How many bars (at the current tempo) before the metronome speeds up. More bars give you time to settle at each tempo; fewer bars ramp up quickly.
+                                </p>
+                            </>
+                        }
+                        otherTools={[
+                            { path: "/online-metronome", name: "Online metronome" },
+                            { path: "/guitar-triad-trainer", name: "Guitar triad trainer" },
+                        ]}
+                    />
+                </div>
+            )}
+        </>
     );
 };
 
