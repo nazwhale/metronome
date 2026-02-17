@@ -428,13 +428,10 @@ const GuitarTriadTrainer = () => {
               <div className="card-body">
                 {passed ? (
                   <>
-                    <h2 className="card-title justify-center text-center">Level complete</h2>
-                    <p className="text-base-content/80 text-center">
-                      Level {level} complete
-                    </p>
-                    <p className="flex justify-center gap-1 text-base-content/80 mt-1" role="img" aria-label={`${lives} lives left`}>
+                    <h2 className="card-title justify-center text-center gap-2" role="img" aria-label={`Level complete, ${lives} lives left`}>
+                      <span>Level complete</span>
                       <span aria-hidden>{"♥".repeat(lives)}</span>
-                    </p>
+                    </h2>
                     {mastered && level + 1 > unlockedLevelAtRunStartRef.current && (
                       <p className="text-success font-medium mt-1">
                         Level {level + 1} unlocked!
