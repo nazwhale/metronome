@@ -402,6 +402,22 @@ const GuitarTriadTrainer = () => {
         })()}
 
         <div className="divider my-8" />
+        <section className="text-left">
+          <h2 className="text-xl font-semibold mb-2">Why it's useful</h2>
+          <p className="text-sm text-base-content/70 mb-2">
+            I made this to replicate the feeling of finding triads in a jam night.
+          </p>
+          <p className="text-sm text-base-content/70 mb-2">
+            You only have a certain amount of time to find the right shape by the time the song gets to it, and you typically want the right shape in the section of the neck you're playing on.
+          </p>
+          <p className="text-sm text-base-content/70 mb-2">
+            This game aims to replicate that feeling, drilling in the ability to find the nearest triad shape for the chord you want with time pressure.
+          </p>
+          <p className="text-sm text-base-content/70 m-0">
+            I hope it helps you!
+          </p>
+        </section>
+        <div className="divider my-8" />
         <ToolPracticeGuide
           title="How to Practice with the Guitar Triad Trainer"
           features={[
