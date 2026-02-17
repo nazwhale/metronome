@@ -309,16 +309,9 @@ const GuitarTriadTrainer = () => {
                         {best && (() => {
                           const bestStars = getStarRating(best.livesLost, best.averageTimeMs, getSecondsPerCard(lvl) * 1000);
                           return (
-                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center gap-2">
-                              <span className="text-base-content/70 font-medium">Best run:</span>
-                              <span className="flex items-center gap-0.5" role="img" aria-label={`${bestStars} out of 5 stars`}>
-                                {[1, 2, 3, 4, 5].map((i) => (
-                                  <span key={i} className="text-warning text-base" aria-hidden>
-                                    {i <= bestStars ? "★" : "☆"}
-                                  </span>
-                                ))}
-                              </span>
+                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center justify-between gap-2">
                               <span className="flex items-center gap-1" role="img" aria-label={`Best run: ${LIVES_PER_LEVEL - best.livesLost} lives left`}>
+                                <span className="text-base-content/70 font-medium">Best run:</span>
                                 <span aria-hidden>{"♥".repeat(LIVES_PER_LEVEL - best.livesLost)}</span>
                                 {best.averageTimeMs < Infinity && (
                                   <span aria-hidden>
@@ -327,6 +320,13 @@ const GuitarTriadTrainer = () => {
                                       : Math.round(best.averageTimeMs / 1000)}s avg
                                   </span>
                                 )}
+                              </span>
+                              <span className="flex items-center gap-0.5 ml-auto" role="img" aria-label={`${bestStars} out of 5 stars`}>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <span key={i} className="text-warning text-base" aria-hidden>
+                                    {i <= bestStars ? "★" : "☆"}
+                                  </span>
+                                ))}
                               </span>
                             </div>
                           );
