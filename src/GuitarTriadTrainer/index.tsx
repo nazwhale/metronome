@@ -13,6 +13,43 @@ type View = "home" | "deck" | "summary";
 
 const LIVES_PER_LEVEL = 3;
 
+/** 1–5 stars: 2 lives lost=1, 1 life lost=2, 0 lives=3, 0 lives in ≤⅔ time=4, 0 lives in <⅓ time=5 */
+function getStarRating(livesLost: number, averageTimeMs: number, maxMsPerCard: number): number {
+  if (livesLost >= 2) return 1;
+  if (livesLost === 1) return 2;
+  const oneThirdMs = maxMsPerCard / 3;
+  const twoThirdsMs = (maxMsPerCard * 2) / 3;
+  if (averageTimeMs < oneThirdMs) return 5;
+  if (averageTimeMs <= twoThirdsMs) return 4;
+  return 3;
+}
+
+function getNextStarCriteria(
+  stars: number,
+  secondsPerCard: number
+): string | null {
+  if (stars >= 5) return null;
+  const limitSec = secondsPerCard;
+  switch (stars) {
+    case 1:
+      return "Next: 2 stars = finish with ♥♥.";
+    case 2:
+      return "Next: 3 stars = finish with ♥♥♥.";
+    case 3: {
+      const fourStarSec = (limitSec * 2) / 3;
+      return `Next: 4 stars = ♥♥♥ in under ${fourStarSec < 10 ? fourStarSec.toFixed(1) : Math.round(fourStarSec)}s per card (⅔ of the ${limitSec}s limit).`;
+    }
+    case 4: {
+      const fiveStarSec = limitSec / 3;
+      return `Next: 5 stars = ♥♥♥ in under ${fiveStarSec < 10 ? fiveStarSec.toFixed(1) : Math.round(fiveStarSec)}s per card (under ⅓ of the ${limitSec}s limit).`;
+    }
+    default:
+      return null;
+  }
+}
+
+const FIVE_STAR_CRITERIA = "5 stars = ♥♥♥ in under ⅓ of the time per card.";
+
 const FAQ_ITEMS: QAItem[] = [
   {
     question: "What are inversions?",
@@ -57,7 +94,7 @@ const FAQ_ITEMS: QAItem[] = [
 ];
 
 const GuitarTriadTrainer = () => {
-  const { unlockedLevel, bestLivesLostByLevel, recordRunResults } = useTriadStats();
+  const { unlockedLevel, bestRunForLevel, recordRunResults } = useTriadStats();
   const [view, setView] = useState<View>("home");
   const [deck, setDeck] = useState<CardId[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -72,6 +109,7 @@ const GuitarTriadTrainer = () => {
   const currentIndexRef = useRef(0);
   const timeoutDeductedRef = useRef(false);
   const flippedRef = useRef(false);
+  const unlockedLevelAtRunStartRef = useRef<number>(1);
 
   currentIndexRef.current = currentIndex;
   flippedRef.current = flipped;
@@ -91,6 +129,7 @@ const GuitarTriadTrainer = () => {
   const startLevel = useCallback(
     (lvl: number) => {
       recordedRunRef.current = false;
+      unlockedLevelAtRunStartRef.current = unlockedLevel;
       setDeck(shuffleDeck(getDeckForLevel(lvl)));
       setCurrentIndex(0);
       setFlipped(false);
@@ -101,7 +140,7 @@ const GuitarTriadTrainer = () => {
       timeoutDeductedRef.current = false;
       setView("deck");
     },
-    [shuffleDeck]
+    [shuffleDeck, unlockedLevel]
   );
 
   useEffect(() => {
@@ -247,10 +286,11 @@ const GuitarTriadTrainer = () => {
                   (lvl) => {
                     const keys = getKeysForLevel(lvl);
                     const isUnlocked = lvl <= unlockedLevel;
+                    const best = bestRunForLevel(lvl);
                     return (
                       <div
                         key={lvl}
-                        className={`rounded-lg border p-3 ${isUnlocked ? "border-base-300 bg-base-200/50" : "border-base-300/50 bg-base-200/30 opacity-75"}`}
+                        className={`rounded-lg border p-3 flex flex-col gap-2 ${isUnlocked ? "border-base-300 bg-base-200/50" : "border-base-300/50 bg-base-200/30 opacity-75"}`}
                       >
                         <div className="flex flex-wrap items-center gap-2">
                           <button
@@ -264,13 +304,33 @@ const GuitarTriadTrainer = () => {
                           <span className="text-sm text-base-content/70">
                             {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
                             {lvl === BOSS_LEVEL ? " · Boss · All keys (random)" : ` · Keys: ${keys.join(", ")}`}
-                            {bestLivesLostByLevel[lvl] !== undefined && (
-                              <span className="ml-1 text-base-content/60">
-                                · Best: {bestLivesLostByLevel[lvl] === 0 ? "0 lives lost" : `${bestLivesLostByLevel[lvl]} lives lost`}
-                              </span>
-                            )}
                           </span>
                         </div>
+                        {best && (() => {
+                          const bestStars = getStarRating(best.livesLost, best.averageTimeMs, getSecondsPerCard(lvl) * 1000);
+                          return (
+                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center gap-2">
+                              <span className="text-base-content/70 font-medium">Best run:</span>
+                              <span className="flex items-center gap-0.5" role="img" aria-label={`${bestStars} out of 5 stars`}>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <span key={i} className="text-warning text-base" aria-hidden>
+                                    {i <= bestStars ? "★" : "☆"}
+                                  </span>
+                                ))}
+                              </span>
+                              <span className="flex items-center gap-1" role="img" aria-label={`Best run: ${LIVES_PER_LEVEL - best.livesLost} lives left`}>
+                                <span aria-hidden>{"♥".repeat(LIVES_PER_LEVEL - best.livesLost)}</span>
+                                {best.averageTimeMs < Infinity && (
+                                  <span aria-hidden>
+                                    {(best.averageTimeMs / 1000) < 10
+                                      ? (best.averageTimeMs / 1000).toFixed(1)
+                                      : Math.round(best.averageTimeMs / 1000)}s avg
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })()}
                       </div>
                     );
                   }
@@ -356,20 +416,45 @@ const GuitarTriadTrainer = () => {
           const accuracyPct = n > 0 ? Math.round((correct / n) * 100) : 0;
           const passed = lives > 0;
           const mastered = passed && level < getTotalLevels();
+          const averageTimeMs = n > 0 ? runResults.reduce((s, r) => s + r.flipTimeMs, 0) / n : 0;
+          const averageTimeSec = averageTimeMs / 1000;
+          const secondsPerCard = getSecondsPerCard(level);
+          const maxMsPerCard = secondsPerCard * 1000;
+          const livesLost = LIVES_PER_LEVEL - lives;
+          const stars = passed ? getStarRating(livesLost, averageTimeMs, maxMsPerCard) : 0;
+          const nextCriteria = passed ? getNextStarCriteria(stars, secondsPerCard) : null;
           return (
             <div className="card bg-base-200 shadow-xl">
               <div className="card-body">
                 {passed ? (
                   <>
-                    <h2 className="card-title">Level complete</h2>
-                    <p className="text-base-content/80">
-                      Level {level} complete with {lives} life{lives === 1 ? "" : "s"} left.
+                    <h2 className="card-title justify-center text-center">Level complete</h2>
+                    <p className="text-base-content/80 text-center">
+                      Level {level} complete
                     </p>
-                    {mastered && (
+                    <p className="flex justify-center gap-1 text-base-content/80 mt-1" role="img" aria-label={`${lives} lives left`}>
+                      <span aria-hidden>{"♥".repeat(lives)}</span>
+                    </p>
+                    {mastered && level + 1 > unlockedLevelAtRunStartRef.current && (
                       <p className="text-success font-medium mt-1">
                         Level {level + 1} unlocked!
                       </p>
                     )}
+                    <div className="flex items-center justify-center gap-1 mt-2" role="img" aria-label={`${stars} out of 5 stars`}>
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <span key={i} className="text-xl text-warning" aria-hidden>
+                          {i <= stars ? "★" : "☆"}
+                        </span>
+                      ))}
+                    </div>
+                    {nextCriteria && (
+                      <p className="text-sm text-base-content/70 mt-1">
+                        {nextCriteria}
+                      </p>
+                    )}
+                    <p className="text-sm text-base-content/60 mt-0.5">
+                      {stars === 5 ? `Maximum stars! ${FIVE_STAR_CRITERIA}` : FIVE_STAR_CRITERIA}
+                    </p>
                   </>
                 ) : (
                   <>
@@ -386,6 +471,11 @@ const GuitarTriadTrainer = () => {
                 <p className="text-base-content/90 mt-2">
                   Accuracy: <strong>{accuracyPct}%</strong> ({correct}/{n} correct)
                 </p>
+                {n > 0 && (
+                  <p className="text-base-content/90 mt-0.5">
+                    Average time: <strong>{averageTimeSec < 10 ? averageTimeSec.toFixed(1) : Math.round(averageTimeSec)}s</strong> per card
+                  </p>
+                )}
                 <div className="card-actions justify-center mt-4">
                   <button
                     type="button"

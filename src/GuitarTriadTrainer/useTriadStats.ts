@@ -9,10 +9,23 @@ export interface CardStat {
   flipTimes: number[];
 }
 
+export interface BestRun {
+  livesLost: number;
+  averageTimeMs: number;
+}
+
 const STORAGE_KEY_LEVEL = "guitarTriadUnlockedLevel";
 const STORAGE_KEY_STATS = "guitarTriadCardStats";
 const STORAGE_KEY_BEST_LIVES = "guitarTriadBestLivesLostByLevel";
+const STORAGE_KEY_BEST_RUN = "guitarTriadBestRunByLevel";
 const LIVES_PER_LEVEL = 3;
+
+function isRunBetter(current: BestRun | undefined, livesLost: number, averageTimeMs: number): boolean {
+  if (!current) return true;
+  if (livesLost < current.livesLost) return true;
+  if (livesLost > current.livesLost) return false;
+  return averageTimeMs < current.averageTimeMs;
+}
 
 export function useTriadStats() {
   const [unlockedLevel, setUnlockedLevel] = useLocalStorage(STORAGE_KEY_LEVEL, 1);
@@ -23,6 +36,10 @@ export function useTriadStats() {
   const [bestLivesLostByLevel, setBestLivesLostByLevel] = useLocalStorage<
     Record<number, number>
   >(STORAGE_KEY_BEST_LIVES, {});
+  const [bestRunByLevel, setBestRunByLevel] = useLocalStorage<Record<number, BestRun>>(
+    STORAGE_KEY_BEST_RUN,
+    {}
+  );
 
   const recordRunResults = useCallback(
     (
@@ -47,22 +64,33 @@ export function useTriadStats() {
 
       if (passed) {
         setUnlockedLevel((l) => Math.max(l, level + 1));
-        if (livesRemaining !== undefined) {
+        if (livesRemaining !== undefined && results.length > 0) {
           const livesLost = LIVES_PER_LEVEL - livesRemaining;
-          setBestLivesLostByLevel((prev) => ({
-            ...prev,
-            [level]: Math.min(prev[level] ?? Infinity, livesLost),
-          }));
+          const averageTimeMs =
+            results.reduce((sum, r) => sum + r.flipTimeMs, 0) / results.length;
+          setBestRunByLevel((prev) => {
+            const current = prev[level];
+            if (!isRunBetter(current, livesLost, averageTimeMs)) return prev;
+            return { ...prev, [level]: { livesLost, averageTimeMs } };
+          });
         }
       }
     },
-    [setCardStats, setUnlockedLevel, setBestLivesLostByLevel]
+    [setCardStats, setUnlockedLevel, setBestLivesLostByLevel, setBestRunByLevel]
   );
+
+  const bestRunForLevel = (lvl: number): BestRun | undefined =>
+    bestRunByLevel[lvl] ??
+    (bestLivesLostByLevel[lvl] !== undefined
+      ? { livesLost: bestLivesLostByLevel[lvl], averageTimeMs: Infinity }
+      : undefined);
 
   return {
     unlockedLevel,
     cardStats,
     bestLivesLostByLevel,
+    bestRunByLevel,
+    bestRunForLevel,
     recordRunResults,
   };
 }
