@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import pako from "pako";
 import QandA, { QAItem } from "../components/QandA";
+import ToolPracticeGuide from "../components/ToolPracticeGuide";
 import { useIsEmbed } from "../contexts/EmbedContext";
 import { EmbedButton } from "../components/EmbedModal";
 
@@ -1203,72 +1204,6 @@ const YouTubeLooper: React.FC = () => {
             </div>
           </div>
 
-          {/* Save Loop */}
-          <div className="w-full bg-base-200 rounded-lg p-4">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="text-lg font-semibold">Save Loop</h2>
-              {!showSaveInput ? (
-                <button
-                  type="button"
-                  onClick={() => setShowSaveInput(true)}
-                  className="btn btn-sm btn-outline"
-                >
-                  Save Current Loop
-                </button>
-              ) : (
-                <div className="flex flex-col gap-2 w-full sm:w-auto">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <input
-                      type="text"
-                      value={loopName}
-                      onChange={(e) => setLoopName(e.target.value)}
-                      placeholder="Loop name (optional)"
-                      className="input input-sm input-bordered w-48"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleSaveLoop();
-                        if (e.key === "Escape") {
-                          setShowSaveInput(false);
-                          setLoopName("");
-                        }
-                      }}
-                      autoFocus
-                    />
-                    {folders.length > 0 && (
-                      <select
-                        className="select select-sm select-bordered w-40"
-                        value={saveToFolderId ?? UNCATEGORIZED}
-                        onChange={(e) => setSaveToFolderId(e.target.value === UNCATEGORIZED ? null : e.target.value)}
-                      >
-                        <option value={UNCATEGORIZED}>No folder</option>
-                        {folders.map((f) => (
-                          <option key={f.id} value={f.id}>
-                            {f.name}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                    <button
-                      type="button"
-                      onClick={handleSaveLoop}
-                      className="btn btn-sm btn-primary"
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowSaveInput(false);
-                        setLoopName("");
-                      }}
-                      className="btn btn-sm btn-ghost"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </>
       ) : (
         !error && (
@@ -1283,19 +1218,28 @@ const YouTubeLooper: React.FC = () => {
       </div>
 
       {/* Saved Loops with Folders */}
-      {hasAnyLoops && (
-        <div className="w-full bg-base-200 rounded-lg p-4">
-          <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-            <h2 className="text-lg font-semibold">Saved Loops</h2>
-            {!showNewFolderInput ? (
+      <div className="w-full bg-base-200 rounded-lg p-4">
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+          <h2 className="text-lg font-semibold">Saved Loops</h2>
+          <div className="flex items-center gap-2 flex-wrap">
+            {url && !showSaveInput && (
               <button
                 type="button"
-                onClick={() => setShowNewFolderInput(true)}
+                onClick={() => setShowSaveInput(true)}
                 className="btn btn-sm btn-outline"
               >
-                New folder
+                Save Current Loop
               </button>
-            ) : (
+            )}
+              {!showNewFolderInput ? (
+                <button
+                  type="button"
+                  onClick={() => setShowNewFolderInput(true)}
+                  className="btn btn-sm btn-outline"
+                >
+                  New folder
+                </button>
+              ) : (
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -1326,8 +1270,60 @@ const YouTubeLooper: React.FC = () => {
                   Cancel
                 </button>
               </div>
-            )}
+              )}
+            </div>
           </div>
+          {url && showSaveInput && (
+            <div className="flex flex-wrap items-center gap-2 mb-3 p-3 bg-base-300/50 rounded-lg">
+              <input
+                type="text"
+                value={loopName}
+                onChange={(e) => setLoopName(e.target.value)}
+                placeholder="Loop name (optional)"
+                className="input input-sm input-bordered w-48"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveLoop();
+                  if (e.key === "Escape") {
+                    setShowSaveInput(false);
+                    setLoopName("");
+                  }
+                }}
+                autoFocus
+              />
+              {folders.length > 0 && (
+                <select
+                  className="select select-sm select-bordered w-40"
+                  value={saveToFolderId ?? UNCATEGORIZED}
+                  onChange={(e) => setSaveToFolderId(e.target.value === UNCATEGORIZED ? null : e.target.value)}
+                >
+                  <option value={UNCATEGORIZED}>No folder</option>
+                  {folders.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <button
+                type="button"
+                onClick={handleSaveLoop}
+                className="btn btn-sm btn-primary"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSaveInput(false);
+                  setLoopName("");
+                }}
+                className="btn btn-sm btn-ghost"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+          {hasAnyLoops && (
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {/* No folder */}
             {uncategorizedLoops.length > 0 && (
@@ -1452,8 +1448,8 @@ const YouTubeLooper: React.FC = () => {
               );
             })}
           </div>
+          )}
         </div>
-      )}
 
       {/* Embed Button - hidden in embed mode */}
       {!isEmbed && videoId && (
@@ -1470,9 +1466,52 @@ const YouTubeLooper: React.FC = () => {
         />
       )}
 
-      {/* FAQ Section - hidden in embed mode */}
+      {/* Practice guide & FAQ - hidden in embed mode */}
       {!isEmbed && (
-        <div className="w-full mt-8">
+        <div className="w-full mt-8 text-left">
+          <div className="divider" />
+          <ToolPracticeGuide
+            title="Practice with the YouTube Looper"
+            features={[
+              "Loop any section — set start and end with the slider handles",
+              "Speed control — slow down or speed up playback for practice",
+              "Save loops — name loops and organise them in folders",
+              "Share folders — get a link to share a whole folder of loops",
+              "Copy link — share a loop with a teacher or bandmate",
+              "Free — no ads, works in the browser",
+            ]}
+            howToUseSteps={[
+              "Paste a YouTube URL and click Load Video.",
+              "Drag the slider handles to set your loop start and end (e.g. a few bars of a solo or one phrase).",
+              "Turn the loop on and play along; use the speed control if you need to slow it down.",
+              "Save loops for different sections (verse, chorus, solo) so you can jump between them without resetting the sliders.",
+              "Use Copy Link to share a specific loop, or load a saved loop to pick up where you left off.",
+            ]}
+            exampleRoutine={
+              <>
+                <p className="m-0">
+                  Set a short loop around the section you want to work on. Play along with the loop on; if it’s too fast, lower the speed. When you’re ready, try playing the part from memory, then check against the loop. Save loops for different sections so you can switch between verse, chorus, and solo without resetting the sliders. Use Copy Link to share a loop with a teacher or bandmate.
+                </p>
+              </>
+            }
+            settingsExplained={
+              <>
+                <p className="m-0">
+                  <strong>Loop start / end:</strong> Drag the handles on the progress bar to define the section that repeats. The video loops between these points while the loop is enabled.
+                </p>
+                <p className="m-0 mt-1.5">
+                  <strong>Speed:</strong> Adjust playback speed (e.g. 0.5× or 0.75×) to practice difficult parts more slowly.
+                </p>
+                <p className="m-0 mt-1.5">
+                  <strong>Saved loops:</strong> Name and save your loop; optionally put it in a folder. Load a saved loop later or use Copy Link to share it.
+                </p>
+              </>
+            }
+            otherTools={[
+              { path: "/online-metronome", name: "Basic metronome" },
+              { path: "/speed-trainer-metronome", name: "Speed trainer metronome" },
+            ]}
+          />
           <div className="divider" />
           <QandA items={FAQ_ITEMS} />
         </div>

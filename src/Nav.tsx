@@ -25,9 +25,9 @@ const Navigation: React.FC = () => {
                     <Link
                       to={metronome.path}
                       onClick={closeDropdown}
-                      className={`link link-hover ${location.pathname === metronome.path
-                        ? "link-success"
-                        : "link-primary"
+                      className={`link link-hover text-base-content ${location.pathname === metronome.path
+                        ? "font-semibold underline underline-offset-2"
+                        : ""
                         }`}
                     >
                       {metronome.name}
