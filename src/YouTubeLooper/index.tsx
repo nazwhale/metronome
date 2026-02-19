@@ -1076,8 +1076,10 @@ const YouTubeLooper: React.FC = () => {
       )}
 
       {addedFolderToast && (
-        <div className="alert alert-success w-full">
-          <span>{addedFolderToast}</span>
+        <div className="toast toast-end toast-top z-50">
+          <div className="alert alert-success shadow-lg">
+            <span>{addedFolderToast}</span>
+          </div>
         </div>
       )}
 
