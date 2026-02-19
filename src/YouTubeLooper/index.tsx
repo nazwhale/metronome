@@ -157,7 +157,13 @@ declare global {
   }
 }
 
-// Saved loop type
+// Folder and saved loop types
+interface SavedLoopFolder {
+  id: string;
+  name: string;
+  createdAt: number;
+}
+
 interface SavedLoop {
   id: string;
   name: string;
@@ -166,22 +172,56 @@ interface SavedLoop {
   end: number;
   playbackRate: number;
   createdAt: number;
+  folderId: string | null;
+}
+
+interface SavedLoopsData {
+  version: 2;
+  folders: SavedLoopFolder[];
+  loops: SavedLoop[];
 }
 
 const SAVED_LOOPS_KEY = "youtube-looper-saved-loops";
+const UNCATEGORIZED = "__uncategorized__";
 
-const loadSavedLoops = (): SavedLoop[] => {
+function isLegacyLoops(data: unknown): data is SavedLoop[] {
+  if (!Array.isArray(data)) return false;
+  if (data.length === 0) return true;
+  const first = data[0];
+  return first != null && typeof first === "object" && "id" in first && "videoId" in first && !("folderId" in first);
+}
+
+const loadSavedLoopsData = (): { folders: SavedLoopFolder[]; loops: SavedLoop[] } => {
   try {
     const stored = localStorage.getItem(SAVED_LOOPS_KEY);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return { folders: [], loops: [] };
+
+    const data: unknown = JSON.parse(stored);
+
+    // Legacy: flat array of loops
+    if (isLegacyLoops(data)) {
+      const loops: SavedLoop[] = data.map((loop) => ({
+        ...loop,
+        folderId: null,
+      }));
+      return { folders: [], loops };
+    }
+
+    const typed = data as SavedLoopsData;
+    if (typed.version === 2 && Array.isArray(typed.folders) && Array.isArray(typed.loops)) {
+      return { folders: typed.folders, loops: typed.loops };
+    }
+
+    return { folders: [], loops: [] };
   } catch {
-    return [];
+    return { folders: [], loops: [] };
   }
 };
 
-const saveSavedLoops = (loops: SavedLoop[]) => {
+const saveSavedLoopsData = (folders: SavedLoopFolder[], loops: SavedLoop[]) => {
   try {
-    localStorage.setItem(SAVED_LOOPS_KEY, JSON.stringify(loops));
+    const data: SavedLoopsData = { version: 2, folders, loops };
+    localStorage.setItem(SAVED_LOOPS_KEY, JSON.stringify(data));
   } catch {
     // localStorage might be full or unavailable
   }
@@ -365,6 +405,64 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   );
 };
 
+function SavedLoopRow({
+  loop,
+  folders,
+  onLoad,
+  onDelete,
+  onMove,
+  formatTime,
+}: {
+  loop: SavedLoop;
+  folders: SavedLoopFolder[];
+  onLoad: (loop: SavedLoop) => void;
+  onDelete: (id: string) => void;
+  onMove: (loopId: string, folderId: string | null) => void;
+  formatTime: (s: number) => string;
+}) {
+  return (
+    <div className="flex items-center justify-between bg-base-100 rounded-lg p-3 gap-2">
+      <div className="flex-1 min-w-0">
+        <div className="font-medium truncate">{loop.name}</div>
+        <div className="text-sm text-base-content/60">
+          {formatTime(loop.start)} → {formatTime(loop.end)}
+          {loop.playbackRate !== 1 && (
+            <span className="ml-2">({Math.round(loop.playbackRate * 100)}% speed)</span>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+        <button type="button" onClick={() => onLoad(loop)} className="btn btn-sm btn-primary">
+          Load
+        </button>
+        {folders.length > 0 && (
+          <select
+            className="select select-sm select-bordered w-32 max-w-[8rem]"
+            value={loop.folderId ?? UNCATEGORIZED}
+            onChange={(e) => onMove(loop.id, e.target.value === UNCATEGORIZED ? null : e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            title="Move to folder"
+          >
+            <option value={UNCATEGORIZED}>No folder</option>
+            {folders.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+        )}
+        <button
+          type="button"
+          onClick={() => onDelete(loop.id)}
+          className="btn btn-sm btn-ghost text-error"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const YouTubeLooper: React.FC = () => {
   const isEmbed = useIsEmbed();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -389,19 +487,29 @@ const YouTubeLooper: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [folders, setFolders] = useState<SavedLoopFolder[]>([]);
   const [savedLoops, setSavedLoops] = useState<SavedLoop[]>([]);
   const [loopName, setLoopName] = useState("");
   const [showSaveInput, setShowSaveInput] = useState(false);
+  const [saveToFolderId, setSaveToFolderId] = useState<string | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>("");
+  const [expandedFolderIds, setExpandedFolderIds] = useState<Set<string>>(new Set());
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editingFolderName, setEditingFolderName] = useState("");
+  const [newFolderName, setNewFolderName] = useState("");
+  const [showNewFolderInput, setShowNewFolderInput] = useState(false);
 
   const playerRef = useRef<YTPlayer | null>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const loopIntervalRef = useRef<number | null>(null);
   const pendingLoopParams = useRef<{ start: number; end: number } | null>(null);
 
-  // Load saved loops from localStorage on mount
+  // Load saved loops and folders from localStorage on mount
   useEffect(() => {
-    setSavedLoops(loadSavedLoops());
+    const { folders: f, loops: l } = loadSavedLoopsData();
+    setFolders(f);
+    setSavedLoops(l);
+    setExpandedFolderIds(new Set(f.map((x) => x.id)));
   }, []);
 
   // Load from URL params on mount
@@ -672,11 +780,12 @@ const YouTubeLooper: React.FC = () => {
       end: loopEnd,
       playbackRate,
       createdAt: Date.now(),
+      folderId: saveToFolderId,
     };
 
     const updatedLoops = [newLoop, ...savedLoops];
     setSavedLoops(updatedLoops);
-    saveSavedLoops(updatedLoops);
+    saveSavedLoopsData(folders, updatedLoops);
     setLoopName("");
     setShowSaveInput(false);
   };
@@ -700,8 +809,59 @@ const YouTubeLooper: React.FC = () => {
   const handleDeleteLoop = (loopId: string) => {
     const updatedLoops = savedLoops.filter((loop) => loop.id !== loopId);
     setSavedLoops(updatedLoops);
-    saveSavedLoops(updatedLoops);
+    saveSavedLoopsData(folders, updatedLoops);
   };
+
+  const handleMoveLoop = (loopId: string, folderId: string | null) => {
+    const updatedLoops = savedLoops.map((l) => (l.id === loopId ? { ...l, folderId } : l));
+    setSavedLoops(updatedLoops);
+    saveSavedLoopsData(folders, updatedLoops);
+  };
+
+  const createFolder = () => {
+    const name = newFolderName.trim();
+    if (!name) return;
+    const id = `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const newFolder: SavedLoopFolder = { id, name, createdAt: Date.now() };
+    const updated = [...folders, newFolder].sort((a, b) => a.createdAt - b.createdAt);
+    setFolders(updated);
+    saveSavedLoopsData(updated, savedLoops);
+    setNewFolderName("");
+    setShowNewFolderInput(false);
+    setExpandedFolderIds((prev) => new Set(prev).add(id));
+  };
+
+  const updateFolderName = (folderId: string, name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const updated = folders.map((f) => (f.id === folderId ? { ...f, name: trimmed } : f));
+    setFolders(updated);
+    saveSavedLoopsData(updated, savedLoops);
+    setEditingFolderId(null);
+    setEditingFolderName("");
+  };
+
+  const deleteFolder = (folderId: string) => {
+    const updatedFolders = folders.filter((f) => f.id !== folderId);
+    const updatedLoops = savedLoops.map((l) => (l.folderId === folderId ? { ...l, folderId: null } : l));
+    setFolders(updatedFolders);
+    setSavedLoops(updatedLoops);
+    saveSavedLoopsData(updatedFolders, updatedLoops);
+    setEditingFolderId(null);
+  };
+
+  const toggleFolderExpanded = (folderId: string) => {
+    setExpandedFolderIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(folderId)) next.delete(folderId);
+      else next.add(folderId);
+      return next;
+    });
+  };
+
+  const uncategorizedLoops = savedLoops.filter((l) => l.folderId == null);
+  const loopsByFolder = folders.map((f) => ({ folder: f, loops: savedLoops.filter((l) => l.folderId === f.id) }));
+  const hasAnyLoops = savedLoops.length > 0 || folders.length > 0;
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-4xl mx-auto">
@@ -887,39 +1047,55 @@ const YouTubeLooper: React.FC = () => {
                   Save Current Loop
                 </button>
               ) : (
-                <div className="flex items-center gap-2 flex-wrap">
-                  <input
-                    type="text"
-                    value={loopName}
-                    onChange={(e) => setLoopName(e.target.value)}
-                    placeholder="Loop name (optional)"
-                    className="input input-sm input-bordered w-48"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSaveLoop();
-                      if (e.key === "Escape") {
+                <div className="flex flex-col gap-2 w-full sm:w-auto">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <input
+                      type="text"
+                      value={loopName}
+                      onChange={(e) => setLoopName(e.target.value)}
+                      placeholder="Loop name (optional)"
+                      className="input input-sm input-bordered w-48"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveLoop();
+                        if (e.key === "Escape") {
+                          setShowSaveInput(false);
+                          setLoopName("");
+                        }
+                      }}
+                      autoFocus
+                    />
+                    {folders.length > 0 && (
+                      <select
+                        className="select select-sm select-bordered w-40"
+                        value={saveToFolderId ?? UNCATEGORIZED}
+                        onChange={(e) => setSaveToFolderId(e.target.value === UNCATEGORIZED ? null : e.target.value)}
+                      >
+                        <option value={UNCATEGORIZED}>No folder</option>
+                        {folders.map((f) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleSaveLoop}
+                      className="btn btn-sm btn-primary"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
                         setShowSaveInput(false);
                         setLoopName("");
-                      }
-                    }}
-                    autoFocus
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSaveLoop}
-                    className="btn btn-sm btn-primary"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowSaveInput(false);
-                      setLoopName("");
-                    }}
-                    className="btn btn-sm btn-ghost"
-                  >
-                    Cancel
-                  </button>
+                      }}
+                      className="btn btn-sm btn-ghost"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -937,43 +1113,166 @@ const YouTubeLooper: React.FC = () => {
         <p>Drag the handles to set loop start and end points. Use "Copy Link" to share.</p>
       </div>
 
-      {/* Saved Loops List */}
-      {savedLoops.length > 0 && (
+      {/* Saved Loops with Folders */}
+      {hasAnyLoops && (
         <div className="w-full bg-base-200 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3">Saved Loops</h2>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {savedLoops.map((loop) => (
-              <div
-                key={loop.id}
-                className="flex items-center justify-between bg-base-100 rounded-lg p-3 gap-2"
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+            <h2 className="text-lg font-semibold">Saved Loops</h2>
+            {!showNewFolderInput ? (
+              <button
+                type="button"
+                onClick={() => setShowNewFolderInput(true)}
+                className="btn btn-sm btn-outline"
               >
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{loop.name}</div>
-                  <div className="text-sm text-base-content/60">
-                    {formatTime(loop.start)} → {formatTime(loop.end)}
-                    {loop.playbackRate !== 1 && (
-                      <span className="ml-2">({Math.round(loop.playbackRate * 100)}% speed)</span>
-                    )}
-                  </div>
+                New folder
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  placeholder="Folder name"
+                  className="input input-sm input-bordered w-40"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") createFolder();
+                    if (e.key === "Escape") {
+                      setShowNewFolderInput(false);
+                      setNewFolderName("");
+                    }
+                  }}
+                  autoFocus
+                />
+                <button type="button" onClick={createFolder} className="btn btn-sm btn-primary">
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowNewFolderInput(false);
+                    setNewFolderName("");
+                  }}
+                  className="btn btn-sm btn-ghost"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {/* No folder */}
+            {uncategorizedLoops.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-base-content/70 flex items-center gap-2">
+                  <span>No folder</span>
+                  <span className="badge badge-ghost badge-sm">{uncategorizedLoops.length}</span>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleLoadLoop(loop)}
-                    className="btn btn-sm btn-primary"
-                  >
-                    Load
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteLoop(loop.id)}
-                    className="btn btn-sm btn-ghost text-error"
-                  >
-                    Delete
-                  </button>
+                <div className="space-y-2 pl-0">
+                  {uncategorizedLoops.map((loop) => (
+                    <SavedLoopRow
+                      key={loop.id}
+                      loop={loop}
+                      folders={folders}
+                      onLoad={handleLoadLoop}
+                      onDelete={handleDeleteLoop}
+                      onMove={handleMoveLoop}
+                      formatTime={formatTime}
+                    />
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
+            {/* Folders */}
+            {loopsByFolder.map(({ folder, loops }) => {
+              const isExpanded = expandedFolderIds.has(folder.id);
+              const isEditing = editingFolderId === folder.id;
+              return (
+                <div key={folder.id} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleFolderExpanded(folder.id)}
+                      className="btn btn-ghost btn-sm btn-square p-0 min-h-0 h-6 w-6"
+                      aria-label={isExpanded ? "Collapse" : "Expand"}
+                    >
+                      <span className="text-base-content/70">{isExpanded ? "▼" : "▶"}</span>
+                    </button>
+                    {isEditing ? (
+                      <div className="flex items-center gap-2 flex-1">
+                        <input
+                          type="text"
+                          value={editingFolderName}
+                          onChange={(e) => setEditingFolderName(e.target.value)}
+                          className="input input-sm input-bordered flex-1 max-w-xs"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") updateFolderName(folder.id, editingFolderName);
+                            if (e.key === "Escape") {
+                              setEditingFolderId(null);
+                              setEditingFolderName("");
+                            }
+                          }}
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={() => updateFolderName(folder.id, editingFolderName)}
+                          className="btn btn-sm btn-primary"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingFolderId(null);
+                            setEditingFolderName("");
+                          }}
+                          className="btn btn-sm btn-ghost"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-sm font-medium text-base-content/80">{folder.name}</span>
+                        <span className="badge badge-ghost badge-sm">{loops.length}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingFolderId(folder.id);
+                            setEditingFolderName(folder.name);
+                          }}
+                          className="btn btn-ghost btn-xs"
+                        >
+                          Rename
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteFolder(folder.id)}
+                          className="btn btn-ghost btn-xs text-error"
+                        >
+                          Delete folder
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  {isExpanded && (
+                    <div className="space-y-2 pl-6 border-l-2 border-base-300 ml-1">
+                      {loops.map((loop) => (
+                        <SavedLoopRow
+                          key={loop.id}
+                          loop={loop}
+                          folders={folders}
+                          onLoad={handleLoadLoop}
+                          onDelete={handleDeleteLoop}
+                          onMove={handleMoveLoop}
+                          formatTime={formatTime}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
