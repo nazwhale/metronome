@@ -596,6 +596,7 @@ const YouTubeLooper: React.FC = () => {
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const loopIntervalRef = useRef<number | null>(null);
   const pendingLoopParams = useRef<{ start: number; end: number } | null>(null);
+  const shareParamProcessedRef = useRef(false);
 
   // Load saved loops and folders from localStorage on mount
   useEffect(() => {
@@ -627,6 +628,12 @@ const YouTubeLooper: React.FC = () => {
     }
 
     if (shareParam) {
+      if (shareParamProcessedRef.current) {
+        setInitialLoadDone(true);
+        return;
+      }
+      shareParamProcessedRef.current = true;
+
       const payload = decodeSharedFolder(shareParam);
       const nextParams: Record<string, string> = {};
       searchParams.forEach((value, key) => {
