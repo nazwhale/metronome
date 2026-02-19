@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
+import pako from "pako";
 import QandA, { QAItem } from "../components/QandA";
 import { useIsEmbed } from "../contexts/EmbedContext";
 import { EmbedButton } from "../components/EmbedModal";
@@ -226,6 +227,94 @@ const saveSavedLoopsData = (folders: SavedLoopFolder[], loops: SavedLoop[]) => {
     // localStorage might be full or unavailable
   }
 };
+
+// Shareable folder payload (no ids or timestamps)
+interface SharedLoop {
+  videoId: string;
+  name: string;
+  start: number;
+  end: number;
+  playbackRate: number;
+}
+
+interface SharedFolderPayload {
+  folderName: string;
+  loops: SharedLoop[];
+}
+
+const MAX_SHARE_LOOPS = 30;
+const SHARE_PARAM = "share";
+
+function base64UrlEncode(bytes: Uint8Array): string {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const b64 = btoa(binary);
+  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function base64UrlDecode(str: string): Uint8Array {
+  let b64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = b64.length % 4;
+  if (pad) b64 += "=".repeat(4 - pad);
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function encodeSharedFolder(folderName: string, loops: SharedLoop[]): string | null {
+  if (loops.length === 0 || loops.length > MAX_SHARE_LOOPS) return null;
+  try {
+    const payload: SharedFolderPayload = { folderName, loops };
+    const json = JSON.stringify(payload);
+    const compressed = pako.deflate(json);
+    return base64UrlEncode(compressed);
+  } catch {
+    return null;
+  }
+}
+
+function decodeSharedFolder(encoded: string): SharedFolderPayload | null {
+  try {
+    const bytes = base64UrlDecode(encoded);
+    const json = pako.inflate(bytes, { to: "string" });
+    const data: unknown = JSON.parse(json);
+    if (!data || typeof data !== "object" || !("folderName" in data) || !("loops" in data)) return null;
+    const folderName = (data as { folderName: unknown }).folderName;
+    const loops = (data as { loops: unknown }).loops;
+    if (typeof folderName !== "string" || !Array.isArray(loops)) return null;
+    if (loops.length > MAX_SHARE_LOOPS) return null;
+    const out: SharedLoop[] = [];
+    for (const item of loops) {
+      if (!item || typeof item !== "object") return null;
+      const o = item as Record<string, unknown>;
+      if (
+        typeof o.videoId !== "string" ||
+        typeof o.name !== "string" ||
+        typeof o.start !== "number" ||
+        typeof o.end !== "number" ||
+        typeof o.playbackRate !== "number"
+      ) {
+        return null;
+      }
+      if (o.videoId.length > 20 || o.name.length > 500) return null;
+      out.push({
+        videoId: o.videoId,
+        name: o.name,
+        start: o.start,
+        end: o.end,
+        playbackRate: o.playbackRate,
+      });
+    }
+    return { folderName, loops: out };
+  } catch {
+    return null;
+  }
+}
 
 const extractVideoId = (url: string): string | null => {
   const patterns = [
@@ -498,6 +587,9 @@ const YouTubeLooper: React.FC = () => {
   const [editingFolderName, setEditingFolderName] = useState("");
   const [newFolderName, setNewFolderName] = useState("");
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [addedFolderToast, setAddedFolderToast] = useState<string | null>(null);
+  const [shareCopiedFolderId, setShareCopiedFolderId] = useState<string | null>(null);
 
   const playerRef = useRef<YTPlayer | null>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -519,6 +611,7 @@ const YouTubeLooper: React.FC = () => {
     const vParam = searchParams.get("v");
     const startParam = searchParams.get("start");
     const endParam = searchParams.get("end");
+    const shareParam = searchParams.get(SHARE_PARAM);
 
     if (vParam) {
       setVideoId(vParam);
@@ -531,8 +624,45 @@ const YouTubeLooper: React.FC = () => {
         setLoopEnabled(true);
       }
     }
+
+    if (shareParam) {
+      const payload = decodeSharedFolder(shareParam);
+      const nextParams: Record<string, string> = {};
+      searchParams.forEach((value, key) => {
+        if (key !== SHARE_PARAM) nextParams[key] = value;
+      });
+      setSearchParams(nextParams, { replace: true });
+
+      if (payload) {
+        const { folders: f, loops: l } = loadSavedLoopsData();
+        const folderId = `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const now = Date.now();
+        const newFolder: SavedLoopFolder = { id: folderId, name: payload.folderName, createdAt: now };
+        const newLoops: SavedLoop[] = payload.loops.map((loop, i) => ({
+          id: `loop-${now}-${i}-${Math.random().toString(36).substr(2, 9)}`,
+          name: loop.name,
+          videoId: loop.videoId,
+          start: loop.start,
+          end: loop.end,
+          playbackRate: loop.playbackRate,
+          createdAt: now,
+          folderId,
+        }));
+        const updatedFolders = [...f, newFolder];
+        const updatedLoops = [...l, ...newLoops];
+        saveSavedLoopsData(updatedFolders, updatedLoops);
+        setFolders(updatedFolders);
+        setSavedLoops(updatedLoops);
+        setExpandedFolderIds((prev) => new Set(prev).add(folderId));
+        setAddedFolderToast(`Added shared folder "${payload.folderName}"`);
+        setTimeout(() => setAddedFolderToast(null), 3000);
+      } else {
+        setShareError("Invalid or expired share link");
+      }
+    }
+
     setInitialLoadDone(true);
-  }, [searchParams, initialLoadDone]);
+  }, [searchParams, initialLoadDone, setSearchParams]);
 
   // Update URL params when state changes
   const updateUrlParams = useCallback((vid: string | null, start: number, end: number, dur: number) => {
@@ -859,6 +989,30 @@ const YouTubeLooper: React.FC = () => {
     });
   };
 
+  const handleShareFolder = async (folderId: string, folderName: string, loops: SavedLoop[]) => {
+    const shared: SharedLoop[] = loops.map((l) => ({
+      videoId: l.videoId,
+      name: l.name,
+      start: l.start,
+      end: l.end,
+      playbackRate: l.playbackRate,
+    }));
+    const encoded = encodeSharedFolder(folderName, shared);
+    if (!encoded) return;
+    if (typeof window === "undefined") return;
+    const path = window.location.pathname.includes("/embed/")
+      ? window.location.pathname.replace("/embed", "")
+      : window.location.pathname;
+    const shareUrl = `${window.location.origin}${path}?${SHARE_PARAM}=${encoded}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopiedFolderId(folderId);
+      setTimeout(() => setShareCopiedFolderId(null), 2000);
+    } catch {
+      setShareError("Could not copy link");
+    }
+  };
+
   const uncategorizedLoops = savedLoops.filter((l) => l.folderId == null);
   const loopsByFolder = folders.map((f) => ({ folder: f, loops: savedLoops.filter((l) => l.folderId === f.id) }));
   const hasAnyLoops = savedLoops.length > 0 || folders.length > 0;
@@ -908,6 +1062,21 @@ const YouTubeLooper: React.FC = () => {
       {error && (
         <div className="alert alert-error">
           <span>{error}</span>
+        </div>
+      )}
+
+      {shareError && (
+        <div className="alert alert-warning w-full">
+          <span>{shareError}</span>
+          <button type="button" onClick={() => setShareError(null)} className="btn btn-sm btn-ghost">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {addedFolderToast && (
+        <div className="alert alert-success w-full">
+          <span>{addedFolderToast}</span>
         </div>
       )}
 
@@ -1235,6 +1404,15 @@ const YouTubeLooper: React.FC = () => {
                       <>
                         <span className="text-sm font-medium text-base-content/80">{folder.name}</span>
                         <span className="badge badge-ghost badge-sm">{loops.length}</span>
+                        {loops.length >= 1 && loops.length <= MAX_SHARE_LOOPS && (
+                          <button
+                            type="button"
+                            onClick={() => handleShareFolder(folder.id, folder.name, loops)}
+                            className="btn btn-ghost btn-xs"
+                          >
+                            {shareCopiedFolderId === folder.id ? "Link copied!" : "Share folder"}
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={() => {
