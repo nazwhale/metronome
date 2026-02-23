@@ -1,9 +1,12 @@
 import Fretboard, { FretRangeDiagram } from "./Fretboard";
 import {
   type CardId,
-  getTriadPositions,
-  getFretWindow,
-  getPromptFretWindow,
+  type Stage,
+  getTriadPositionsForStage,
+  getFretWindowForStage,
+  getPromptFretWindowForStage,
+  STRING_SET_LABEL,
+  STRING_LABELS_BY_STAGE,
   positionLabel,
 } from "./data";
 
@@ -11,6 +14,7 @@ export type Result = "gotIt" | "miss";
 
 interface FlashcardProps {
   card: CardId;
+  stage: Stage;
   flipped: boolean;
   /** 0–1, how much of the time limit has elapsed (for progress bar). */
   timeProgress: number;
@@ -22,15 +26,17 @@ interface FlashcardProps {
 
 export default function Flashcard({
   card,
+  stage,
   flipped,
   timeProgress,
   secondsPerCard,
   onFlip,
   onResult,
 }: FlashcardProps) {
-  const positions = getTriadPositions(card.key, card.position);
-  const displayWindow = getFretWindow(card.key, card.position);
-  const promptFretWindow = getPromptFretWindow(card.key, card.position);
+  const positions = getTriadPositionsForStage(stage, card.key, card.position);
+  const displayWindow = getFretWindowForStage(stage, card.key, card.position);
+  const promptFretWindow = getPromptFretWindowForStage(stage, card.key, card.position);
+  const stringLabels = STRING_LABELS_BY_STAGE[stage];
 
   return (
     <div className="card bg-base-200 shadow-xl" role="region" aria-label={flipped ? "Answer" : "Question"}>
@@ -45,12 +51,12 @@ export default function Flashcard({
             </dl>
             <p className="text-sm text-base-content/70 mt-3">Play in this range:</p>
             <div className="mt-2">
-              <FretRangeDiagram fretWindow={promptFretWindow} />
+              <FretRangeDiagram fretWindow={promptFretWindow} stringLabels={stringLabels} />
             </div>
             <dl className="text-left inline-block mt-3 space-y-1.5">
               <div className="flex gap-3">
                 <dt className="text-base-content/60 text-sm w-24 shrink-0">String set</dt>
-                <dd className="font-medium text-base m-0">G–B–e</dd>
+                <dd className="font-medium text-base m-0">{STRING_SET_LABEL[stage]}</dd>
               </div>
               <div className="flex gap-3">
                 <dt className="text-base-content/60 text-sm w-24 shrink-0">Position</dt>
@@ -84,6 +90,7 @@ export default function Flashcard({
               <Fretboard
                 positions={positions}
                 positionWindow={displayWindow}
+                stringLabels={stringLabels}
               />
             </div>
             <div className="flex gap-3 mt-6">

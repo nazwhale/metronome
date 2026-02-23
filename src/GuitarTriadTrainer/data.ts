@@ -1,7 +1,7 @@
 /**
- * Guitar Triad Trainer data: keys, positions (inversions), string set G-B-e.
+ * Guitar Triad Trainer data: keys, positions (inversions), string sets.
  * Prompts: string set + bass-note chord tone + nearest playable voicing.
- * Standard tuning: G=7, B=11, e=4 (semitones, C=0).
+ * Standard tuning semitones from C=0: D=2, G=7, B=11, e=4.
  */
 
 export const KEYS = [
@@ -29,8 +29,26 @@ export const POSITIONS = ["root", "1st", "2nd"] as const;
 
 export type Position = (typeof POSITIONS)[number];
 
-/** String set: G (index 0), B (1), e (2). Open note semitones (C=0). */
-const STRING_OPEN: number[] = [7, 11, 4]; // G, B, e
+/** Stage 1 = G-B-e, Stage 2 = D-G-B. Same curriculum (keys × positions); fret positions differ by string set. */
+export type Stage = 1 | 2;
+
+/** String set: open note semitones (C=0). Index 0 = lowest string in set, 2 = highest. */
+const STRING_OPEN_BY_STAGE: Record<Stage, number[]> = {
+  1: [7, 11, 4],   // G, B, e
+  2: [2, 7, 11],   // D, G, B
+};
+
+/** Human-readable string set label per stage (e.g. for clues). */
+export const STRING_SET_LABEL: Record<Stage, string> = {
+  1: "G–B–e",
+  2: "D–G–B",
+};
+
+/** String labels by stage for diagrams: [lowest, middle, highest] = index 0, 1, 2. */
+export const STRING_LABELS_BY_STAGE: Record<Stage, [string, string, string]> = {
+  1: ["G", "B", "e"],
+  2: ["D", "G", "B"],
+};
 
 const KEY_TO_SEMITONE: Record<string, number> = {
   C: 0,
@@ -52,11 +70,11 @@ const KEY_TO_SEMITONE: Record<string, number> = {
   B: 11,
 };
 
-/** [role at G, role at B, role at e] where 0=root, 1=3rd, 2=5th. One voicing per inversion. */
+/** [role at string 0, 1, 2] where 0=root, 1=3rd, 2=5th. One voicing per inversion. */
 const POSITION_ROLES: Record<Position, [number, number, number]> = {
-  root: [0, 1, 2], // 1 on G, 3 on B, 5 on e (e.g. C major tab 5-5-3)
-  "1st": [1, 2, 0], // 3 on G, 5 on B, 1 on e (e.g. C major tab 9-8-8)
-  "2nd": [2, 0, 1], // 5 on G, root on B, 3 on e (e.g. C major tab 12-13-12, prefer over open)
+  root: [0, 1, 2], // 1 on lowest string, 3 on middle, 5 on highest
+  "1st": [1, 2, 0], // 3, 5, 1
+  "2nd": [2, 0, 1], // 5, 1, 3
 };
 
 export interface TriadPosition {
@@ -71,17 +89,21 @@ function getTriadSemitones(key: Key): [number, number, number] {
 }
 
 /** First fret on string that produces the note (0–11). */
-function fretForNoteFirst(stringIndex: number, note: number): number {
-  const open = STRING_OPEN[stringIndex];
+function fretForNoteFirst(stringOpen: number[], stringIndex: number, note: number): number {
+  const open = stringOpen[stringIndex];
   return (note - open + 12) % 12;
 }
 
 /**
  * Returns the three (stringIndex, fret, degree) for the nearest playable voicing
- * of the given key and position on G-B-e. We prefer the 12th-fret region over open
- * strings: root position (e.g. G major → 12-12-10), 2nd inversion (e.g. C major 2nd → 12-13-12).
+ * of the given key and position on the given string set. We prefer the 12th-fret
+ * region over open strings where applicable.
  */
-export function getTriadPositions(key: Key, position: Position): TriadPosition[] {
+function getTriadPositionsWithStringOpen(
+  stringOpen: number[],
+  key: Key,
+  position: Position
+): TriadPosition[] {
   const [root, third, fifth] = getTriadSemitones(key);
   const roles = POSITION_ROLES[position];
   const notes = [root, third, fifth];
@@ -90,10 +112,9 @@ export function getTriadPositions(key: Key, position: Position): TriadPosition[]
   for (let s = 0; s < 3; s++) {
     const role = roles[s];
     const note = notes[role];
-    let fret = fretForNoteFirst(s, note);
+    let fret = fretForNoteFirst(stringOpen, s, note);
     result.push({ stringIndex: s, fret, degree: roleToDegree(role) });
   }
-  // Prefer 12th-fret region over open/low for root, 1st inversion (e.g. D# major 1st → 12-11-11), and 2nd inversion
   const frets = result.map((p) => p.fret);
   const hasOpenString = frets.some((f) => f === 0);
   const hasHighFret = frets.some((f) => f >= 10);
@@ -113,6 +134,20 @@ export function getTriadPositions(key: Key, position: Position): TriadPosition[]
   return result;
 }
 
+/** Stage 1 (G-B-e) positions. Kept for backward compatibility. */
+export function getTriadPositions(key: Key, position: Position): TriadPosition[] {
+  return getTriadPositionsWithStringOpen(STRING_OPEN_BY_STAGE[1], key, position);
+}
+
+/** Positions for the given stage (string set). */
+export function getTriadPositionsForStage(
+  stage: Stage,
+  key: Key,
+  position: Position
+): TriadPosition[] {
+  return getTriadPositionsWithStringOpen(STRING_OPEN_BY_STAGE[stage], key, position);
+}
+
 /**
  * Fret window that contains exactly this voicing (min and max fret of the three positions).
  * Use for display so there is exactly one intended answer in view.
@@ -123,17 +158,31 @@ export function getFretWindow(key: Key, position: Position): [number, number] {
   return [Math.min(...frets), Math.max(...frets)];
 }
 
+/** Fret window for the given stage. */
+export function getFretWindowForStage(
+  stage: Stage,
+  key: Key,
+  position: Position
+): [number, number] {
+  const positions = getTriadPositionsForStage(stage, key, position);
+  const frets = positions.map((p) => p.fret);
+  return [Math.min(...frets), Math.max(...frets)];
+}
+
 const WIDTH_PROMPT_WINDOW = 5;
 
 /**
  * All 5-fret-wide windows that contain the triad. Each window is [start, start+4] (0-based).
  */
-function getPromptFretWindowOptions(key: Key, position: Position): [number, number][] {
-  const [minFret, maxFret] = getFretWindow(key, position);
+function getPromptFretWindowOptions(
+  stage: Stage,
+  key: Key,
+  position: Position
+): [number, number][] {
+  const [minFret, maxFret] = getFretWindowForStage(stage, key, position);
   const startMin = Math.max(0, maxFret - (WIDTH_PROMPT_WINDOW - 1));
   const startMax = minFret;
   if (startMin > startMax) {
-    // Triad spans more than 5 frets; use tight window so the prompt always contains the triad
     return [[minFret, maxFret]];
   }
   const options: [number, number][] = [];
@@ -157,7 +206,19 @@ function hashString(s: string): number {
  * so the same card always shows the same clue (one of the valid options).
  */
 export function getPromptFretWindow(key: Key, position: Position): [number, number] {
-  const options = getPromptFretWindowOptions(key, position);
+  const options = getPromptFretWindowOptions(1, key, position);
+  const seed = hashString(`${key}|${position}`);
+  const index = seed % options.length;
+  return options[index];
+}
+
+/** Prompt fret window for the given stage. */
+export function getPromptFretWindowForStage(
+  stage: Stage,
+  key: Key,
+  position: Position
+): [number, number] {
+  const options = getPromptFretWindowOptions(stage, key, position);
   const seed = hashString(`${key}|${position}`);
   const index = seed % options.length;
   return options[index];
@@ -194,14 +255,22 @@ export const CURRICULUM: CardId[] = KEYS_CIRCLE_OF_FIFTHS.flatMap((key) =>
   (["root", "1st", "2nd"] as const).map((position) => ({ key, position }))
 );
 
+/** Level 3: 6 keys (formerly levels 3 and 4). 10 random cards from this pool. */
+const KEYS_LEVEL_3: Key[] = ["F#", "C#", "G#", "D#", "A#", "F"];
+const LEVEL_3_POOL: CardId[] = CURRICULUM.filter((c) => KEYS_LEVEL_3.includes(c.key));
+
 export const CARDS_PER_DECK = 10;
-export const BOSS_LEVEL = 5;
+export const BOSS_LEVEL = 4;
 export const BOSS_DECK_SIZE = 20;
 
 export function getDeckForLevel(level: number): CardId[] {
   if (level === BOSS_LEVEL) {
     const shuffled = [...CURRICULUM].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, BOSS_DECK_SIZE);
+  }
+  if (level === 3) {
+    const shuffled = [...LEVEL_3_POOL].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, CARDS_PER_DECK);
   }
   const start = (level - 1) * CARDS_PER_DECK;
   return CURRICULUM.slice(start, start + CARDS_PER_DECK);
@@ -216,15 +285,16 @@ export function getLevelDeckSize(level: number): number {
   return level === BOSS_LEVEL ? BOSS_DECK_SIZE : CARDS_PER_DECK;
 }
 
-/** Seconds allowed per card before losing a life (flip in time). Level 1=9s, 2=8s, 3=7s, 4=6s, 5=5s. */
+/** Seconds allowed per card before losing a life (flip in time). Level 1=9s, 2=8s, 3=7s, 4 (Boss)=5s. */
 export function getSecondsPerCard(level: number): number {
-  const byLevel: Record<number, number> = { 1: 9, 2: 8, 3: 7, 4: 6, 5: 5 };
+  const byLevel: Record<number, number> = { 1: 9, 2: 8, 3: 7, 4: 5 };
   return byLevel[level] ?? 5;
 }
 
 /** Keys (circle-of-fifths order) covered in this level's deck, for UI. Boss = all keys. */
 export function getKeysForLevel(level: number): Key[] {
   if (level === BOSS_LEVEL) return [...KEYS_CIRCLE_OF_FIFTHS];
+  if (level === 3) return [...KEYS_LEVEL_3];
   const deck = getDeckForLevel(level);
   const keysInDeck = new Set(deck.map((c) => c.key));
   return KEYS_CIRCLE_OF_FIFTHS.filter((k) => keysInDeck.has(k));

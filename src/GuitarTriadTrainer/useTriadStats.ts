@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { cardId, type CardId } from "./data";
+import { cardId, type CardId, type Stage } from "./data";
 import type { Result } from "./Flashcard";
 
 export interface CardStat {
@@ -15,9 +15,11 @@ export interface BestRun {
 }
 
 const STORAGE_KEY_LEVEL = "guitarTriadUnlockedLevel";
+const STORAGE_KEY_LEVEL_BY_STAGE = "guitarTriadUnlockedLevelByStage";
 const STORAGE_KEY_STATS = "guitarTriadCardStats";
 const STORAGE_KEY_BEST_LIVES = "guitarTriadBestLivesLostByLevel";
 const STORAGE_KEY_BEST_RUN = "guitarTriadBestRunByLevel";
+const STORAGE_KEY_BEST_RUN_BY_STAGE = "guitarTriadBestRunByLevelByStage";
 const LIVES_PER_LEVEL = 3;
 
 function isRunBetter(current: BestRun | undefined, livesLost: number, averageTimeMs: number): boolean {
@@ -27,18 +29,56 @@ function isRunBetter(current: BestRun | undefined, livesLost: number, averageTim
   return averageTimeMs < current.averageTimeMs;
 }
 
+/** Normalize stored level: legacy is a single number (stage 1); byStage stores per-stage when set. */
+function normalizeUnlockedByStage(
+  legacy: number,
+  byStage: Record<string, number> | undefined
+): Record<Stage, number> {
+  return {
+    1: (byStage && typeof byStage["1"] === "number" ? byStage["1"] : legacy),
+    2: (byStage && typeof byStage["2"] === "number" ? byStage["2"] : 1),
+  };
+}
+
 export function useTriadStats() {
-  const [unlockedLevel, setUnlockedLevel] = useLocalStorage(STORAGE_KEY_LEVEL, 1);
+  const [legacyUnlockedLevel, setLegacyUnlockedLevel] = useLocalStorage(STORAGE_KEY_LEVEL, 1);
+  const [unlockedByStage, setUnlockedByStage] = useLocalStorage<Record<string, number>>(
+    STORAGE_KEY_LEVEL_BY_STAGE,
+    {}
+  );
   const [cardStats, setCardStats] = useLocalStorage<Record<string, CardStat>>(
     STORAGE_KEY_STATS,
     {}
   );
-  const [bestLivesLostByLevel, setBestLivesLostByLevel] = useLocalStorage<
-    Record<number, number>
-  >(STORAGE_KEY_BEST_LIVES, {});
+  const [bestLivesLostByLevel] = useLocalStorage<Record<number, number>>(
+    STORAGE_KEY_BEST_LIVES,
+    {}
+  );
   const [bestRunByLevel, setBestRunByLevel] = useLocalStorage<Record<number, BestRun>>(
     STORAGE_KEY_BEST_RUN,
     {}
+  );
+  const [bestRunByLevelByStage, setBestRunByLevelByStage] = useLocalStorage<
+    Record<string, Record<number, BestRun>>
+  >(STORAGE_KEY_BEST_RUN_BY_STAGE, {});
+
+  const unlockedLevelByStage: Record<Stage, number> = normalizeUnlockedByStage(
+    legacyUnlockedLevel,
+    unlockedByStage
+  );
+
+  const setUnlockedForStage = useCallback(
+    (stage: Stage, level: number) => {
+      if (stage === 1) {
+        setLegacyUnlockedLevel((prev) => Math.max(prev, level));
+      }
+      setUnlockedByStage((prev) => {
+        const key = String(stage);
+        const current = prev[key] ?? (stage === 1 ? legacyUnlockedLevel : 1);
+        return { ...prev, [key]: Math.max(current, level) };
+      });
+    },
+    [setLegacyUnlockedLevel, setUnlockedByStage, legacyUnlockedLevel]
   );
 
   const recordRunResults = useCallback(
@@ -46,7 +86,8 @@ export function useTriadStats() {
       results: { card: CardId; result: Result; flipTimeMs: number }[],
       level: number,
       passed: boolean,
-      livesRemaining?: number
+      livesRemaining?: number,
+      stage: Stage = 1
     ) => {
       setCardStats((prev) => {
         const next = { ...prev };
@@ -63,30 +104,51 @@ export function useTriadStats() {
       });
 
       if (passed) {
-        setUnlockedLevel((l) => Math.max(l, level + 1));
+        setUnlockedForStage(stage, level + 1);
         if (livesRemaining !== undefined && results.length > 0) {
           const livesLost = LIVES_PER_LEVEL - livesRemaining;
           const averageTimeMs =
             results.reduce((sum, r) => sum + r.flipTimeMs, 0) / results.length;
-          setBestRunByLevel((prev) => {
-            const current = prev[level];
-            if (!isRunBetter(current, livesLost, averageTimeMs)) return prev;
-            return { ...prev, [level]: { livesLost, averageTimeMs } };
-          });
+          if (stage === 1) {
+            setBestRunByLevel((prev) => {
+              const current = prev[level];
+              if (!isRunBetter(current, livesLost, averageTimeMs)) return prev;
+              return { ...prev, [level]: { livesLost, averageTimeMs } };
+            });
+          } else {
+            setBestRunByLevelByStage((prev) => {
+              const stageKey = String(stage);
+              const stageRuns = prev[stageKey] ?? {};
+              const current = stageRuns[level];
+              if (!isRunBetter(current, livesLost, averageTimeMs)) return prev;
+              return {
+                ...prev,
+                [stageKey]: { ...stageRuns, [level]: { livesLost, averageTimeMs } },
+              };
+            });
+          }
         }
       }
     },
-    [setCardStats, setUnlockedLevel, setBestLivesLostByLevel, setBestRunByLevel]
+    [setCardStats, setUnlockedForStage, setBestRunByLevel, setBestRunByLevelByStage]
   );
 
-  const bestRunForLevel = (lvl: number): BestRun | undefined =>
-    bestRunByLevel[lvl] ??
-    (bestLivesLostByLevel[lvl] !== undefined
-      ? { livesLost: bestLivesLostByLevel[lvl], averageTimeMs: Infinity }
-      : undefined);
+  const bestRunForLevel = (stage: Stage, lvl: number): BestRun | undefined => {
+    if (stage === 1) {
+      return (
+        bestRunByLevel[lvl] ??
+        (bestLivesLostByLevel[lvl] !== undefined
+          ? { livesLost: bestLivesLostByLevel[lvl], averageTimeMs: Infinity }
+          : undefined)
+      );
+    }
+    const stageRuns = bestRunByLevelByStage[String(stage)];
+    return stageRuns?.[lvl];
+  };
 
   return {
-    unlockedLevel,
+    unlockedLevel: legacyUnlockedLevel,
+    unlockedLevelByStage,
     cardStats,
     bestLivesLostByLevel,
     bestRunByLevel,
