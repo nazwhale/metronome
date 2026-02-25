@@ -502,6 +502,15 @@ function SavedLoopRow({
   onDelete,
   onMove,
   formatTime,
+  isEditing,
+  editingName,
+  onEditingNameChange,
+  onRenameSave,
+  onRenameCancel,
+  onRenameStart,
+  isMovePickerOpen,
+  onMovePickerOpen,
+  onMovePickerClose,
 }: {
   loop: SavedLoop;
   folders: SavedLoopFolder[];
@@ -509,46 +518,145 @@ function SavedLoopRow({
   onDelete: (id: string) => void;
   onMove: (loopId: string, folderId: string | null) => void;
   formatTime: (s: number) => string;
+  isEditing: boolean;
+  editingName: string;
+  onEditingNameChange: (value: string) => void;
+  onRenameSave: () => void;
+  onRenameCancel: () => void;
+  onRenameStart: (loop: SavedLoop) => void;
+  isMovePickerOpen: boolean;
+  onMovePickerOpen: () => void;
+  onMovePickerClose: () => void;
 }) {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const closeDropdown = () => {
+    (dropdownRef.current?.querySelector("[tabindex='0']") as HTMLElement)?.blur();
+  };
+
   return (
-    <div className="flex items-center justify-between bg-base-100 rounded-lg p-3 gap-2">
+    <div className="flex flex-row items-center justify-between gap-2 bg-base-100 rounded-lg p-3">
+      {/* Name and time on left; Actions on the same line on the right */}
       <div className="flex-1 min-w-0">
-        <div className="font-medium truncate">{loop.name}</div>
-        <div className="text-sm text-base-content/60">
-          {formatTime(loop.start)} → {formatTime(loop.end)}
-          {loop.playbackRate !== 1 && (
-            <span className="ml-2">({Math.round(loop.playbackRate * 100)}% speed)</span>
+        {isEditing ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              value={editingName}
+              onChange={(e) => onEditingNameChange(e.target.value)}
+              className="input input-sm input-bordered flex-1 min-w-0 max-w-xs"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onRenameSave();
+                if (e.key === "Escape") onRenameCancel();
+              }}
+              autoFocus
+            />
+            <button type="button" onClick={onRenameSave} className="btn btn-sm btn-primary">
+              Save
+            </button>
+            <button type="button" onClick={onRenameCancel} className="btn btn-sm btn-ghost">
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="font-medium truncate" title={loop.name}>
+              {loop.name}
+            </div>
+            <div className="text-sm text-base-content/60">
+              {formatTime(loop.start)} → {formatTime(loop.end)}
+              {loop.playbackRate !== 1 && (
+                <span className="ml-2">({Math.round(loop.playbackRate * 100)}% speed)</span>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Actions button on same line as name; dropdown opens left on small screens so items stay in view */}
+      {!isEditing && (
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {isMovePickerOpen ? (
+            <div className="flex w-full min-w-0 max-w-sm flex-col gap-1 rounded-lg border border-base-300 bg-base-200 p-2 shadow-sm">
+              <span className="text-xs text-base-content/70">Move to folder:</span>
+              <div className="flex flex-col gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => onMove(loop.id, null)}
+                  className="btn btn-sm btn-ghost justify-start rounded-md text-left"
+                >
+                  No folder
+                </button>
+                {folders.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => onMove(loop.id, f.id)}
+                    className="btn btn-sm btn-ghost justify-start truncate rounded-md text-left"
+                    title={f.name}
+                  >
+                    {f.name}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={onMovePickerClose}
+                className="btn btn-sm btn-ghost mt-1 border-t border-base-300 rounded-md text-base-content/60"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div ref={dropdownRef} className="dropdown dropdown-start sm:dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-sm btn-outline" aria-label="Loop actions">
+                Actions
+              </div>
+              <div
+                tabIndex={0}
+                className="dropdown-content z-10 mt-1 w-40 rounded-lg border border-base-300 bg-base-200 py-1 shadow-lg"
+              >
+                <button
+                  type="button"
+                  onClick={() => onLoad(loop)}
+                  className="flex w-full items-center bg-primary px-3 py-2 text-left text-sm font-medium text-primary-content hover:bg-primary/90"
+                >
+                  Load
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeDropdown();
+                    onRenameStart(loop);
+                  }}
+                  className="flex w-full items-center px-3 py-2 text-left text-sm text-base-content hover:bg-base-300"
+                >
+                  Rename
+                </button>
+                {folders.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeDropdown();
+                      onMovePickerOpen();
+                    }}
+                    className="flex w-full items-center px-3 py-2 text-left text-sm text-base-content hover:bg-base-300"
+                  >
+                    Move to folder
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => onDelete(loop.id)}
+                  className="flex w-full items-center px-3 py-2 text-left text-sm text-error hover:bg-base-300"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           )}
         </div>
-      </div>
-      <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
-        <button type="button" onClick={() => onLoad(loop)} className="btn btn-sm btn-primary">
-          Load
-        </button>
-        {folders.length > 0 && (
-          <select
-            className="select select-sm select-bordered w-32 max-w-[8rem]"
-            value={loop.folderId ?? UNCATEGORIZED}
-            onChange={(e) => onMove(loop.id, e.target.value === UNCATEGORIZED ? null : e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            title="Move to folder"
-          >
-            <option value={UNCATEGORIZED}>No folder</option>
-            {folders.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.name}
-              </option>
-            ))}
-          </select>
-        )}
-        <button
-          type="button"
-          onClick={() => onDelete(loop.id)}
-          className="btn btn-sm btn-ghost text-error"
-        >
-          Delete
-        </button>
-      </div>
+      )}
     </div>
   );
 }
@@ -591,6 +699,9 @@ const YouTubeLooper: React.FC = () => {
   const [shareError, setShareError] = useState<string | null>(null);
   const [addedFolderToast, setAddedFolderToast] = useState<string | null>(null);
   const [shareCopiedFolderId, setShareCopiedFolderId] = useState<string | null>(null);
+  const [editingLoopId, setEditingLoopId] = useState<string | null>(null);
+  const [editingLoopName, setEditingLoopName] = useState("");
+  const [moveLoopId, setMoveLoopId] = useState<string | null>(null);
 
   const playerRef = useRef<YTPlayer | null>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -954,6 +1065,17 @@ const YouTubeLooper: React.FC = () => {
     const updatedLoops = savedLoops.map((l) => (l.id === loopId ? { ...l, folderId } : l));
     setSavedLoops(updatedLoops);
     saveSavedLoopsData(folders, updatedLoops);
+    setMoveLoopId(null);
+  };
+
+  const handleRenameLoop = (loopId: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    const updatedLoops = savedLoops.map((l) => (l.id === loopId ? { ...l, name: trimmed } : l));
+    setSavedLoops(updatedLoops);
+    saveSavedLoopsData(folders, updatedLoops);
+    setEditingLoopId(null);
+    setEditingLoopName("");
   };
 
   const createFolder = () => {
@@ -1351,6 +1473,21 @@ const YouTubeLooper: React.FC = () => {
                       onDelete={handleDeleteLoop}
                       onMove={handleMoveLoop}
                       formatTime={formatTime}
+                      isEditing={editingLoopId === loop.id}
+                      editingName={editingLoopName}
+                      onEditingNameChange={setEditingLoopName}
+                      onRenameSave={() => editingLoopId === loop.id && handleRenameLoop(loop.id, editingLoopName)}
+                      onRenameCancel={() => {
+                        setEditingLoopId(null);
+                        setEditingLoopName("");
+                      }}
+                      onRenameStart={(l) => {
+                        setEditingLoopId(l.id);
+                        setEditingLoopName(l.name);
+                      }}
+                      isMovePickerOpen={moveLoopId === loop.id}
+                      onMovePickerOpen={() => setMoveLoopId(loop.id)}
+                      onMovePickerClose={() => setMoveLoopId(null)}
                     />
                   ))}
                 </div>
@@ -1449,6 +1586,21 @@ const YouTubeLooper: React.FC = () => {
                           onDelete={handleDeleteLoop}
                           onMove={handleMoveLoop}
                           formatTime={formatTime}
+                          isEditing={editingLoopId === loop.id}
+                          editingName={editingLoopName}
+                          onEditingNameChange={setEditingLoopName}
+                          onRenameSave={() => editingLoopId === loop.id && handleRenameLoop(loop.id, editingLoopName)}
+                          onRenameCancel={() => {
+                            setEditingLoopId(null);
+                            setEditingLoopName("");
+                          }}
+                          onRenameStart={(l) => {
+                            setEditingLoopId(l.id);
+                            setEditingLoopName(l.name);
+                          }}
+                          isMovePickerOpen={moveLoopId === loop.id}
+                          onMovePickerOpen={() => setMoveLoopId(loop.id)}
+                          onMovePickerClose={() => setMoveLoopId(null)}
                         />
                       ))}
                     </div>
