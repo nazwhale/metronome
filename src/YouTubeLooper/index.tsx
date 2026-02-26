@@ -109,6 +109,8 @@ interface YTPlayer {
   getCurrentTime: () => number;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
   playVideo: () => void;
+  pauseVideo: () => void;
+  getPlayerState: () => number;
   getPlaybackRate: () => number;
   setPlaybackRate: (suggestedRate: number) => void;
   getAvailablePlaybackRates: () => number[];
@@ -702,6 +704,7 @@ const YouTubeLooper: React.FC = () => {
   const [editingLoopId, setEditingLoopId] = useState<string | null>(null);
   const [editingLoopName, setEditingLoopName] = useState("");
   const [moveLoopId, setMoveLoopId] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   const playerRef = useRef<YTPlayer | null>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -870,6 +873,10 @@ const YouTubeLooper: React.FC = () => {
           }
         },
         onStateChange: (event: YTOnStateChangeEvent) => {
+          const playing =
+            event.data === window.YT.PlayerState.PLAYING ||
+            event.data === window.YT.PlayerState.BUFFERING;
+          setIsPlaying(playing);
           // When video ends, restart from loop start if looping whole video
           if (event.data === window.YT.PlayerState.ENDED && !loopEnabled) {
             event.target.seekTo(0, true);
@@ -967,6 +974,61 @@ const YouTubeLooper: React.FC = () => {
     if (playerRef.current) {
       playerRef.current.seekTo(loopStart, true);
     }
+  };
+
+  const handlePlayPause = () => {
+    if (!playerRef.current) return;
+    try {
+      const state = playerRef.current.getPlayerState();
+      if (state === window.YT.PlayerState.PLAYING || state === window.YT.PlayerState.BUFFERING) {
+        playerRef.current.pauseVideo();
+      } else {
+        playerRef.current.playVideo();
+      }
+    } catch {
+      // Player might not be ready
+    }
+  };
+
+  const handleNextSection = () => {
+    const length = loopEnd - loopStart;
+    const newStart = loopEnd;
+    const newEnd = duration > 0 ? Math.min(newStart + length, duration) : newStart + length;
+    setLoopStart(newStart);
+    setLoopEnd(newEnd);
+    if (playerRef.current) {
+      playerRef.current.seekTo(newStart, true);
+    }
+  };
+
+  const handlePreviousSection = () => {
+    const length = loopEnd - loopStart;
+    const newEnd = loopStart;
+    const newStart = Math.max(0, loopStart - length);
+    setLoopStart(newStart);
+    setLoopEnd(newEnd);
+    if (playerRef.current) {
+      playerRef.current.seekTo(newStart, true);
+    }
+  };
+
+  const NUDGE_STEP = 0.25;
+  const handleNudgeStartBack = () => {
+    const newStart = Math.max(0, loopStart - NUDGE_STEP);
+    if (newStart < loopEnd - 0.5) setLoopStart(newStart);
+  };
+  const handleNudgeStartForward = () => {
+    const newStart = Math.min(loopEnd - 0.5, loopStart + NUDGE_STEP);
+    setLoopStart(newStart);
+  };
+  const handleNudgeEndBack = () => {
+    const newEnd = Math.max(loopStart + 0.5, loopEnd - NUDGE_STEP);
+    setLoopEnd(newEnd);
+  };
+  const handleNudgeEndForward = () => {
+    const maxEnd = duration > 0 ? duration : Infinity;
+    const newEnd = Math.min(maxEnd, loopEnd + NUDGE_STEP);
+    if (newEnd > loopStart + 0.5) setLoopEnd(newEnd);
   };
 
   const handleSeek = (time: number) => {
@@ -1225,10 +1287,47 @@ const YouTubeLooper: React.FC = () => {
               <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                 <button
                   type="button"
+                  onClick={handlePlayPause}
+                  className="btn btn-sm btn-primary"
+                  title={isPlaying ? "Pause" : "Play"}
+                  aria-label={isPlaying ? "Pause" : "Play"}
+                >
+                  {isPlaying ? (
+                    <>
+                      <span className="sr-only">Pause</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                    </>
+                  ) : (
+                    <>
+                      <span className="sr-only">Play</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden><path d="M8 5v14l11-7z"/></svg>
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
                   onClick={handleJumpToStart}
-                  className="btn btn-sm btn-ghost"
+                  className="btn btn-sm btn-outline"
                 >
                   Jump to Start
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePreviousSection}
+                  className="btn btn-sm btn-outline"
+                  title="Move loop backward: new end = current start, same length"
+                  disabled={loopStart <= 0}
+                >
+                  Previous Section
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextSection}
+                  className="btn btn-sm btn-outline"
+                  title="Move loop forward: new start = current end, same length"
+                  disabled={duration > 0 && loopEnd >= duration - 0.1}
+                >
+                  Next Section
                 </button>
                 <button
                   type="button"
@@ -1260,24 +1359,68 @@ const YouTubeLooper: React.FC = () => {
               onSeek={handleSeek}
             />
 
-            {/* Set to Current Time buttons */}
-            <div className="flex justify-center gap-4">
-              <button
-                type="button"
-                onClick={() => setLoopStart(currentTime)}
-                className="btn btn-sm btn-outline"
-                disabled={currentTime >= loopEnd - 0.5}
-              >
-                Set Start Here
-              </button>
-              <button
-                type="button"
-                onClick={() => setLoopEnd(currentTime)}
-                className="btn btn-sm btn-outline"
-                disabled={currentTime <= loopStart + 0.5}
-              >
-                Set End Here
-              </button>
+            {/* Set to Current Time buttons with nudge */}
+            <div className="flex justify-center items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={handleNudgeStartBack}
+                  className="btn btn-sm btn-square btn-ghost"
+                  title="Nudge start back 0.25s"
+                  aria-label="Nudge start back 0.25 seconds"
+                  disabled={loopStart <= 0}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoopStart(currentTime)}
+                  className="btn btn-sm btn-outline"
+                  disabled={currentTime >= loopEnd - 0.5}
+                >
+                  Set Start Here
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNudgeStartForward}
+                  className="btn btn-sm btn-square btn-ghost"
+                  title="Nudge start forward 0.25s"
+                  aria-label="Nudge start forward 0.25 seconds"
+                  disabled={loopStart >= loopEnd - 0.5}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={handleNudgeEndBack}
+                  className="btn btn-sm btn-square btn-ghost"
+                  title="Nudge end back 0.25s"
+                  aria-label="Nudge end back 0.25 seconds"
+                  disabled={loopEnd <= loopStart + 0.5}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoopEnd(currentTime)}
+                  className="btn btn-sm btn-outline"
+                  disabled={currentTime <= loopStart + 0.5}
+                >
+                  Set End Here
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNudgeEndForward}
+                  className="btn btn-sm btn-square btn-ghost"
+                  title="Nudge end forward 0.25s"
+                  aria-label="Nudge end forward 0.25 seconds"
+                  disabled={duration > 0 && loopEnd >= duration - 0.1}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </button>
+              </div>
             </div>
 
             {loopEnabled && (
@@ -1285,6 +1428,11 @@ const YouTubeLooper: React.FC = () => {
                 Looping: {formatTime(loopStart)} → {formatTime(loopEnd)}
               </div>
             )}
+
+            <div className="text-sm text-base-content/60 text-center pt-1">
+              <p className="m-0">Drag the handles to set loop start and end points. Use "Copy Link" to share.</p>
+              <p className="m-0 mt-1">The arrows next to Set Start Here / Set End Here nudge the start or end by 0.25 seconds for fine tuning.</p>
+            </div>
           </div>
 
           {/* Speed Controls */}
@@ -1343,10 +1491,6 @@ const YouTubeLooper: React.FC = () => {
           </div>
         )
       )}
-
-      <div className="text-sm text-base-content/60 text-center">
-        <p>Drag the handles to set loop start and end points. Use "Copy Link" to share.</p>
-      </div>
 
       {/* Saved Loops with Folders */}
       <div className="w-full bg-base-200 rounded-lg p-4">
