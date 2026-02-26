@@ -68,6 +68,8 @@ export function getBreadcrumbItems(pathname: string): BreadcrumbItem[] | null {
   let variantLabel: string;
   if (lastSegment === "difference-between-34-and-68") {
     variantLabel = "Difference between 3/4 and 6/8";
+  } else if (lastSegment === "difference-between-32-and-64") {
+    variantLabel = "Difference between 3/2 and 6/4";
   } else if (lastSegment.match(/^\d+-bpm$/)) {
     const bpm = lastSegment.replace(/-bpm$/, "");
     variantLabel = `${bpm} BPM`;

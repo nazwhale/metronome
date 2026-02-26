@@ -117,8 +117,12 @@ const TimeSignatureExamplesPage: React.FC = () => {
         <p className="text-base-content/70 text-sm mt-6">
           <Link to="/time-signature-examples/difference-between-34-and-68" className="link link-primary">
             Compare 3/4 and 6/8
-          </Link>{" "}
-          — side-by-side with FAQs about telling them apart.
+          </Link>
+          {" · "}
+          <Link to="/time-signature-examples/difference-between-32-and-64" className="link link-primary">
+            Compare 3/2 and 6/4
+          </Link>
+          {" — "}side-by-side with FAQs about telling them apart.
         </p>
 
         <div className="divider my-8" />

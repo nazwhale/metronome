@@ -4,7 +4,8 @@ import Post from "./Blog/Post.tsx";
 import Dictionary from "./Dictionary";
 import TermPage from "./Dictionary/TermPage.tsx";
 import All from "./All.tsx";
-import TimeSignatureExamplesDifference from "./TimeSignatureExamples/Difference34And68";
+import TimeSignatureExamplesDifference34And68 from "./TimeSignatureExamples/Difference34And68";
+import TimeSignatureExamplesDifference32And64 from "./TimeSignatureExamples/Difference32And64";
 import EmbedMetronome from "./pages/embed/EmbedMetronome.tsx";
 import EmbedSpeedTrainer from "./pages/embed/EmbedSpeedTrainer.tsx";
 import EmbedYouTubeLooper from "./pages/embed/EmbedYouTubeLooper.tsx";
@@ -58,7 +59,11 @@ const routes = [
   },
   {
     path: "/time-signature-examples/difference-between-34-and-68",
-    element: <TimeSignatureExamplesDifference />,
+    element: <TimeSignatureExamplesDifference34And68 />,
+  },
+  {
+    path: "/time-signature-examples/difference-between-32-and-64",
+    element: <TimeSignatureExamplesDifference32And64 />,
   },
   ...All.map((metronome) => ({
     path: metronome.path,
