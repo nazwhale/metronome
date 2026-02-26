@@ -340,6 +340,14 @@ const formatTime = (seconds: number): string => {
   return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 };
 
+/** Format as "Xm Ys Zms" for clear parsing and nudge feedback. */
+const formatTimeMinsSecsMs = (seconds: number): string => {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  const ms = Math.round((seconds % 1) * 1000);
+  return `${m}m ${s}s ${ms}ms`;
+};
+
 type RangeSliderProps = {
   min: number;
   max: number;
@@ -1425,7 +1433,7 @@ const YouTubeLooper: React.FC = () => {
 
             {loopEnabled && (
               <div className="text-sm text-success text-center">
-                Looping: {formatTime(loopStart)} → {formatTime(loopEnd)}
+                Looping: {formatTimeMinsSecsMs(loopStart)} → {formatTimeMinsSecsMs(loopEnd)}
               </div>
             )}
 
