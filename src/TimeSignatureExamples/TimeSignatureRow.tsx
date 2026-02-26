@@ -37,7 +37,25 @@ export const TimeSignatureRow: React.FC<TimeSignatureRowProps> = ({
         <p className="text-xs text-base-content/50 mt-0.5">{config.beatUnitLabel}</p>
         <p className="text-xs text-base-content/50 mt-1">
           <span className="font-medium text-base-content/60">Examples:</span>{" "}
-          {config.songExamples.join(" · ")}
+          {config.songExamples.map((example, i) => {
+            const href =
+              example === "Flight of the Bumblebee (Rimsky-Korsakov)"
+                ? "https://www.tempotick.com/youtube-looper?v=aYAJopwEYv8"
+                : `https://www.google.com/search?q=${encodeURIComponent(example)}`;
+            return (
+              <React.Fragment key={example}>
+                {i > 0 && " · "}
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link link-primary link-hover"
+                >
+                  {example}
+                </a>
+              </React.Fragment>
+            );
+          })}
         </p>
       </div>
 
