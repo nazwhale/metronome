@@ -20,6 +20,18 @@ const Navigation: React.FC = () => {
             <details ref={detailsRef}>
               <summary>tools</summary>
               <ul className="p-2 bg-base-100 rounded-t-none z-50 end-0 w-max">
+                <li className="list-none w-100%">
+                  <Link
+                    to="/"
+                    onClick={closeDropdown}
+                    className={`link link-hover text-base-content ${location.pathname === "/"
+                      ? "font-semibold underline underline-offset-2"
+                      : ""
+                      }`}
+                  >
+                    All tools
+                  </Link>
+                </li>
                 {All.map((metronome) => (
                   <li key={metronome.path} className="list-none w-100%">
                     <Link

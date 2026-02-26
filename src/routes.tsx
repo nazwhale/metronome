@@ -1,4 +1,4 @@
-import StandardMetronome from "./Metronomes/Standard.tsx";
+import HomePage from "./HomePage.tsx";
 import Blog from "./Blog";
 import Post from "./Blog/Post.tsx";
 import Dictionary from "./Dictionary";
@@ -20,7 +20,7 @@ import BpmMetronomiPage from "./pages/fi/BpmMetronomiPage.tsx";
 const routes = [
   {
     path: "/",
-    element: <StandardMetronome />,
+    element: <HomePage />,
   },
   {
     path: "/articles",
