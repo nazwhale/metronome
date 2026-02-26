@@ -4,6 +4,7 @@ import Post from "./Blog/Post.tsx";
 import Dictionary from "./Dictionary";
 import TermPage from "./Dictionary/TermPage.tsx";
 import All from "./All.tsx";
+import TimeSignatureExamplesDifference from "./TimeSignatureExamples/Difference34And68";
 import EmbedMetronome from "./pages/embed/EmbedMetronome.tsx";
 import EmbedSpeedTrainer from "./pages/embed/EmbedSpeedTrainer.tsx";
 import EmbedYouTubeLooper from "./pages/embed/EmbedYouTubeLooper.tsx";
@@ -54,6 +55,10 @@ const routes = [
   {
     path: "/fi/metronomi/:bpm-bpm",
     element: <BpmMetronomiPage />,
+  },
+  {
+    path: "/time-signature-examples/difference-between-34-and-68",
+    element: <TimeSignatureExamplesDifference />,
   },
   ...All.map((metronome) => ({
     path: metronome.path,

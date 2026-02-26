@@ -72,6 +72,7 @@ export const TOOL_CLUSTERS: { title: string; description?: string; paths: { path
       { path: "/online-metronome", name: "Online Metronome" },
       { path: "/speed-trainer-metronome", name: "Speed Trainer" },
       { path: "/circle-of-fifths-metronome", name: "Circle of Fifths metronome" },
+      { path: "/time-signature-examples", name: "Time signature examples" },
     ],
   },
   {

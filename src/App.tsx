@@ -65,6 +65,7 @@ const Footer = () => {
       "/online-metronome",
       "/circle-of-fifths-metronome",
       "/speed-trainer-metronome",
+      "/time-signature-examples",
       "/youtube-looper",
     ].includes(item.path)
   );

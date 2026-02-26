@@ -1,22 +1,20 @@
 import { Link, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { HOMEPAGE_TOOLS } from "../homepageTools";
-import All from "../All";
+import { TOOL_DISPLAY_NAMES } from "../toolDisplayNames";
 import { BASE_URL } from "../i18n/translations";
 
 export type BreadcrumbItem = { label: string; path?: string };
 
-/** Display name for a path: prefer HOMEPAGE_TOOLS (title case), else All (sentence case), else format path. */
+/** Display name for a path: prefer HOMEPAGE_TOOLS (title case), else TOOL_DISPLAY_NAMES, else format path. */
 const TOOL_NAMES: Record<string, string> = (() => {
   const map: Record<string, string> = {};
   HOMEPAGE_TOOLS.forEach((t) => {
     map[t.path] = t.name;
   });
-  All.forEach((t) => {
-    if (!map[t.path]) map[t.path] = t.name;
+  Object.entries(TOOL_DISPLAY_NAMES).forEach(([path, name]) => {
+    if (!map[path]) map[path] = name;
   });
-  map["/es/metronomo"] = "metronomo";
-  map["/fi/metronomi"] = "metronomi";
   return map;
 })();
 
@@ -68,7 +66,9 @@ export function getBreadcrumbItems(pathname: string): BreadcrumbItem[] | null {
   const lastSegment = segments[segments.length - 1];
 
   let variantLabel: string;
-  if (lastSegment.match(/^\d+-bpm$/)) {
+  if (lastSegment === "difference-between-34-and-68") {
+    variantLabel = "Difference between 3/4 and 6/8";
+  } else if (lastSegment.match(/^\d+-bpm$/)) {
     const bpm = lastSegment.replace(/-bpm$/, "");
     variantLabel = `${bpm} BPM`;
   } else {

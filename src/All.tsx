@@ -7,6 +7,7 @@ import YouTubeLooper from "./YouTubeLooper/index.tsx";
 import ChordProgressionTrainer from "./ChordProgressionTrainer/index.tsx";
 import MelodicDictationTrainer from "./MelodicDictationTrainer/index.tsx";
 import GuitarTriadTrainer from "./GuitarTriadTrainer/index.tsx";
+import TimeSignatureExamples from "./TimeSignatureExamples";
 
 const All = [
   {
@@ -53,6 +54,11 @@ const All = [
     path: "/articles",
     component: Blog,
     name: "articles",
+  },
+  {
+    path: "/time-signature-examples",
+    component: TimeSignatureExamples,
+    name: "time signature examples",
   },
 ];
 
