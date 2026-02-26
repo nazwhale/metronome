@@ -83,6 +83,13 @@ export function getBreadcrumbItems(pathname: string): BreadcrumbItem[] | null {
   ];
 }
 
+/** Current page label for nav (e.g. "Online Metronome", "80 BPM"). Returns null for home or embed. */
+export function getCurrentPageLabel(pathname: string): string | null {
+  const items = getBreadcrumbItems(pathname);
+  if (!items || items.length === 0) return null;
+  return items[items.length - 1].label;
+}
+
 type Props = {
   /** Optional override items (e.g. when page has a specific title for the last segment). */
   items?: BreadcrumbItem[] | null;

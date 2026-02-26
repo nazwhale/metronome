@@ -3,7 +3,7 @@ import "./App.css";
 import Navigation from "./Nav";
 import routes from "./routes.tsx";
 import All from "./All.tsx";
-import Breadcrumbs from "./components/Breadcrumbs";
+import Breadcrumbs, { getCurrentPageLabel } from "./components/Breadcrumbs";
 
 function AppContent() {
   const location = useLocation();
@@ -25,7 +25,7 @@ function AppContent() {
       <div className="navbar bg-neutral text-neutral-content rounded-box mb-8">
         <div className="flex-1 px-2 lg:flex-none">
           <Link to="/" className="text-lg font-semibold hover:opacity-80">
-            tempotick <span className="text-neutral-content/60">tools</span>
+            tempotick <span className="text-neutral-content/60">{(getCurrentPageLabel(location.pathname) ?? "music tools").toLowerCase()}</span>
           </Link>
         </div>
         <div className="flex justify-end flex-1 px-2">
