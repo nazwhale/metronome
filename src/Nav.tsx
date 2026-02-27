@@ -50,15 +50,14 @@ const Navigation: React.FC = () => {
             </details>
           </li>
           <li>
-            <Link
-              to="/dictionary"
-              className={`link link-hover focus-visible:text-neutral-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-content focus-visible:ring-offset-2 focus-visible:ring-offset-neutral ${location.pathname.startsWith("/dictionary")
-                ? "text-neutral-content font-semibold underline underline-offset-4"
-                : ""
-                }`}
+            <a
+              href="https://forms.gle/bx26SRnHDHzv5TF68"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-hover focus-visible:text-neutral-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-content focus-visible:ring-offset-2 focus-visible:ring-offset-neutral"
             >
-              dictionary
-            </Link>
+              feedback?
+            </a>
           </li>
         </ul>
       </div>
