@@ -8,6 +8,7 @@ import ChordProgressionTrainer from "./ChordProgressionTrainer/index.tsx";
 import MelodicDictationTrainer from "./MelodicDictationTrainer/index.tsx";
 import GuitarTriadTrainer from "./GuitarTriadTrainer/index.tsx";
 import TimeSignatureExamples from "./TimeSignatureExamples";
+import ChordChartConverter from "./ChordChartConverter";
 
 const All = [
   {
@@ -59,6 +60,11 @@ const All = [
     path: "/time-signature-examples",
     component: TimeSignatureExamples,
     name: "time signature examples",
+  },
+  {
+    path: "/chord-chart-converter",
+    component: ChordChartConverter,
+    name: "Roman Numeral Chord Translator",
   },
 ];
 

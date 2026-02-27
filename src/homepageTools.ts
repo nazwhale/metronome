@@ -55,6 +55,13 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     applicationCategory: "ReferenceApplication",
   },
   {
+    path: "/chord-chart-converter",
+    name: "Roman Numeral Chord Translator",
+    benefit: "Build a chord progression and see Roman numerals in your chosen key. Share or copy the result.",
+    chips: ["Key & chords", "Diatonic quick-add", "Shareable link"],
+    applicationCategory: "ReferenceApplication",
+  },
+  {
     path: "/circle-of-fifths-metronome",
     name: "Circle of Fifths Metronome",
     benefit: "Practice with a metronome that cycles through keys—great for theory and key awareness.",
@@ -86,6 +93,7 @@ export const TOOL_CLUSTERS: { title: string; description?: string; paths: { path
     title: "Theory & vocabulary",
     paths: [
       { path: "/dictionary", name: "Musical Dictionary" },
+      { path: "/chord-chart-converter", name: "Roman Numeral Chord Translator" },
     ],
   },
   {

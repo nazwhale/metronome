@@ -50,6 +50,7 @@ export default defineConfig({
         "/chord-progression-trainer",
         "/melodic-dictation-trainer",
         "/prompts-for-guitar",
+        "/chord-chart-converter",
         "/articles",
         ...getArticleSlugs(),
         "/dictionary",

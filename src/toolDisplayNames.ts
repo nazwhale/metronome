@@ -14,6 +14,7 @@ export const TOOL_DISPLAY_NAMES: Record<string, string> = {
   "/guitar-triad-trainer": "guitar triad trainer",
   "/articles": "articles",
   "/time-signature-examples": "time signature examples",
+  "/chord-chart-converter": "Roman Numeral Chord Translator",
   "/es/metronomo": "metronomo",
   "/fi/metronomi": "metronomi",
 };
