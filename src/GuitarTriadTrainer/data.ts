@@ -291,7 +291,7 @@ export function getTotalLevels(): number {
 }
 
 /** Cards in this level (before shuffle). For UI only. */
-export function getLevelDeckSize(level: number): number {
+export function getLevelDeckSize(_level: number): number {
   return CARDS_PER_DECK;
 }
 
