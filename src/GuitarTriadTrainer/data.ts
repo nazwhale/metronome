@@ -266,24 +266,26 @@ const KEYS_CIRCLE_OF_FIFTHS: Key[] = [
   "F",
 ];
 
-/** Curriculum: 12 keys (circle of fifths) × 3 positions = 36 cards. Deck N = slice of 10. */
+/** Curriculum: 12 keys (circle of fifths) × 3 positions = 36 cards. */
 export const CURRICULUM: CardId[] = KEYS_CIRCLE_OF_FIFTHS.flatMap((key) =>
   (["root", "1st", "2nd"] as const).map((position) => ({ key, position }))
 );
 
-/** Level 3: 6 keys (formerly levels 3 and 4). 10 random cards from this pool. */
-const KEYS_LEVEL_3: Key[] = ["F#", "C#", "G#", "D#", "A#", "F"];
-const LEVEL_3_POOL: CardId[] = CURRICULUM.filter((c) => KEYS_LEVEL_3.includes(c.key));
+/** 4 keys per level (circle of fifths). Level 1: C,G,D,A; 2: E,B,F#,C#; 3: G#,D#,A#,F. */
+const KEYS_BY_LEVEL: Record<number, Key[]> = {
+  1: ["C", "G", "D", "A"],
+  2: ["E", "B", "F#", "C#"],
+  3: ["G#", "D#", "A#", "F"],
+};
 
 export const CARDS_PER_DECK = 10;
 
 export function getDeckForLevel(level: number): CardId[] {
-  if (level === 3) {
-    const shuffled = [...LEVEL_3_POOL].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, CARDS_PER_DECK);
-  }
-  const start = (level - 1) * CARDS_PER_DECK;
-  return CURRICULUM.slice(start, start + CARDS_PER_DECK);
+  const keys = KEYS_BY_LEVEL[level];
+  if (!keys) return [];
+  const pool = CURRICULUM.filter((c) => keys.includes(c.key));
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, CARDS_PER_DECK);
 }
 
 export function getTotalLevels(): number {
@@ -301,12 +303,10 @@ export function getSecondsPerCard(level: number): number {
   return byLevel[level] ?? 7;
 }
 
-/** Keys (circle-of-fifths order) covered in this level's deck, for UI. */
+/** Keys for this level (4 keys, circle of fifths). */
 export function getKeysForLevel(level: number): Key[] {
-  if (level === 3) return [...KEYS_LEVEL_3];
-  const deck = getDeckForLevel(level);
-  const keysInDeck = new Set(deck.map((c) => c.key));
-  return KEYS_CIRCLE_OF_FIFTHS.filter((k) => keysInDeck.has(k));
+  const keys = KEYS_BY_LEVEL[level];
+  return keys ? [...keys] : [];
 }
 
 export function cardId(card: CardId): string {
