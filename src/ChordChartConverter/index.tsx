@@ -128,7 +128,9 @@ export default function ChordChartConverter() {
 
   const [keyState, setKeyState] = useState<Key>(() => {
     const k = searchParams.get("k");
-    return (k && paramToKey(k)) ?? DEFAULT_KEY;
+    if (!k) return DEFAULT_KEY;
+    const parsed = paramToKey(k);
+    return parsed ?? DEFAULT_KEY;
   });
   const [progression, setProgression] = useState<Chord[]>(() => {
     const c = searchParams.get("c");
