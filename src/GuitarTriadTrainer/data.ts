@@ -29,25 +29,35 @@ export const POSITIONS = ["root", "1st", "2nd"] as const;
 
 export type Position = (typeof POSITIONS)[number];
 
-/** Stage 1 = G-B-e, Stage 2 = D-G-B. Same curriculum (keys × positions); fret positions differ by string set. */
-export type Stage = 1 | 2;
+/** Stage 1 = G-B-e, Stage 2 = D-G-B, Stage 3 = mixed (each card uses G-B-e or D-G-B). */
+export type Stage = 1 | 2 | 3;
+
+/** String set stage (1 or 2). Stage 3 uses this per-card. */
+export type StringSetStage = 1 | 2;
 
 /** String set: open note semitones (C=0). Index 0 = lowest string in set, 2 = highest. */
-const STRING_OPEN_BY_STAGE: Record<Stage, number[]> = {
+const STRING_OPEN_BY_STAGE: Record<StringSetStage, number[]> = {
   1: [7, 11, 4],   // G, B, e
   2: [2, 7, 11],   // D, G, B
 };
 
-/** Human-readable string set label per stage (e.g. for clues). */
+/** Human-readable string set label per stage (e.g. for clues). Stage 3 is generic; per-card label comes from StringSetStage. */
 export const STRING_SET_LABEL: Record<Stage, string> = {
   1: "G–B–e",
   2: "D–G–B",
+  3: "G–B–e & D–G–B (mixed)",
 };
 
-/** String labels by stage for diagrams: [lowest, middle, highest] = index 0, 1, 2. */
-export const STRING_LABELS_BY_STAGE: Record<Stage, [string, string, string]> = {
+/** String labels by string-set stage for diagrams: [lowest, middle, highest] = index 0, 1, 2. */
+export const STRING_LABELS_BY_STAGE: Record<StringSetStage, [string, string, string]> = {
   1: ["G", "B", "e"],
   2: ["D", "G", "B"],
+};
+
+/** Full 6-string tab labels for "Play in this range" (high to low: e, B, G, D, A, E). Triad strings show name; others show "x". */
+export const TAB_STRING_LABELS_BY_STAGE: Record<StringSetStage, readonly [string, string, string, string, string, string]> = {
+  1: ["e", "B", "G", "x", "x", "x"],
+  2: ["x", "B", "G", "D", "x", "x"],
 };
 
 const KEY_TO_SEMITONE: Record<string, number> = {
@@ -139,9 +149,9 @@ export function getTriadPositions(key: Key, position: Position): TriadPosition[]
   return getTriadPositionsWithStringOpen(STRING_OPEN_BY_STAGE[1], key, position);
 }
 
-/** Positions for the given stage (string set). */
+/** Positions for the given string-set stage (1 or 2). For Stage 3, pass the card’s effective stage. */
 export function getTriadPositionsForStage(
-  stage: Stage,
+  stage: StringSetStage,
   key: Key,
   position: Position
 ): TriadPosition[] {
@@ -158,9 +168,9 @@ export function getFretWindow(key: Key, position: Position): [number, number] {
   return [Math.min(...frets), Math.max(...frets)];
 }
 
-/** Fret window for the given stage. */
+/** Fret window for the given string-set stage. */
 export function getFretWindowForStage(
-  stage: Stage,
+  stage: StringSetStage,
   key: Key,
   position: Position
 ): [number, number] {
@@ -175,7 +185,7 @@ const WIDTH_PROMPT_WINDOW = 5;
  * All 5-fret-wide windows that contain the triad. Each window is [start, start+4] (0-based).
  */
 function getPromptFretWindowOptions(
-  stage: Stage,
+  stage: StringSetStage,
   key: Key,
   position: Position
 ): [number, number][] {
@@ -212,9 +222,9 @@ export function getPromptFretWindow(key: Key, position: Position): [number, numb
   return options[index];
 }
 
-/** Prompt fret window for the given stage. */
+/** Prompt fret window for the given string-set stage. */
 export function getPromptFretWindowForStage(
-  stage: Stage,
+  stage: StringSetStage,
   key: Key,
   position: Position
 ): [number, number] {
@@ -222,6 +232,12 @@ export function getPromptFretWindowForStage(
   const seed = hashString(`${key}|${position}`);
   const index = seed % options.length;
   return options[index];
+}
+
+/** For Stage 3: deterministic string set (1 or 2) per card so the same deck position always gets the same set. */
+export function getEffectiveStageForCard(card: CardId, cardIndex: number, level: number): StringSetStage {
+  const seed = hashString(`${cardId(card)}|${level}|${cardIndex}`);
+  return (seed % 2 === 0 ? 1 : 2) as StringSetStage;
 }
 
 /** Format a 0-based fret window for display. Uses 0-based to match diagram labels so the clue and answer align. */
@@ -260,14 +276,8 @@ const KEYS_LEVEL_3: Key[] = ["F#", "C#", "G#", "D#", "A#", "F"];
 const LEVEL_3_POOL: CardId[] = CURRICULUM.filter((c) => KEYS_LEVEL_3.includes(c.key));
 
 export const CARDS_PER_DECK = 10;
-export const BOSS_LEVEL = 4;
-export const BOSS_DECK_SIZE = 20;
 
 export function getDeckForLevel(level: number): CardId[] {
-  if (level === BOSS_LEVEL) {
-    const shuffled = [...CURRICULUM].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, BOSS_DECK_SIZE);
-  }
   if (level === 3) {
     const shuffled = [...LEVEL_3_POOL].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, CARDS_PER_DECK);
@@ -277,23 +287,22 @@ export function getDeckForLevel(level: number): CardId[] {
 }
 
 export function getTotalLevels(): number {
-  return BOSS_LEVEL;
+  return 3;
 }
 
 /** Cards in this level (before shuffle). For UI only. */
 export function getLevelDeckSize(level: number): number {
-  return level === BOSS_LEVEL ? BOSS_DECK_SIZE : CARDS_PER_DECK;
+  return CARDS_PER_DECK;
 }
 
-/** Seconds allowed per card before losing a life (flip in time). Level 1=9s, 2=8s, 3=7s, 4 (Boss)=5s. */
+/** Seconds allowed per card before losing a life (flip in time). Level 1=9s, 2=8s, 3=7s. */
 export function getSecondsPerCard(level: number): number {
-  const byLevel: Record<number, number> = { 1: 9, 2: 8, 3: 7, 4: 5 };
-  return byLevel[level] ?? 5;
+  const byLevel: Record<number, number> = { 1: 9, 2: 8, 3: 7 };
+  return byLevel[level] ?? 7;
 }
 
-/** Keys (circle-of-fifths order) covered in this level's deck, for UI. Boss = all keys. */
+/** Keys (circle-of-fifths order) covered in this level's deck, for UI. */
 export function getKeysForLevel(level: number): Key[] {
-  if (level === BOSS_LEVEL) return [...KEYS_CIRCLE_OF_FIFTHS];
   if (level === 3) return [...KEYS_LEVEL_3];
   const deck = getDeckForLevel(level);
   const keysInDeck = new Set(deck.map((c) => c.key));

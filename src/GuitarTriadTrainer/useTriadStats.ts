@@ -37,6 +37,7 @@ function normalizeUnlockedByStage(
   return {
     1: (byStage && typeof byStage["1"] === "number" ? byStage["1"] : legacy),
     2: (byStage && typeof byStage["2"] === "number" ? byStage["2"] : 1),
+    3: (byStage && typeof byStage["3"] === "number" ? byStage["3"] : 1),
   };
 }
 

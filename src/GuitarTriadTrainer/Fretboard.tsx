@@ -9,11 +9,11 @@ export function FretRangeDiagram({
   stringLabels,
 }: {
   fretWindow: [number, number];
-  stringLabels: [string, string, string];
+  /** Full 6 strings high to low (e, B, G, D, A, E). Triad strings show name; others show "x". */
+  stringLabels: readonly [string, string, string, string, string, string];
 }) {
   const [minFret, maxFret] = fretWindow;
   const fretCount = maxFret - minFret + 1;
-  const labelByIndex = (i: number) => stringLabels[i];
 
   return (
     <div
@@ -22,10 +22,12 @@ export function FretRangeDiagram({
       aria-label={`Fret range ${minFret} to ${maxFret}`}
     >
       <div className="flex flex-col gap-0 py-1 px-1">
-        {STRING_ORDER.map((stringIndex) => (
+        {stringLabels.map((label, stringIndex) => (
           <div key={stringIndex} className="flex items-center gap-0">
-            <span className="w-4 text-base-content/60 text-xs mr-1.5 flex justify-center">
-              {labelByIndex(stringIndex)}
+            <span
+              className={`w-4 mr-1.5 flex justify-center ${label === "x" ? "text-xs text-base-content/40" : "text-sm text-base-content/85"}`}
+            >
+              {label}
             </span>
             <div className="flex">
               {Array.from({ length: fretCount }, (_, i) => (
@@ -41,14 +43,17 @@ export function FretRangeDiagram({
         ))}
       </div>
       <div className="flex pl-5 mt-0.5 px-1">
-        {Array.from({ length: fretCount }, (_, i) => (
-          <span
-            key={i}
-            className="w-7 text-center text-base-content/50 text-xs tabular-nums"
-          >
-            {minFret + i}
-          </span>
-        ))}
+        {Array.from({ length: fretCount }, (_, i) => {
+          const isMiddleFret = i === Math.floor(fretCount / 2);
+          return (
+            <span
+              key={i}
+              className={`w-7 text-center tabular-nums ${isMiddleFret ? "text-sm text-base-content/80 font-medium" : "text-xs text-base-content/50"}`}
+            >
+              {minFret + i}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

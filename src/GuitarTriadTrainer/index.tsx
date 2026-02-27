@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import Flashcard, { type Result } from "./Flashcard";
-import { getDeckForLevel, getKeysForLevel, getLevelDeckSize, getSecondsPerCard, getTotalLevels, BOSS_LEVEL, type CardId, type Stage } from "./data";
+import { getDeckForLevel, getKeysForLevel, getLevelDeckSize, getSecondsPerCard, getTotalLevels, getEffectiveStageForCard, type CardId, type Stage } from "./data";
 import { useTriadStats } from "./useTriadStats";
 import QandA, { type QAItem } from "../components/QandA";
 import ToolPracticeGuide from "../components/ToolPracticeGuide";
@@ -105,6 +105,7 @@ const GuitarTriadTrainer = () => {
   const [flipTimeMs, setFlipTimeMs] = useState<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [runResults, setRunResults] = useState<{ card: CardId; result: Result; flipTimeMs: number; lifeLost: boolean }[]>([]);
+  const [deckStages, setDeckStages] = useState<(1 | 2)[] | null>(null);
   const cardShownAtRef = useRef<number>(0);
   const recordedRunRef = useRef(false);
   const currentIndexRef = useRef(0);
@@ -132,7 +133,9 @@ const GuitarTriadTrainer = () => {
       recordedRunRef.current = false;
       unlockedLevelAtRunStartRef.current = unlockedLevelByStage[stg];
       setStage(stg);
-      setDeck(shuffleDeck(getDeckForLevel(lvl)));
+      const shuffled = shuffleDeck(getDeckForLevel(lvl));
+      setDeck(shuffled);
+      setDeckStages(stg === 3 ? shuffled.map((card, i) => getEffectiveStageForCard(card, i, lvl)) : null);
       setCurrentIndex(0);
       setFlipped(false);
       setLevel(lvl);
@@ -279,7 +282,7 @@ const GuitarTriadTrainer = () => {
             </div>
 
             <section>
-              <h2 className="text-xl font-semibold mb-1 text-left">Stage 1</h2>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 1 – Major, G–B–e string set</h2>
               <p className="text-sm text-base-content/70 mb-4 text-left">
                 Major triads on G-B-e (root, 1st, 2nd inversion). Keys follow the circle of fifths.
               </p>
@@ -301,11 +304,11 @@ const GuitarTriadTrainer = () => {
                             disabled={!isUnlocked}
                             onClick={() => startLevel(lvl, 1)}
                           >
-                            {lvl === BOSS_LEVEL ? `Level ${lvl} (Boss)` : `Level ${lvl}`}
+                            Level {lvl}
                           </button>
                           <span className="text-sm text-base-content/70">
                             {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
-                            {lvl === BOSS_LEVEL ? " · Boss · All keys (random)" : ` · Keys: ${keys.join(", ")}`}
+                            {` · Keys: ${keys.join(", ")}`}
                           </span>
                         </div>
                         {best && (() => {
@@ -341,7 +344,7 @@ const GuitarTriadTrainer = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-1 text-left">Stage 2</h2>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 2 – Major, D–G–B string set</h2>
               <p className="text-sm text-base-content/70 mb-4 text-left">
                 Major triads on D-G-B (root, 1st, 2nd inversion). Keys follow the circle of fifths.
               </p>
@@ -363,11 +366,73 @@ const GuitarTriadTrainer = () => {
                             disabled={!isUnlocked}
                             onClick={() => startLevel(lvl, 2)}
                           >
-                            {lvl === BOSS_LEVEL ? `Level ${lvl} (Boss)` : `Level ${lvl}`}
+                            Level {lvl}
                           </button>
                           <span className="text-sm text-base-content/70">
                             {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
-                            {lvl === BOSS_LEVEL ? " · Boss · All keys (random)" : ` · Keys: ${keys.join(", ")}`}
+                            {` · Keys: ${keys.join(", ")}`}
+                          </span>
+                        </div>
+                        {best && (() => {
+                          const bestStars = getStarRating(best.livesLost, best.averageTimeMs, getSecondsPerCard(lvl) * 1000);
+                          return (
+                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center justify-between gap-2">
+                              <span className="flex items-center gap-1" role="img" aria-label={`Best run: ${LIVES_PER_LEVEL - best.livesLost} lives left`}>
+                                <span className="text-base-content/70 font-medium">Best run:</span>
+                                <span aria-hidden>{"♥".repeat(LIVES_PER_LEVEL - best.livesLost)}</span>
+                                {best.averageTimeMs < Infinity && (
+                                  <span aria-hidden>
+                                    {(best.averageTimeMs / 1000) < 10
+                                      ? (best.averageTimeMs / 1000).toFixed(1)
+                                      : Math.round(best.averageTimeMs / 1000)}s avg
+                                  </span>
+                                )}
+                              </span>
+                              <span className="flex items-center gap-0.5 ml-auto" role="img" aria-label={`${bestStars} out of 5 stars`}>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <span key={i} className="text-warning text-base" aria-hidden>
+                                    {i <= bestStars ? "★" : "☆"}
+                                  </span>
+                                ))}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 3 – Major, 2 string sets</h2>
+              <p className="text-sm text-base-content/70 mb-4 text-left">
+                Mixed: each card uses either G–B–e or D–G–B (same levels and keys as above).
+              </p>
+              <div className="flex flex-col gap-3">
+                {Array.from({ length: getTotalLevels() }, (_, i) => i + 1).map(
+                  (lvl) => {
+                    const keys = getKeysForLevel(lvl);
+                    const isUnlocked = lvl <= unlockedLevelByStage[3];
+                    const best = bestRunForLevel(3, lvl);
+                    return (
+                      <div
+                        key={`s3-${lvl}`}
+                        className={`rounded-lg border p-3 flex flex-col gap-2 ${isUnlocked ? "border-base-300 bg-base-200/50" : "border-base-300/50 bg-base-200/30 opacity-75"}`}
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${isUnlocked ? "btn-primary" : "btn-disabled"}`}
+                            disabled={!isUnlocked}
+                            onClick={() => startLevel(lvl, 3)}
+                          >
+                            Level {lvl}
+                          </button>
+                          <span className="text-sm text-base-content/70">
+                            {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
+                            {` · Keys: ${keys.join(", ")}`}
                           </span>
                         </div>
                         {best && (() => {
@@ -450,6 +515,7 @@ const GuitarTriadTrainer = () => {
             <Flashcard
               card={currentCard}
               stage={stage}
+              cardStage={stage === 3 && deckStages ? deckStages[currentIndex] : undefined}
               flipped={flipped}
               timeProgress={Math.min(1, elapsedMs / maxMsPerCard)}
               secondsPerCard={secondsPerCard}
@@ -565,15 +631,15 @@ const GuitarTriadTrainer = () => {
         <ToolPracticeGuide
           title="How to Practice with the Guitar Triad Trainer"
           features={[
-            "Stage 1: major triads on G–B–e; Stage 2: major triads on D–G–B (root, 1st, 2nd inversion)",
-            "Levels by key (circle of fifths) plus a Boss level with all keys",
+            "Stage 1: G–B–e; Stage 2: D–G–B; Stage 3: mixed (each card G–B–e or D–G–B). Root, 1st, 2nd inversion.",
+            "Levels by key (circle of fifths)",
             "3 lives per run — wrong answers and timeouts cost a life",
             "Time limit per card (e.g. 8s or 6s) to build quick recognition",
             "Keyboard shortcuts — Space to flip, ← / → to mark Got it / Miss",
             "Free — no ads, no account",
           ]}
           howToUseSteps={[
-            "Pick a level (start at Level 1). Each level adds more keys; the Boss level mixes all keys.",
+            "Pick a level (start at Level 1). Each level adds more keys.",
             "Start the deck. You’ll see a clue: the string set (G–B–e), which chord tone is in the bass (root, 1st, or 2nd inversion), and the key.",
             "Say or play the triad shape, then flip the card (click or press Space) to see the answer.",
             "Mark yourself: Got it (or press →) if you were right, Miss (or press ←) if you weren’t. Wrong answers and timeouts cost a life.",
@@ -595,7 +661,7 @@ const GuitarTriadTrainer = () => {
           settingsExplained={
             <>
               <p className="m-0">
-                <strong>Stages:</strong> Stage 1 = G–B–e, Stage 2 = D–G–B. Each has major triads in root, 1st, and 2nd inversion. Keys follow the circle of fifths (Level 1 = fewer keys, Boss = all keys). Each level shows deck size and seconds per card.
+                <strong>Stages:</strong> Stage 1 = G–B–e, Stage 2 = D–G–B, Stage 3 = mixed (each card uses one set). Major triads in root, 1st, and 2nd inversion. Keys follow the circle of fifths. Each level shows deck size and seconds per card.
               </p>
               <p className="m-0 mt-1.5">
                 <strong>Lives & time:</strong> You get 3 lives per run. You lose a life for a wrong answer or if you don’t flip before the time limit. The limit (e.g. 8s or 6s per card) is shown on the level button.
