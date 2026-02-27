@@ -525,6 +525,20 @@ export const dictionaryTerms: DictionaryTerm[] = [
     ],
   },
   {
+    term: "Passaggio",
+    slug: "passaggio",
+    shortDefinition: "The transition zone between vocal registers where the voice shifts in quality.",
+    fullDefinition:
+      "Passaggio (Italian for 'passage') refers to the part of a singer's range where the voice transitions from one register to another—for example, from chest voice to head voice, or through the middle register. In this zone, the tone and feel of the voice can change noticeably, and many singers work on blending the registers so the passaggio sounds smooth rather than abrupt.\n\n" +
+      "Classical and opera singers often train specifically to navigate the passaggio with even tone and consistent support. The exact pitches of the passaggio vary by voice type (soprano, tenor, baritone, etc.).",
+    tags: ["Vocal", "Voice Type"],
+    relatedTerms: ["Soprano", "Tenor", "Baritone", "Alto", "Opera"],
+    examples: [
+      "A tenor's passaggio often lies around D4 to F4",
+      "Singers use exercises to smooth out the passaggio and unify registers",
+    ],
+  },
+  {
     term: "Presto",
     slug: "presto",
     shortDefinition: "A very fast tempo, typically 168-200 BPM.",
