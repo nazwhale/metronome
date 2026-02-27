@@ -29,35 +29,52 @@ export const POSITIONS = ["root", "1st", "2nd"] as const;
 
 export type Position = (typeof POSITIONS)[number];
 
-/** Stage 1 = G-B-e, Stage 2 = D-G-B, Stage 3 = mixed (each card uses G-B-e or D-G-B). */
-export type Stage = 1 | 2 | 3;
+/** Triad quality: major (1–3–5) or minor (1–♭3–5). */
+export type Quality = "major" | "minor";
 
-/** String set stage (1 or 2). Stage 3 uses this per-card. */
-export type StringSetStage = 1 | 2;
+/** Stage 1 = G-B-e major, 2 = G-B-e minor, 3 = G-B-e mixed major/minor, 4 = D-G-B major, 5 = D-G-B minor, 6 = mixed major/minor on 2 sets (G-B-e & D-G-B), 7 = A-D-G major. */
+export type Stage = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+/** String set stage (1, 2, or 4). Stage 6 uses this per-card (1 or 2). */
+export type StringSetStage = 1 | 2 | 4;
 
 /** String set: open note semitones (C=0). Index 0 = lowest string in set, 2 = highest. */
 const STRING_OPEN_BY_STAGE: Record<StringSetStage, number[]> = {
   1: [7, 11, 4],   // G, B, e
   2: [2, 7, 11],   // D, G, B
+  4: [9, 2, 7],    // A, D, G
 };
 
-/** Human-readable string set label per stage (e.g. for clues). Stage 3 is generic; per-card label comes from StringSetStage. */
+/** Human-readable string set label per stage (e.g. for section headers). */
 export const STRING_SET_LABEL: Record<Stage, string> = {
   1: "G–B–e",
+  2: "G–B–e",
+  3: "G–B–e",
+  4: "D–G–B",
+  5: "D–G–B",
+  6: "G–B–e & D–G–B (mixed)",
+  7: "A–D–G",
+};
+
+/** String set label by StringSetStage (for card "String set" line). */
+export const STRING_SET_LABEL_BY_STRING_SET: Record<StringSetStage, string> = {
+  1: "G–B–e",
   2: "D–G–B",
-  3: "G–B–e & D–G–B (mixed)",
+  4: "A–D–G",
 };
 
 /** String labels by string-set stage for diagrams: [lowest, middle, highest] = index 0, 1, 2. */
 export const STRING_LABELS_BY_STAGE: Record<StringSetStage, [string, string, string]> = {
   1: ["G", "B", "e"],
   2: ["D", "G", "B"],
+  4: ["A", "D", "G"],
 };
 
 /** Full 6-string tab labels for "Play in this range" (high to low: e, B, G, D, A, E). Triad strings show name; others show "x". */
 export const TAB_STRING_LABELS_BY_STAGE: Record<StringSetStage, readonly [string, string, string, string, string, string]> = {
   1: ["e", "B", "G", "x", "x", "x"],
   2: ["x", "B", "G", "D", "x", "x"],
+  4: ["x", "x", "G", "D", "A", "x"],
 };
 
 const KEY_TO_SEMITONE: Record<string, number> = {
@@ -93,9 +110,12 @@ export interface TriadPosition {
   degree: 1 | 3 | 5;
 }
 
-function getTriadSemitones(key: Key): [number, number, number] {
+function getTriadSemitones(key: Key, quality: Quality = "major"): [number, number, number] {
   const root = KEY_TO_SEMITONE[key] ?? 0;
-  return [root, (root + 4) % 12, (root + 7) % 12];
+  if (quality === "minor") {
+    return [root, (root + 3) % 12, (root + 7) % 12]; // 1, ♭3, 5
+  }
+  return [root, (root + 4) % 12, (root + 7) % 12]; // 1, 3, 5
 }
 
 /** First fret on string that produces the note (0–11). */
@@ -112,9 +132,10 @@ function fretForNoteFirst(stringOpen: number[], stringIndex: number, note: numbe
 function getTriadPositionsWithStringOpen(
   stringOpen: number[],
   key: Key,
-  position: Position
+  position: Position,
+  quality: Quality = "major"
 ): TriadPosition[] {
-  const [root, third, fifth] = getTriadSemitones(key);
+  const [root, third, fifth] = getTriadSemitones(key, quality);
   const roles = POSITION_ROLES[position];
   const notes = [root, third, fifth];
   const roleToDegree = (r: number): 1 | 3 | 5 => (r === 0 ? 1 : r === 1 ? 3 : 5);
@@ -149,13 +170,14 @@ export function getTriadPositions(key: Key, position: Position): TriadPosition[]
   return getTriadPositionsWithStringOpen(STRING_OPEN_BY_STAGE[1], key, position);
 }
 
-/** Positions for the given string-set stage (1 or 2). For Stage 3, pass the card’s effective stage. */
+/** Positions for the given string-set stage. For Stage 6 (minor), pass quality "minor". */
 export function getTriadPositionsForStage(
   stage: StringSetStage,
   key: Key,
-  position: Position
+  position: Position,
+  quality: Quality = "major"
 ): TriadPosition[] {
-  return getTriadPositionsWithStringOpen(STRING_OPEN_BY_STAGE[stage], key, position);
+  return getTriadPositionsWithStringOpen(STRING_OPEN_BY_STAGE[stage], key, position, quality);
 }
 
 /**
@@ -172,9 +194,10 @@ export function getFretWindow(key: Key, position: Position): [number, number] {
 export function getFretWindowForStage(
   stage: StringSetStage,
   key: Key,
-  position: Position
+  position: Position,
+  quality: Quality = "major"
 ): [number, number] {
-  const positions = getTriadPositionsForStage(stage, key, position);
+  const positions = getTriadPositionsForStage(stage, key, position, quality);
   const frets = positions.map((p) => p.fret);
   return [Math.min(...frets), Math.max(...frets)];
 }
@@ -187,9 +210,10 @@ const WIDTH_PROMPT_WINDOW = 5;
 function getPromptFretWindowOptions(
   stage: StringSetStage,
   key: Key,
-  position: Position
+  position: Position,
+  quality: Quality = "major"
 ): [number, number][] {
-  const [minFret, maxFret] = getFretWindowForStage(stage, key, position);
+  const [minFret, maxFret] = getFretWindowForStage(stage, key, position, quality);
   const startMin = Math.max(0, maxFret - (WIDTH_PROMPT_WINDOW - 1));
   const startMax = minFret;
   if (startMin > startMax) {
@@ -226,17 +250,24 @@ export function getPromptFretWindow(key: Key, position: Position): [number, numb
 export function getPromptFretWindowForStage(
   stage: StringSetStage,
   key: Key,
-  position: Position
+  position: Position,
+  quality: Quality = "major"
 ): [number, number] {
-  const options = getPromptFretWindowOptions(stage, key, position);
-  const seed = hashString(`${key}|${position}`);
+  const options = getPromptFretWindowOptions(stage, key, position, quality);
+  const seed = hashString(`${key}|${position}|${quality}`);
   const index = seed % options.length;
   return options[index];
 }
 
-/** For Stage 3: deterministic string set (1 or 2) per card so the same deck position always gets the same set. */
-export function getEffectiveStageForCard(card: CardId, cardIndex: number, level: number): StringSetStage {
-  const seed = hashString(`${cardId(card)}|${level}|${cardIndex}`);
+/** For Stage 3 or 6 (mixed major/minor): deterministic quality per card. */
+export function getEffectiveQualityForCard(card: CardId, cardIndex: number, level: number, stage: Stage): Quality {
+  const seed = hashString(`${cardId(card)}|${level}|${cardIndex}|quality|${stage}`);
+  return seed % 2 === 0 ? "major" : "minor";
+}
+
+/** For Stage 6 (mixed 2 string sets): deterministic string set (1 or 2) per card. */
+export function getEffectiveStageForCard(card: CardId, cardIndex: number, level: number, stage: Stage): StringSetStage {
+  const seed = hashString(`${cardId(card)}|${level}|${cardIndex}|${stage}`);
   return (seed % 2 === 0 ? 1 : 2) as StringSetStage;
 }
 

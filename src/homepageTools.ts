@@ -43,8 +43,8 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
   {
     path: "/guitar-triad-trainer",
     name: "Guitar Triad Trainer",
-    benefit: "Learn major, minor, and seventh triads on the fretboard with instant feedback.",
-    chips: ["Major, minor, 7th", "Flashcards", "Stats"],
+    benefit: "Learn major and minor triads on the fretboard with instant feedback.",
+    chips: ["Major & minor", "Flashcards", "Stats"],
     applicationCategory: "EducationalApplication",
   },
   {

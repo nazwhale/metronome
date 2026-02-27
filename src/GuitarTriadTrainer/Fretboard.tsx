@@ -1,7 +1,13 @@
-import type { TriadPosition } from "./data";
+import type { Quality, TriadPosition } from "./data";
 
 /** String order: high (top), middle, low (bottom) — like looking at the neck */
 const STRING_ORDER: [number, number, number] = [2, 1, 0];
+
+/** Label for chord degree in the circle (e.g. ♭3 for minor third). */
+function degreeLabel(degree: 1 | 3 | 5, quality: Quality): string {
+  if (degree === 3 && quality === "minor") return "♭3";
+  return String(degree);
+}
 
 /** Minimal fretboard strip showing only the fret range (no positions). For the question side. */
 export function FretRangeDiagram({
@@ -63,9 +69,11 @@ interface FretboardProps {
   positions: TriadPosition[];
   positionWindow: [number, number];
   stringLabels: [string, string, string];
+  /** For minor triads, degree 3 is shown as ♭3. */
+  quality?: Quality;
 }
 
-export default function Fretboard({ positions, positionWindow, stringLabels }: FretboardProps) {
+export default function Fretboard({ positions, positionWindow, stringLabels, quality = "major" }: FretboardProps) {
   const [minFret, maxFret] = positionWindow;
   const fretCount = maxFret - minFret + 1;
   const labelByIndex = (i: number) => stringLabels[i];
@@ -109,9 +117,9 @@ export default function Fretboard({ positions, positionWindow, stringLabels }: F
                             : "bg-secondary text-secondary-content ring-2 ring-secondary/60 ring-offset-2 ring-offset-base-200"
                         }`}
                         role="img"
-                        aria-label={`Degree ${pos.degree}, fret ${fret + 1}`}
+                        aria-label={`Degree ${pos.degree === 3 && quality === "minor" ? "flat 3" : pos.degree}, fret ${fret + 1}`}
                       >
-                        {pos.degree}
+                        {degreeLabel(pos.degree, quality)}
                       </span>
                     ) : (
                       <span className="invisible w-4 h-4" aria-hidden />

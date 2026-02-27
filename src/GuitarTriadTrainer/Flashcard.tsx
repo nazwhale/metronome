@@ -1,24 +1,43 @@
 import Fretboard, { FretRangeDiagram } from "./Fretboard";
 import {
   type CardId,
+  type Quality,
   type Stage,
   type StringSetStage,
   getTriadPositionsForStage,
   getFretWindowForStage,
   getPromptFretWindowForStage,
-  STRING_SET_LABEL,
+  STRING_SET_LABEL_BY_STRING_SET,
   STRING_LABELS_BY_STAGE,
   TAB_STRING_LABELS_BY_STAGE,
   positionLabel,
 } from "./data";
+
+/** Resolve effective string set for this stage (1, 2, or 4). Stage 6 uses cardStage. */
+function effectiveStringSetForStage(stage: Stage, cardStage: StringSetStage | undefined): StringSetStage {
+  if (stage === 6) return cardStage ?? 1;
+  if (stage === 1 || stage === 2 || stage === 3) return 1;
+  if (stage === 4 || stage === 5) return 2;
+  if (stage === 7) return 4;
+  return 1;
+}
+
+/** Resolve quality for this stage. Stage 3 and 6 use cardQuality. */
+function effectiveQualityForStage(stage: Stage, cardQuality: Quality | undefined): Quality {
+  if (stage === 2 || stage === 5) return "minor";
+  if ((stage === 3 || stage === 6) && cardQuality != null) return cardQuality;
+  return "major";
+}
 
 export type Result = "gotIt" | "miss";
 
 interface FlashcardProps {
   card: CardId;
   stage: Stage;
-  /** When stage is 3 (mixed), which string set this card uses. Omit for stages 1 and 2. */
+  /** When stage is 6 (mixed 2 sets), which string set this card uses. */
   cardStage?: StringSetStage;
+  /** When stage is 3 or 6 (mixed major/minor), which quality this card uses. */
+  cardQuality?: Quality;
   flipped: boolean;
   /** 0–1, how much of the time limit has elapsed (for progress bar). */
   timeProgress: number;
@@ -32,18 +51,21 @@ export default function Flashcard({
   card,
   stage,
   cardStage,
+  cardQuality,
   flipped,
   timeProgress,
   secondsPerCard,
   onFlip,
   onResult,
 }: FlashcardProps) {
-  const effectiveStage: StringSetStage = (stage === 3 && cardStage != null) ? cardStage : (stage as StringSetStage);
-  const positions = getTriadPositionsForStage(effectiveStage, card.key, card.position);
-  const displayWindow = getFretWindowForStage(effectiveStage, card.key, card.position);
-  const promptFretWindow = getPromptFretWindowForStage(effectiveStage, card.key, card.position);
+  const effectiveStage = effectiveStringSetForStage(stage, cardStage);
+  const quality = effectiveQualityForStage(stage, cardQuality);
+  const positions = getTriadPositionsForStage(effectiveStage, card.key, card.position, quality);
+  const displayWindow = getFretWindowForStage(effectiveStage, card.key, card.position, quality);
+  const promptFretWindow = getPromptFretWindowForStage(effectiveStage, card.key, card.position, quality);
   const stringLabels = STRING_LABELS_BY_STAGE[effectiveStage];
   const tabStringLabels = TAB_STRING_LABELS_BY_STAGE[effectiveStage];
+  const qualityLabel = quality === "minor" ? "minor" : "major";
 
   return (
     <div className="card bg-base-200 shadow-xl" role="region" aria-label={flipped ? "Answer" : "Question"}>
@@ -53,7 +75,7 @@ export default function Flashcard({
             <dl className="text-left inline-block mt-0">
               <div className="flex gap-3">
                 <dt className="text-base-content/60 text-sm w-24 shrink-0">Key</dt>
-                <dd className="font-semibold text-base m-0">{card.key} major</dd>
+                <dd className="font-semibold text-base m-0">{card.key} {qualityLabel}</dd>
               </div>
             </dl>
             <p className="text-sm text-base-content/70 mt-3">Play in this range:</p>
@@ -63,7 +85,7 @@ export default function Flashcard({
             <dl className="text-left inline-block mt-3 space-y-1.5">
               <div className="flex gap-3">
                 <dt className="text-base-content/60 text-sm w-24 shrink-0">String set</dt>
-                <dd className="font-medium text-base m-0">{STRING_SET_LABEL[effectiveStage]}</dd>
+                <dd className="font-medium text-base m-0">{STRING_SET_LABEL_BY_STRING_SET[effectiveStage]}</dd>
               </div>
               <div className="flex gap-3">
                 <dt className="text-base-content/60 text-sm w-24 shrink-0">Position</dt>
@@ -91,13 +113,14 @@ export default function Flashcard({
         ) : (
           <>
             <p className="text-base font-semibold text-base-content/80">
-              {card.key} major · {positionLabel(card.position)}
+              {card.key} {qualityLabel} · {positionLabel(card.position)}
             </p>
             <div className="mt-4">
               <Fretboard
                 positions={positions}
                 positionWindow={displayWindow}
                 stringLabels={stringLabels}
+                quality={quality}
               />
             </div>
             <div className="flex gap-3 mt-6">

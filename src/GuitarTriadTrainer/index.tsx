@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import Flashcard, { type Result } from "./Flashcard";
-import { getDeckForLevel, getKeysForLevel, getLevelDeckSize, getSecondsPerCard, getTotalLevels, getEffectiveStageForCard, type CardId, type Stage } from "./data";
+import { getDeckForLevel, getKeysForLevel, getLevelDeckSize, getSecondsPerCard, getTotalLevels, getEffectiveStageForCard, getEffectiveQualityForCard, type CardId, type Quality, type Stage, type StringSetStage } from "./data";
 import { useTriadStats } from "./useTriadStats";
 import QandA, { type QAItem } from "../components/QandA";
 import ToolPracticeGuide from "../components/ToolPracticeGuide";
@@ -105,7 +105,8 @@ const GuitarTriadTrainer = () => {
   const [flipTimeMs, setFlipTimeMs] = useState<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [runResults, setRunResults] = useState<{ card: CardId; result: Result; flipTimeMs: number; lifeLost: boolean }[]>([]);
-  const [deckStages, setDeckStages] = useState<(1 | 2)[] | null>(null);
+  const [deckStages, setDeckStages] = useState<StringSetStage[] | null>(null);
+  const [deckQualities, setDeckQualities] = useState<Quality[] | null>(null);
   const cardShownAtRef = useRef<number>(0);
   const recordedRunRef = useRef(false);
   const currentIndexRef = useRef(0);
@@ -135,7 +136,8 @@ const GuitarTriadTrainer = () => {
       setStage(stg);
       const shuffled = shuffleDeck(getDeckForLevel(lvl));
       setDeck(shuffled);
-      setDeckStages(stg === 3 ? shuffled.map((card, i) => getEffectiveStageForCard(card, i, lvl)) : null);
+      setDeckStages(stg === 6 ? shuffled.map((card, i) => getEffectiveStageForCard(card, i, lvl, stg)) : null);
+      setDeckQualities(stg === 3 || stg === 6 ? shuffled.map((card, i) => getEffectiveQualityForCard(card, i, lvl, stg)) : null);
       setCurrentIndex(0);
       setFlipped(false);
       setLevel(lvl);
@@ -344,9 +346,9 @@ const GuitarTriadTrainer = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-1 text-left">Stage 2 – Major, D–G–B string set</h2>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 2 – Minor, G–B–e string set</h2>
               <p className="text-sm text-base-content/70 mb-4 text-left">
-                Major triads on D-G-B (root, 1st, 2nd inversion). Keys follow the circle of fifths.
+                Minor triads on G–B–e (root, 1st, 2nd inversion). Keys follow the circle of fifths.
               </p>
               <div className="flex flex-col gap-3">
                 {Array.from({ length: getTotalLevels() }, (_, i) => i + 1).map(
@@ -406,9 +408,9 @@ const GuitarTriadTrainer = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-1 text-left">Stage 3 – Major, 2 string sets</h2>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 3 – Major & minor, G–B–e string set</h2>
               <p className="text-sm text-base-content/70 mb-4 text-left">
-                Mixed: each card uses either G–B–e or D–G–B (same levels and keys as above).
+                Mixed: each card is either major or minor on G–B–e (same levels and keys as above).
               </p>
               <div className="flex flex-col gap-3">
                 {Array.from({ length: getTotalLevels() }, (_, i) => i + 1).map(
@@ -427,6 +429,254 @@ const GuitarTriadTrainer = () => {
                             className={`btn btn-sm ${isUnlocked ? "btn-primary" : "btn-disabled"}`}
                             disabled={!isUnlocked}
                             onClick={() => startLevel(lvl, 3)}
+                          >
+                            Level {lvl}
+                          </button>
+                          <span className="text-sm text-base-content/70">
+                            {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
+                            {` · Keys: ${keys.join(", ")}`}
+                          </span>
+                        </div>
+                        {best && (() => {
+                          const bestStars = getStarRating(best.livesLost, best.averageTimeMs, getSecondsPerCard(lvl) * 1000);
+                          return (
+                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center justify-between gap-2">
+                              <span className="flex items-center gap-1" role="img" aria-label={`Best run: ${LIVES_PER_LEVEL - best.livesLost} lives left`}>
+                                <span className="text-base-content/70 font-medium">Best run:</span>
+                                <span aria-hidden>{"♥".repeat(LIVES_PER_LEVEL - best.livesLost)}</span>
+                                {best.averageTimeMs < Infinity && (
+                                  <span aria-hidden>
+                                    {(best.averageTimeMs / 1000) < 10
+                                      ? (best.averageTimeMs / 1000).toFixed(1)
+                                      : Math.round(best.averageTimeMs / 1000)}s avg
+                                  </span>
+                                )}
+                              </span>
+                              <span className="flex items-center gap-0.5 ml-auto" role="img" aria-label={`${bestStars} out of 5 stars`}>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <span key={i} className="text-warning text-base" aria-hidden>
+                                    {i <= bestStars ? "★" : "☆"}
+                                  </span>
+                                ))}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 4 – Major, D–G–B string set</h2>
+              <p className="text-sm text-base-content/70 mb-4 text-left">
+                Major triads on D–G–B (root, 1st, 2nd inversion). Keys follow the circle of fifths.
+              </p>
+              <div className="flex flex-col gap-3">
+                {Array.from({ length: getTotalLevels() }, (_, i) => i + 1).map(
+                  (lvl) => {
+                    const keys = getKeysForLevel(lvl);
+                    const isUnlocked = lvl <= unlockedLevelByStage[4];
+                    const best = bestRunForLevel(4, lvl);
+                    return (
+                      <div
+                        key={`s4-${lvl}`}
+                        className={`rounded-lg border p-3 flex flex-col gap-2 ${isUnlocked ? "border-base-300 bg-base-200/50" : "border-base-300/50 bg-base-200/30 opacity-75"}`}
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${isUnlocked ? "btn-primary" : "btn-disabled"}`}
+                            disabled={!isUnlocked}
+                            onClick={() => startLevel(lvl, 4)}
+                          >
+                            Level {lvl}
+                          </button>
+                          <span className="text-sm text-base-content/70">
+                            {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
+                            {` · Keys: ${keys.join(", ")}`}
+                          </span>
+                        </div>
+                        {best && (() => {
+                          const bestStars = getStarRating(best.livesLost, best.averageTimeMs, getSecondsPerCard(lvl) * 1000);
+                          return (
+                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center justify-between gap-2">
+                              <span className="flex items-center gap-1" role="img" aria-label={`Best run: ${LIVES_PER_LEVEL - best.livesLost} lives left`}>
+                                <span className="text-base-content/70 font-medium">Best run:</span>
+                                <span aria-hidden>{"♥".repeat(LIVES_PER_LEVEL - best.livesLost)}</span>
+                                {best.averageTimeMs < Infinity && (
+                                  <span aria-hidden>
+                                    {(best.averageTimeMs / 1000) < 10
+                                      ? (best.averageTimeMs / 1000).toFixed(1)
+                                      : Math.round(best.averageTimeMs / 1000)}s avg
+                                  </span>
+                                )}
+                              </span>
+                              <span className="flex items-center gap-0.5 ml-auto" role="img" aria-label={`${bestStars} out of 5 stars`}>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <span key={i} className="text-warning text-base" aria-hidden>
+                                    {i <= bestStars ? "★" : "☆"}
+                                  </span>
+                                ))}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 5 – Minor, D–G–B string set</h2>
+              <p className="text-sm text-base-content/70 mb-4 text-left">
+                Minor triads on D–G–B (root, 1st, 2nd inversion). Keys follow the circle of fifths.
+              </p>
+              <div className="flex flex-col gap-3">
+                {Array.from({ length: getTotalLevels() }, (_, i) => i + 1).map(
+                  (lvl) => {
+                    const keys = getKeysForLevel(lvl);
+                    const isUnlocked = lvl <= unlockedLevelByStage[5];
+                    const best = bestRunForLevel(5, lvl);
+                    return (
+                      <div
+                        key={`s5-${lvl}`}
+                        className={`rounded-lg border p-3 flex flex-col gap-2 ${isUnlocked ? "border-base-300 bg-base-200/50" : "border-base-300/50 bg-base-200/30 opacity-75"}`}
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${isUnlocked ? "btn-primary" : "btn-disabled"}`}
+                            disabled={!isUnlocked}
+                            onClick={() => startLevel(lvl, 5)}
+                          >
+                            Level {lvl}
+                          </button>
+                          <span className="text-sm text-base-content/70">
+                            {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
+                            {` · Keys: ${keys.join(", ")}`}
+                          </span>
+                        </div>
+                        {best && (() => {
+                          const bestStars = getStarRating(best.livesLost, best.averageTimeMs, getSecondsPerCard(lvl) * 1000);
+                          return (
+                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center justify-between gap-2">
+                              <span className="flex items-center gap-1" role="img" aria-label={`Best run: ${LIVES_PER_LEVEL - best.livesLost} lives left`}>
+                                <span className="text-base-content/70 font-medium">Best run:</span>
+                                <span aria-hidden>{"♥".repeat(LIVES_PER_LEVEL - best.livesLost)}</span>
+                                {best.averageTimeMs < Infinity && (
+                                  <span aria-hidden>
+                                    {(best.averageTimeMs / 1000) < 10
+                                      ? (best.averageTimeMs / 1000).toFixed(1)
+                                      : Math.round(best.averageTimeMs / 1000)}s avg
+                                  </span>
+                                )}
+                              </span>
+                              <span className="flex items-center gap-0.5 ml-auto" role="img" aria-label={`${bestStars} out of 5 stars`}>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <span key={i} className="text-warning text-base" aria-hidden>
+                                    {i <= bestStars ? "★" : "☆"}
+                                  </span>
+                                ))}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 6 – Major & minor, 2 string sets</h2>
+              <p className="text-sm text-base-content/70 mb-4 text-left">
+                Mixed: each card is major or minor, on either G–B–e or D–G–B (same levels and keys as above).
+              </p>
+              <div className="flex flex-col gap-3">
+                {Array.from({ length: getTotalLevels() }, (_, i) => i + 1).map(
+                  (lvl) => {
+                    const keys = getKeysForLevel(lvl);
+                    const isUnlocked = lvl <= unlockedLevelByStage[6];
+                    const best = bestRunForLevel(6, lvl);
+                    return (
+                      <div
+                        key={`s6-${lvl}`}
+                        className={`rounded-lg border p-3 flex flex-col gap-2 ${isUnlocked ? "border-base-300 bg-base-200/50" : "border-base-300/50 bg-base-200/30 opacity-75"}`}
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${isUnlocked ? "btn-primary" : "btn-disabled"}`}
+                            disabled={!isUnlocked}
+                            onClick={() => startLevel(lvl, 6)}
+                          >
+                            Level {lvl}
+                          </button>
+                          <span className="text-sm text-base-content/70">
+                            {getLevelDeckSize(lvl)} cards · {getSecondsPerCard(lvl)}s per card
+                            {` · Keys: ${keys.join(", ")}`}
+                          </span>
+                        </div>
+                        {best && (() => {
+                          const bestStars = getStarRating(best.livesLost, best.averageTimeMs, getSecondsPerCard(lvl) * 1000);
+                          return (
+                            <div className="text-sm text-base-content/60 pt-2 border-t border-base-300/70 flex flex-wrap items-center justify-between gap-2">
+                              <span className="flex items-center gap-1" role="img" aria-label={`Best run: ${LIVES_PER_LEVEL - best.livesLost} lives left`}>
+                                <span className="text-base-content/70 font-medium">Best run:</span>
+                                <span aria-hidden>{"♥".repeat(LIVES_PER_LEVEL - best.livesLost)}</span>
+                                {best.averageTimeMs < Infinity && (
+                                  <span aria-hidden>
+                                    {(best.averageTimeMs / 1000) < 10
+                                      ? (best.averageTimeMs / 1000).toFixed(1)
+                                      : Math.round(best.averageTimeMs / 1000)}s avg
+                                  </span>
+                                )}
+                              </span>
+                              <span className="flex items-center gap-0.5 ml-auto" role="img" aria-label={`${bestStars} out of 5 stars`}>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <span key={i} className="text-warning text-base" aria-hidden>
+                                    {i <= bestStars ? "★" : "☆"}
+                                  </span>
+                                ))}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mb-1 text-left">Stage 7 – Major, A–D–G string set</h2>
+              <p className="text-sm text-base-content/70 mb-4 text-left">
+                Major triads on A–D–G (root, 1st, 2nd inversion). Keys follow the circle of fifths.
+              </p>
+              <div className="flex flex-col gap-3">
+                {Array.from({ length: getTotalLevels() }, (_, i) => i + 1).map(
+                  (lvl) => {
+                    const keys = getKeysForLevel(lvl);
+                    const isUnlocked = lvl <= unlockedLevelByStage[7];
+                    const best = bestRunForLevel(7, lvl);
+                    return (
+                      <div
+                        key={`s7-${lvl}`}
+                        className={`rounded-lg border p-3 flex flex-col gap-2 ${isUnlocked ? "border-base-300 bg-base-200/50" : "border-base-300/50 bg-base-200/30 opacity-75"}`}
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            className={`btn btn-sm ${isUnlocked ? "btn-primary" : "btn-disabled"}`}
+                            disabled={!isUnlocked}
+                            onClick={() => startLevel(lvl, 7)}
                           >
                             Level {lvl}
                           </button>
@@ -515,7 +765,8 @@ const GuitarTriadTrainer = () => {
             <Flashcard
               card={currentCard}
               stage={stage}
-              cardStage={stage === 3 && deckStages ? deckStages[currentIndex] : undefined}
+              cardStage={stage === 6 && deckStages ? deckStages[currentIndex] : undefined}
+              cardQuality={(stage === 3 || stage === 6) && deckQualities ? deckQualities[currentIndex] : undefined}
               flipped={flipped}
               timeProgress={Math.min(1, elapsedMs / maxMsPerCard)}
               secondsPerCard={secondsPerCard}
@@ -631,7 +882,7 @@ const GuitarTriadTrainer = () => {
         <ToolPracticeGuide
           title="How to Practice with the Guitar Triad Trainer"
           features={[
-            "Stage 1: G–B–e; Stage 2: D–G–B; Stage 3: mixed (each card G–B–e or D–G–B). Root, 1st, 2nd inversion.",
+            "Stage 1 = major G–B–e; 2 = minor G–B–e; 3 = major & minor G–B–e; 4 = major D–G–B; 5 = minor D–G–B; 6 = major & minor on 2 sets (G–B–e & D–G–B); 7 = major A–D–G. Root, 1st, 2nd inversion.",
             "Levels by key (circle of fifths)",
             "3 lives per run — wrong answers and timeouts cost a life",
             "Time limit per card (e.g. 8s or 6s) to build quick recognition",
@@ -661,7 +912,7 @@ const GuitarTriadTrainer = () => {
           settingsExplained={
             <>
               <p className="m-0">
-                <strong>Stages:</strong> Stage 1 = G–B–e, Stage 2 = D–G–B, Stage 3 = mixed (each card uses one set). Major triads in root, 1st, and 2nd inversion. Keys follow the circle of fifths. Each level shows deck size and seconds per card.
+                <strong>Stages:</strong> 1 = major G–B–e, 2 = minor G–B–e, 3 = major & minor G–B–e, 4 = major D–G–B, 5 = minor D–G–B, 6 = major & minor on 2 sets, 7 = major A–D–G. Root, 1st, 2nd inversion. Keys follow the circle of fifths. Each level shows deck size and seconds per card.
               </p>
               <p className="m-0 mt-1.5">
                 <strong>Lives & time:</strong> You get 3 lives per run. You lose a life for a wrong answer or if you don’t flip before the time limit. The limit (e.g. 8s or 6s per card) is shown on the level button.
