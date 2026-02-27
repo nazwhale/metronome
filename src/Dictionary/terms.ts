@@ -458,6 +458,20 @@ export const dictionaryTerms: DictionaryTerm[] = [
     ],
   },
   {
+    term: "Messa di voce",
+    slug: "messa-di-voce",
+    shortDefinition: "A vocal technique of swelling a sustained note from soft to loud and back to soft.",
+    fullDefinition:
+      "Messa di voce (Italian for 'placing of the voice') is a vocal technique in which a singer holds a single note while gradually increasing the volume from soft to loud (crescendo) and then decreasing it back to soft (diminuendo). The note stays steady in pitch and quality while the dynamic changes.\n\n" +
+      "It is a cornerstone of bel canto training and is used both as an exercise for breath control and as an expressive device in opera and art song. Done well, it demonstrates refined breath support and even tone across the dynamic range.",
+    tags: ["Vocal", "Technique"],
+    relatedTerms: ["Soprano", "Tenor", "Opera", "Dynamics"],
+    examples: [
+      "Bel canto arias often include messa di voce on long, sustained notes",
+      "Voice teachers use messa di voce to develop consistent support and tone",
+    ],
+  },
+  {
     term: "Minuet",
     slug: "minuet",
     shortDefinition: "A stately dance in triple meter, common in Baroque and Classical music.",
